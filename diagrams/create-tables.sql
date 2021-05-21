@@ -51,6 +51,13 @@ CREATE TABLE "studios" (
   "created_at" timestamp DEFAULT (now())
 );
 
+CREATE TABLE "studio_photos" (
+  "id" SERIAL PRIMARY KEY,
+  "studio_id" int,
+  "photo_url" varchar,
+  "order" int
+);
+
 CREATE TABLE "studio_users" (
   "studio_id" int,
   "user_id" int,
@@ -64,6 +71,13 @@ CREATE TABLE "spaces" (
   "title" varchar,
   "description" varchar,
   "created_at" timestamp DEFAULT (now())
+);
+
+CREATE TABLE "space_photos" (
+  "id" SERIAL PRIMARY KEY,
+  "space_id" int,
+  "photo_url" varchar,
+  "order" int
 );
 
 CREATE TABLE "space_users" (
@@ -135,6 +149,14 @@ CREATE TABLE "booking_reviews" (
   PRIMARY KEY ("booking_id", "space_id")
 );
 
+CREATE TABLE "booking_review_photos" (
+  "id" SERIAL PRIMARY KEY,
+  "booking_id" int,
+  "space_id" int,
+  "photo_url" varchar,
+  "order" int
+);
+
 CREATE TABLE "studio_roles" (
   "name" varchar PRIMARY KEY,
   "title" varchar,
@@ -163,6 +185,8 @@ ALTER TABLE "user_payment_methods" ADD FOREIGN KEY ("user_id") REFERENCES "users
 
 ALTER TABLE "user_payment_methods" ADD FOREIGN KEY ("vendor") REFERENCES "payment_vendors" ("name");
 
+ALTER TABLE "studio_photos" ADD FOREIGN KEY ("studio_id") REFERENCES "studios" ("id");
+
 ALTER TABLE "studio_users" ADD FOREIGN KEY ("studio_id") REFERENCES "studios" ("id");
 
 ALTER TABLE "studio_users" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");
@@ -170,6 +194,8 @@ ALTER TABLE "studio_users" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id")
 ALTER TABLE "studio_users" ADD FOREIGN KEY ("studio_role_name") REFERENCES "studio_roles" ("name");
 
 ALTER TABLE "spaces" ADD FOREIGN KEY ("studio_id") REFERENCES "studios" ("id");
+
+ALTER TABLE "space_photos" ADD FOREIGN KEY ("space_id") REFERENCES "spaces" ("id");
 
 ALTER TABLE "space_users" ADD FOREIGN KEY ("space_id") REFERENCES "spaces" ("id");
 
@@ -206,6 +232,10 @@ ALTER TABLE "booking_items" ADD FOREIGN KEY ("service_type") REFERENCES "service
 ALTER TABLE "booking_reviews" ADD FOREIGN KEY ("booking_id") REFERENCES "bookings" ("id");
 
 ALTER TABLE "booking_reviews" ADD FOREIGN KEY ("space_id") REFERENCES "spaces" ("id");
+
+ALTER TABLE "booking_review_photos" ADD FOREIGN KEY ("booking_id") REFERENCES "bookings" ("id");
+
+ALTER TABLE "booking_review_photos" ADD FOREIGN KEY ("space_id") REFERENCES "spaces" ("id");
 
 
 COMMENT ON COLUMN "studio_roles"."permissions" IS 'array';
