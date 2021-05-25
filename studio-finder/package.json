@@ -1,5 +1,6 @@
 {
   "name": "studio-finder",
+  "description": "Studio Finder",
   "version": "0.0.1",
   "private": true,
   "dependencies": {
@@ -64,6 +65,5 @@
   },
   "devDependencies": {
     "@capacitor/cli": "3.0.0"
-  },
-  "description": "An Ionic project"
+  }
 }
