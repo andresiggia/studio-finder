@@ -2,10 +2,10 @@ import React from 'react';
 import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/react';
 
 // context
-import AppContext from '../context/AppContext';
+import AppContext from '../../context/AppContext';
 
 // components
-import ExploreContainer from '../components/ExploreContainer';
+import ExploreContainer from '../../components/ExploreContainer/ExploreContainer';
 
 // css
 import './Home.css';
