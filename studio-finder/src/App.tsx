@@ -3,7 +3,9 @@ import { IonApp, IonRouterOutlet } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
 import React from 'react';
 
+// pages
 import Home from './pages/Home/Home';
+import Login from './pages/Login/Login';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -33,6 +35,9 @@ class App extends React.Component {
           <IonRouterOutlet>
             <Route exact path="/home">
               <Home />
+            </Route>
+            <Route path="/login">
+              <Login />
             </Route>
             <Route exact path="/">
               <Redirect to="/home" />
