@@ -3,9 +3,6 @@ import { IonApp, IonRouterOutlet } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
 import React from 'react';
 
-// services
-import Supabase from './services/supabase';
-
 import Home from './pages/Home';
 
 /* Core CSS required for Ionic components to work properly */
@@ -28,12 +25,6 @@ import '@ionic/react/css/display.css';
 import './theme/variables.css';
 
 class App extends React.Component {
-
-  supabase: any;
-
-  componentDidMount() {
-    this.supabase = new Supabase();
-  }
 
   render() {
     return (
