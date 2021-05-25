@@ -24,6 +24,9 @@ export class AppContextProvider extends React.Component<Props> {
     }
     this.supabase.auth.onAuthStateChange((event, session) => {
       console.log('onAuthStateChange', { event, session });
+      this.setState({
+        user: session?.user || null,
+      });
     });
   }
 
