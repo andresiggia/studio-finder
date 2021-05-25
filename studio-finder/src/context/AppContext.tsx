@@ -4,6 +4,9 @@ import { createClient, SupabaseClient } from '@supabase/supabase-js';
 // constants
 import appKeys from '../constants/supabase-keys';
 
+// services
+import { i18nInit } from '../services/i18n/i18n';
+
 const AppContext = React.createContext({});
 
 export default AppContext;
@@ -18,6 +21,8 @@ export class AppContextProvider extends React.Component<Props> {
 
   constructor(props: any) {
     super(props);
+
+    // user
     this.supabase = createClient(appKeys.url, appKeys.publicAnonKey);
     this.state = {
       user: this.supabase.auth.user(),
@@ -28,6 +33,9 @@ export class AppContextProvider extends React.Component<Props> {
         user: session?.user || null,
       });
     });
+
+    // i18n
+    i18nInit();
   }
 
   render() {
