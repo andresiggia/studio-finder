@@ -5,7 +5,6 @@ import { IonContent, IonPage } from '@ionic/react';
 import AppContext from '../../context/AppContext';
 
 // components
-import ExploreContainer from '../../components/ExploreContainer/ExploreContainer';
 import Header from '../../components/Header/Header';
 
 // css
@@ -17,7 +16,7 @@ class Home extends React.Component {
       <IonPage>
         <Header />
         <IonContent fullscreen>
-          <ExploreContainer />
+          <p>Under development</p>
         </IonContent>
       </IonPage>
     );
