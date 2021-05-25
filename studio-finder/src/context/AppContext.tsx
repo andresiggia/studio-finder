@@ -34,7 +34,6 @@ export class AppContextProvider extends React.Component<Props> {
     const { children } = this.props;
     return (
       <AppContext.Provider value={{
-        supabase: this.supabase,
         state: this.state,
       }}>
         {children}
