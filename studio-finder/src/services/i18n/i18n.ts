@@ -9,14 +9,14 @@ export const i18nInit = () => {
     .init({
       resources: {
         en: {
-          translation: en
+          translation: en,
         },
       },
       lng: 'en',
       fallbackLng: 'en',
       interpolation: {
-        escapeValue: false
-      }
+        escapeValue: false,
+      },
     });
 };
 

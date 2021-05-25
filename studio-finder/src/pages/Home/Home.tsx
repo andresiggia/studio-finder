@@ -1,5 +1,7 @@
 import React from 'react';
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/react';
+import {
+  IonContent, IonHeader, IonPage, IonTitle, IonToolbar,
+} from '@ionic/react';
 
 // services
 import i18n from '../../services/i18n/i18n';
@@ -14,7 +16,6 @@ import ExploreContainer from '../../components/ExploreContainer/ExploreContainer
 import './Home.css';
 
 class Home extends React.Component {
-
   render() {
     return (
       <IonPage>
@@ -34,7 +35,7 @@ class Home extends React.Component {
       </IonPage>
     );
   }
-};
+}
 
 Home.contextType = AppContext;
 

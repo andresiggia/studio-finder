@@ -1,5 +1,7 @@
 import React from 'react';
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/react';
+import {
+  IonContent, IonHeader, IonPage, IonTitle, IonToolbar,
+} from '@ionic/react';
 
 // context
 import AppContext from '../../context/AppContext';
@@ -26,7 +28,7 @@ class Login extends React.Component {
       </IonPage>
     );
   }
-};
+}
 
 Login.contextType = AppContext;
 
