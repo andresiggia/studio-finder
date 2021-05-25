@@ -1,6 +1,6 @@
 {
-  "short_name": "Studio Finder",
-  "name": "Studio Finder",
+  "short_name": "StudioFinder",
+  "name": "StudioFinder",
   "icons": [
     {
       "src": "assets/icon/favicon.png",

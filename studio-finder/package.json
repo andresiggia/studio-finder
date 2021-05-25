@@ -1,6 +1,6 @@
 {
   "name": "studio-finder",
-  "description": "Studio Finder",
+  "description": "StudioFinder",
   "version": "0.0.1",
   "private": true,
   "dependencies": {
