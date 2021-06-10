@@ -7,6 +7,8 @@ import React from 'react';
 import Home from './pages/Home/Home';
 import Login from './pages/Login/Login';
 
+import routes, { defaultRoute } from './services/routes/routes';
+
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
 
@@ -32,15 +34,22 @@ class App extends React.Component {
       <IonApp>
         <IonReactRouter>
           <IonRouterOutlet>
-            <Route exact path="/home">
-              <Home />
-            </Route>
-            <Route path="/login">
-              <Login />
-            </Route>
-            <Route exact path="/">
-              <Redirect to="/home" />
-            </Route>
+            {routes.map((route) => {
+              const { Component, exact, path } = route;
+              if (!Component) {
+                return null;
+              }
+              return (
+                <Route exact={exact} path={path}>
+                  <Component />
+                </Route>
+              );
+            }).filter((item) => item)}
+            {!!defaultRoute && (
+              <Route exact path="/">
+                <Redirect to={defaultRoute.path} />
+              </Route>
+            )}
           </IonRouterOutlet>
         </IonReactRouter>
       </IonApp>
