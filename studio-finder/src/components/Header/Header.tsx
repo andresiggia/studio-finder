@@ -44,12 +44,16 @@ class Header extends React.Component<RouteComponentProps> {
           </IonButtons>
 
           <IonButtons slot="end">
-            <IonButton fill="outline" color="primary">
-              {i18n.t('Log In')}
-            </IonButton>
-            <IonButton fill="solid" color="primary">
-              {i18n.t('Sign Up')}
-            </IonButton>
+            {getRoutesByName(['login']).map((route) => (
+              <IonButton fill="outline" color="primary">
+                {route.getLabel()}
+              </IonButton>
+            ))}
+            {getRoutesByName(['signUp']).map((route) => (
+              <IonButton fill="solid" color="primary">
+                {route.getLabel()}
+              </IonButton>
+            ))}
           </IonButtons>
         </IonToolbar>
 
