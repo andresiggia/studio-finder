@@ -6,7 +6,7 @@ import {
   Link, RouteComponentProps, withRouter, matchPath,
 } from 'react-router-dom';
 
-import i18n from '../../services/i18n/i18n';
+// services
 import { defaultRoute, getRoutesByName } from '../../services/routes/routes';
 
 // css
