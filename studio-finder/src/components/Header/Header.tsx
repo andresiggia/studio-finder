@@ -14,7 +14,7 @@ import './Header.css';
 
 class Header extends React.Component<RouteComponentProps> {
   render() {
-    const { match } = this.props;
+    const { match, location } = this.props;
     return (
       <IonHeader>
 
@@ -44,20 +44,18 @@ class Header extends React.Component<RouteComponentProps> {
           </IonButtons>
 
           <IonButtons slot="end">
-            {getRoutesByName(['login']).map((route) => (
-              <Link key={route.path} to={route.path}>
-                <IonButton fill="outline" color="primary">
-                  {route.getLabel()}
-                </IonButton>
-              </Link>
-            ))}
-            {getRoutesByName(['signUp']).map((route) => (
-              <Link key={route.path} to={route.path}>
-                <IonButton fill="solid" color="primary">
-                  {route.getLabel()}
-                </IonButton>
-              </Link>
-            ))}
+            {getRoutesByName(['login', 'signUp']).map((route) => {
+              const fill = route.name === 'login'
+                ? 'outline'
+                : 'solid';
+              return (
+                <Link key={route.path} to={`${route.path}?backUrl=${location.pathname}`}>
+                  <IonButton fill={fill} color="primary">
+                    {route.getLabel()}
+                  </IonButton>
+                </Link>
+              );
+            })}
           </IonButtons>
         </IonToolbar>
 
