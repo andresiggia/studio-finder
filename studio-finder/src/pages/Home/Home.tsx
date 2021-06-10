@@ -16,7 +16,7 @@ class Home extends React.Component {
       <IonPage>
         <IonContent fullscreen>
           <Header />
-          <p>Under development</p>
+          <p>Home - Under development</p>
         </IonContent>
       </IonPage>
     );

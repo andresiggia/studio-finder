@@ -16,7 +16,7 @@ class Login extends React.Component {
       <IonPage>
         <IonContent fullscreen>
           <Header />
-          <p>Under development</p>
+          <p>Login - Under development</p>
         </IonContent>
       </IonPage>
     );
