@@ -2,6 +2,8 @@
 import Home from '../../pages/Home/Home';
 import About from '../../pages/About/About';
 import Login from '../../pages/Login/Login';
+import SignUp from '../../pages/SignUp/SignUp';
+import StudioLogin from '../../pages/StudioLogin/StudioLogin';
 
 // services
 import i18n from '../i18n/i18n';
@@ -34,7 +36,7 @@ const routes: {
     exact: false,
     strict: false,
     isDefault: false,
-    // Component: StudioLogin,
+    Component: StudioLogin,
     getLabel: () => i18n.t('Studio Login'),
   },
   {
@@ -43,7 +45,7 @@ const routes: {
     exact: false,
     strict: false,
     isDefault: false,
-    // Component: SignUp,
+    Component: SignUp,
     getLabel: () => i18n.t('Sign Up'),
   },
   {
