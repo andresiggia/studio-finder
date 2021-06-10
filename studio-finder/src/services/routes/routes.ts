@@ -1,4 +1,6 @@
+// pages
 import Home from '../../pages/Home/Home';
+import About from '../../pages/About/About';
 import Login from '../../pages/Login/Login';
 
 const routes: {
@@ -14,7 +16,7 @@ const routes: {
     path: '/about',
     exact: true,
     isDefault: false,
-    // Component: About,
+    Component: About,
   },
   {
     path: '/studio-login',
