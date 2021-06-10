@@ -2,30 +2,45 @@ import React from 'react';
 import {
   IonHeader, IonTitle, IonToolbar, IonButtons, IonButton,
 } from '@ionic/react';
+import {
+  Link, RouteComponentProps, withRouter, matchPath,
+} from 'react-router-dom';
 
 import i18n from '../../services/i18n/i18n';
+import { defaultRoute, getRoutesByName } from '../../services/routes/routes';
 
-class Header extends React.Component {
+// css
+import './Header.css';
+
+class Header extends React.Component<RouteComponentProps> {
   render() {
+    const { match } = this.props;
     return (
       <IonHeader>
 
         <IonToolbar>
-          <IonTitle slot="start">
-            Studio
-            <strong>Finder</strong>
+          <IonTitle slot="start" className="header-title">
+            <Link to={defaultRoute?.path || ''}>
+              Studio
+              <strong>Finder</strong>
+            </Link>
           </IonTitle>
 
           <IonButtons>
-            <IonButton fill="clear" color="primary">
-              {i18n.t('Home')}
-            </IonButton>
-            <IonButton fill="clear" color="primary">
-              {i18n.t('About')}
-            </IonButton>
-            <IonButton fill="clear" color="primary">
-              {i18n.t('Studio Login')}
-            </IonButton>
+            {getRoutesByName(['home', 'about', 'studioLogin']).map((route) => {
+              const isActive = matchPath(match.path, {
+                path: route.path,
+                exact: route.exact,
+                strict: route.strict,
+              });
+              return (
+                <Link to={route.path}>
+                  <IonButton fill={isActive ? 'solid' : 'clear'} color="primary">
+                    {route.getLabel()}
+                  </IonButton>
+                </Link>
+              );
+            })}
           </IonButtons>
 
           <IonButtons slot="end">
@@ -43,4 +58,4 @@ class Header extends React.Component {
   }
 }
 
-export default Header;
+export default withRouter(Header);
