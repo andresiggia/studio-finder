@@ -37,7 +37,7 @@ class App extends React.Component {
                 return null;
               }
               return (
-                <Route exact={exact} path={path}>
+                <Route key={path} exact={exact} path={path}>
                   <Component />
                 </Route>
               );
