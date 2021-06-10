@@ -3,10 +3,7 @@ import { IonApp, IonRouterOutlet } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
 import React from 'react';
 
-// pages
-import Home from './pages/Home/Home';
-import Login from './pages/Login/Login';
-
+// services
 import routes, { defaultRoute } from './services/routes/routes';
 
 /* Core CSS required for Ionic components to work properly */
