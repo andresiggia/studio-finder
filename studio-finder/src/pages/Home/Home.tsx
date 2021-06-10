@@ -14,8 +14,8 @@ class Home extends React.Component {
   render() {
     return (
       <IonPage>
-        <Header />
         <IonContent fullscreen>
+          <Header />
           <p>Under development</p>
         </IonContent>
       </IonPage>
