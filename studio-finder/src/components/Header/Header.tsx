@@ -34,7 +34,7 @@ class Header extends React.Component<RouteComponentProps> {
                 strict: route.strict,
               });
               return (
-                <Link to={route.path}>
+                <Link key={route.path} to={route.path}>
                   <IonButton fill={isActive ? 'solid' : 'clear'} color="primary">
                     {route.getLabel()}
                   </IonButton>
@@ -45,14 +45,18 @@ class Header extends React.Component<RouteComponentProps> {
 
           <IonButtons slot="end">
             {getRoutesByName(['login']).map((route) => (
-              <IonButton fill="outline" color="primary">
-                {route.getLabel()}
-              </IonButton>
+              <Link key={route.path} to={route.path}>
+                <IonButton fill="outline" color="primary">
+                  {route.getLabel()}
+                </IonButton>
+              </Link>
             ))}
             {getRoutesByName(['signUp']).map((route) => (
-              <IonButton fill="solid" color="primary">
-                {route.getLabel()}
-              </IonButton>
+              <Link key={route.path} to={route.path}>
+                <IonButton fill="solid" color="primary">
+                  {route.getLabel()}
+                </IonButton>
+              </Link>
             ))}
           </IonButtons>
         </IonToolbar>
