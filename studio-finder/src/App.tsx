@@ -1,7 +1,8 @@
 import { Redirect, Route } from 'react-router-dom';
-import { IonApp, IonRouterOutlet } from '@ionic/react';
+import { IonApp } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
 import React from 'react';
+import { Switch } from 'react-router';
 
 // services
 import routes, { defaultRoute } from './services/routes/routes';
@@ -30,7 +31,7 @@ class App extends React.Component {
     return (
       <IonApp>
         <IonReactRouter>
-          <IonRouterOutlet>
+          <Switch>
             {routes.map((route) => {
               const { Component, exact, path } = route;
               if (!Component) {
@@ -47,7 +48,7 @@ class App extends React.Component {
                 <Redirect to={defaultRoute.path} />
               </Route>
             )}
-          </IonRouterOutlet>
+          </Switch>
         </IonReactRouter>
       </IonApp>
     );
