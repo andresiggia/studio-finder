@@ -1,19 +1,35 @@
 // pages
 import Home from '../../pages/Home/Home';
 import About from '../../pages/About/About';
-import Login from '../../pages/Login/Login';
-import SignUp from '../../pages/SignUp/SignUp';
+import LoginSignUp from '../../pages/LoginSignUp/LoginSignUp';
 import StudioLogin from '../../pages/StudioLogin/StudioLogin';
 
 // services
 import i18n from '../i18n/i18n';
 
-const routes: {
-  name: string, path: string, exact: boolean, strict: boolean, isDefault: boolean, Component?: any,
-  getLabel: () => string,
-}[] = [
+export enum RouteNames {
+  home = 'home',
+  about = 'about',
+  studioLogin = 'studioLogin',
+  loginSignUp = 'loginSignUp',
+  login = 'login',
+  signUp = 'signUp',
+}
+
+interface Route {
+  name: string;
+  path: string;
+  exact?: boolean;
+  strict?: boolean;
+  isDefault?: boolean;
+  Component?: any;
+  routes?: Route[],
+  getLabel?: () => string;
+}
+
+const routes: Route[] = [
   {
-    name: 'home',
+    name: RouteNames.home,
     path: '/home',
     exact: true,
     strict: false,
@@ -22,7 +38,7 @@ const routes: {
     getLabel: () => i18n.t('Home'),
   },
   {
-    name: 'about',
+    name: RouteNames.about,
     path: '/about',
     exact: true,
     strict: false,
@@ -31,7 +47,7 @@ const routes: {
     getLabel: () => i18n.t('About'),
   },
   {
-    name: 'studioLogin',
+    name: RouteNames.studioLogin,
     path: '/studio-login',
     exact: false,
     strict: false,
@@ -40,22 +56,24 @@ const routes: {
     getLabel: () => i18n.t('Studio Login'),
   },
   {
-    name: 'signUp',
-    path: '/signup',
-    exact: false,
-    strict: false,
-    isDefault: false,
-    Component: SignUp,
-    getLabel: () => i18n.t('Sign Up'),
-  },
-  {
-    name: 'login',
+    name: RouteNames.loginSignUp,
     path: '/login',
     exact: false,
     strict: false,
     isDefault: false,
-    Component: Login,
-    getLabel: () => i18n.t('Log In'),
+    Component: LoginSignUp,
+    routes: [
+      {
+        name: RouteNames.login,
+        path: RouteNames.login,
+        getLabel: () => i18n.t('Log In'),
+      },
+      {
+        name: RouteNames.signUp,
+        path: RouteNames.signUp,
+        getLabel: () => i18n.t('Sign Up'),
+      },
+    ],
   },
 ];
 

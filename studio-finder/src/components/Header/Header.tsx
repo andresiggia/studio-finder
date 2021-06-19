@@ -7,7 +7,7 @@ import {
 } from 'react-router-dom';
 
 // services
-import { defaultRoute, getRoutesByName } from '../../services/routes/routes';
+import { defaultRoute, getRoutesByName, RouteNames } from '../../services/routes/routes';
 
 // css
 import './Header.css';
@@ -27,7 +27,7 @@ class Header extends React.Component<RouteComponentProps> {
           </IonTitle>
 
           <IonButtons>
-            {getRoutesByName(['home', 'about', 'studioLogin']).map((route) => {
+            {getRoutesByName([RouteNames.home, RouteNames.about, RouteNames.studioLogin]).map((route) => {
               const isActive = matchPath(match.path, {
                 path: route.path,
                 exact: route.exact,
@@ -36,7 +36,7 @@ class Header extends React.Component<RouteComponentProps> {
               return (
                 <Link key={route.path} to={route.path}>
                   <IonButton fill={isActive ? 'solid' : 'clear'} color="primary">
-                    {route.getLabel()}
+                    {route.getLabel ? route.getLabel() : ''}
                   </IonButton>
                 </Link>
               );
@@ -44,18 +44,28 @@ class Header extends React.Component<RouteComponentProps> {
           </IonButtons>
 
           <IonButtons slot="end">
-            {getRoutesByName(['login', 'signUp']).map((route) => {
-              const fill = route.name === 'login'
-                ? 'outline'
-                : 'solid';
-              return (
-                <Link key={route.path} to={`${route.path}?backUrl=${location.pathname}`}>
-                  <IonButton fill={fill} color="primary">
-                    {route.getLabel()}
-                  </IonButton>
-                </Link>
-              );
-            })}
+            {getRoutesByName([RouteNames.loginSignUp]).map((route) => (
+              <React.Fragment key={route.name}>
+                {!!route.routes && (
+                  route.routes.map((subRoute) => {
+                    const fill = subRoute.name === RouteNames.login
+                      ? 'outline'
+                      : 'solid';
+                    const params = [
+                      ['backUrl', location.pathname],
+                      ['screen', subRoute.path],
+                    ].map((item) => item.join('='));
+                    return (
+                      <Link key={subRoute.path} to={`${route.path}?${params.join('&')}`}>
+                        <IonButton fill={fill} color="primary">
+                          {subRoute.getLabel ? subRoute.getLabel() : ''}
+                        </IonButton>
+                      </Link>
+                    );
+                  })
+                )}
+              </React.Fragment>
+            ))}
           </IonButtons>
         </IonToolbar>
 
