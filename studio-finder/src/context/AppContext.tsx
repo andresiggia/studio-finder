@@ -45,6 +45,11 @@ export class AppContextProvider extends React.Component<Props> {
       <AppContext.Provider
         value={{
           state: this.state,
+          signIn: this.supabase.auth.signIn,
+          signOut: this.supabase.auth.signOut,
+          updateUser: this.supabase.auth.update,
+          resetPassword: this.supabase.auth.api.resetPasswordForEmail,
+          deleteUser: this.supabase.auth.api.deleteUser,
         }}
       >
         {children}
