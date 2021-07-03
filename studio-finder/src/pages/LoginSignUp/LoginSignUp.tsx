@@ -168,7 +168,7 @@ class LoginSignUp extends React.Component<RouteComponentProps, State> {
                   <React.Fragment key={route.name}>
                     {!!route.routes && (
                       route.routes.map((subRoute) => (
-                        <IonSegmentButton value={subRoute.name}>
+                        <IonSegmentButton key={subRoute.name} value={subRoute.name}>
                           <IonLabel>
                             {subRoute.getLabel ? subRoute.getLabel() : ''}
                           </IonLabel>
