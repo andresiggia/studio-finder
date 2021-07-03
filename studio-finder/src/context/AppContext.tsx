@@ -1,6 +1,6 @@
 /* eslint-disable react/no-unused-state */
 import React from 'react';
-import { createClient } from '@supabase/supabase-js';
+import { createClient, Subscription } from '@supabase/supabase-js';
 
 // constants
 import appKeys from '../constants/supabase-keys';
@@ -16,8 +16,15 @@ interface Props {
   children?: any | any[],
 }
 
+interface AuthResponse {
+  data: Subscription | null,
+  error: Error | null,
+}
+
 export class AppContextProvider extends React.Component<Props> {
   supabase = createClient(appKeys.url, appKeys.publicAnonKey);
+
+  authResponse: AuthResponse;
 
   constructor(props: never) {
     super(props);
@@ -26,9 +33,7 @@ export class AppContextProvider extends React.Component<Props> {
     this.state = {
       user: this.supabase.auth.user(),
     };
-    this.supabase.auth.onAuthStateChange((event, session) => {
-      // eslint-disable-next-line no-console
-      console.log('onAuthStateChange', { event, session });
+    this.authResponse = this.supabase.auth.onAuthStateChange((event, session) => {
       this.setState({
         user: session?.user || null,
       });
@@ -36,6 +41,12 @@ export class AppContextProvider extends React.Component<Props> {
 
     // i18n
     i18nInit();
+  }
+
+  componentWillUnmount() {
+    if (this.authResponse?.data) {
+      this.authResponse.data.unsubscribe();
+    }
   }
 
   render() {
