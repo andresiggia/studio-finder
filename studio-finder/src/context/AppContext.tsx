@@ -1,6 +1,6 @@
 /* eslint-disable react/no-unused-state */
 import React from 'react';
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import { createClient } from '@supabase/supabase-js';
 
 // constants
 import appKeys from '../constants/supabase-keys';
@@ -17,13 +17,12 @@ interface Props {
 }
 
 export class AppContextProvider extends React.Component<Props> {
-  supabase: SupabaseClient;
+  supabase = createClient(appKeys.url, appKeys.publicAnonKey);
 
   constructor(props: never) {
     super(props);
 
     // user
-    this.supabase = createClient(appKeys.url, appKeys.publicAnonKey);
     this.state = {
       user: this.supabase.auth.user(),
     };
