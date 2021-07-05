@@ -15,7 +15,7 @@ import Header from '../../components/Header/Header';
 
 // services
 import i18n from '../../services/i18n/i18n';
-import { getRoutesByName, RouteNames } from '../../services/routes/routes';
+import { defaultRoute, getRoutesByName, RouteNames } from '../../services/routes/routes';
 
 // css
 import './LoginSignUp.css';
@@ -66,10 +66,21 @@ class LoginSignUp extends React.Component<RouteComponentProps, State> {
     return LoginSignUp.getSearchParam(location, 'screen') || this.defaultScreen;
   }
 
+  getDefaultLoggedRoutePath = () => {
+    const [defaultLoggedRoute] = getRoutesByName([RouteNames.profile]);
+    return defaultLoggedRoute.path;
+  }
+
   onClose = () => {
     const { location, history } = this.props;
-    const backUrl = LoginSignUp.getSearchParam(location, 'backUrl') || '/';
+    const backUrl = LoginSignUp.getSearchParam(location, 'backUrl') || defaultRoute?.path || '/';
     history.push(backUrl);
+  }
+
+  onLogin = () => {
+    const { location, history } = this.props;
+    const redirectTo = LoginSignUp.getSearchParam(location, 'redirectTo') || this.getDefaultLoggedRoutePath() || '/';
+    history.push(redirectTo);
   }
 
   onRouteChange = (e: any) => {
@@ -110,7 +121,7 @@ class LoginSignUp extends React.Component<RouteComponentProps, State> {
           }
           this.setState({
             isLoading: false,
-          }, () => this.onClose);
+          }, () => this.onLogin);
         } catch (error) {
           // eslint-disable-next-line no-console
           console.warn('error - onSubmit', error);
