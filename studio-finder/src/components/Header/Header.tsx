@@ -7,14 +7,67 @@ import {
 } from 'react-router-dom';
 
 // services
-import { defaultRoute, getRoutesByName, RouteNames } from '../../services/routes/routes';
+import {
+  defaultRoute, getRoutesByName, Route, RouteNames,
+} from '../../services/routes/routes';
 
 // css
 import './Header.css';
+import AppContext from '../../context/AppContext';
 
 class Header extends React.Component<RouteComponentProps> {
+  renderLoginButtons = () => (
+    getRoutesByName([RouteNames.loginSignUp]).map((route) => (
+      <React.Fragment key={route.name}>
+        {!!route.routes && (
+          route.routes.map((subRoute) => {
+            const { location } = this.props;
+            const fill = subRoute.name === RouteNames.login
+              ? 'outline'
+              : 'solid';
+            const { getLoginUrl } = this.context;
+            return this.renderRoute(subRoute, {
+              fill,
+              path: getLoginUrl({
+                screen: subRoute.path,
+                backUrl: location.pathname,
+              }),
+            });
+          })
+        )}
+      </React.Fragment>
+    ))
+  )
+
+  renderMainLinks = () => (
+    getRoutesByName([RouteNames.home, RouteNames.about, RouteNames.studioLogin])
+      .map((route) => this.renderRoute(route))
+  )
+
+  renderProfileLink = () => (
+    getRoutesByName([RouteNames.profile]).map((route) => this.renderRoute(route))
+  )
+
+  renderRoute = (route: Route, options: {
+    path?: string, fill?: string, color?: string,
+  } = {}) => {
+    const { match } = this.props;
+    const isActive = matchPath(match.path, {
+      path: route.path,
+      exact: route.exact,
+      strict: route.strict,
+    });
+    return (
+      <Link key={route.path} to={options.path || route.path}>
+        <IonButton fill={options.fill || isActive ? 'solid' : 'clear'} color={options.color}>
+          {route.getLabel ? route.getLabel() : ''}
+        </IonButton>
+      </Link>
+    );
+  }
+
   render() {
-    const { match, location } = this.props;
+    const { state } = this.context;
     return (
       <IonHeader>
 
@@ -27,45 +80,13 @@ class Header extends React.Component<RouteComponentProps> {
           </IonTitle>
 
           <IonButtons>
-            {getRoutesByName([RouteNames.home, RouteNames.about, RouteNames.studioLogin]).map((route) => {
-              const isActive = matchPath(match.path, {
-                path: route.path,
-                exact: route.exact,
-                strict: route.strict,
-              });
-              return (
-                <Link key={route.path} to={route.path}>
-                  <IonButton fill={isActive ? 'solid' : 'clear'} color="primary">
-                    {route.getLabel ? route.getLabel() : ''}
-                  </IonButton>
-                </Link>
-              );
-            })}
+            {this.renderMainLinks()}
           </IonButtons>
 
           <IonButtons slot="end">
-            {getRoutesByName([RouteNames.loginSignUp]).map((route) => (
-              <React.Fragment key={route.name}>
-                {!!route.routes && (
-                  route.routes.map((subRoute) => {
-                    const fill = subRoute.name === RouteNames.login
-                      ? 'outline'
-                      : 'solid';
-                    const params = [
-                      ['backUrl', location.pathname],
-                      ['screen', subRoute.path],
-                    ].map((item) => item.join('='));
-                    return (
-                      <Link key={subRoute.path} to={`${route.path}?${params.join('&')}`}>
-                        <IonButton fill={fill} color="primary">
-                          {subRoute.getLabel ? subRoute.getLabel() : ''}
-                        </IonButton>
-                      </Link>
-                    );
-                  })
-                )}
-              </React.Fragment>
-            ))}
+            {state.user
+              ? this.renderProfileLink()
+              : this.renderLoginButtons()}
           </IonButtons>
         </IonToolbar>
 
@@ -73,5 +94,7 @@ class Header extends React.Component<RouteComponentProps> {
     );
   }
 }
+
+Header.contextType = AppContext;
 
 export default withRouter(Header);
