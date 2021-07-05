@@ -1,6 +1,6 @@
 /* eslint-disable react/no-unused-state */
 import React from 'react';
-import { createClient, Subscription } from '@supabase/supabase-js';
+import supabase, { createClient } from '@supabase/supabase-js';
 
 // constants
 import appKeys from '../constants/supabase-keys';
@@ -17,7 +17,7 @@ interface Props {
 }
 
 interface AuthResponse {
-  data: Subscription | null,
+  data: supabase.Subscription | null,
   error: Error | null,
 }
 
