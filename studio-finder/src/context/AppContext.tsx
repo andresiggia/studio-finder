@@ -7,6 +7,7 @@ import appKeys from '../constants/supabase-keys';
 
 // services
 import { i18nInit } from '../services/i18n/i18n';
+import { getRoutesByName, RouteNames } from '../services/routes/routes';
 
 const AppContext = React.createContext({});
 
@@ -49,6 +50,22 @@ export class AppContextProvider extends React.Component<Props> {
     }
   }
 
+  getLoginUrl = (options: {
+    backUrl?: string, redirectTo?: string, screen?: string,
+  }) => {
+    const {
+      backUrl = '', redirectTo = '', screen = RouteNames.login,
+    } = options;
+    const params = [
+      ['backUrl', backUrl],
+      ['redirectTo', redirectTo],
+      ['screen', screen],
+    ].filter((item) => !!item[0] && !!item[1])
+      .map((item) => item.join('='));
+    const [url] = getRoutesByName([RouteNames.loginSignUp]).map((route) => `${route.path}?${params.join('&')}`);
+    return url;
+  }
+
   render() {
     const { children } = this.props;
     return (
@@ -56,6 +73,7 @@ export class AppContextProvider extends React.Component<Props> {
         value={{
           state: this.state,
           auth: this.supabase.auth,
+          getLoginUrl: this.getLoginUrl,
         }}
       >
         {children}
