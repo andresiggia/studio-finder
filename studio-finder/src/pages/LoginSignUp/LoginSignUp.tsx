@@ -2,7 +2,7 @@ import React from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
 import {
   IonContent, IonPage, IonModal, IonToolbar, IonIcon, IonButton, IonButtons, IonSegment,
-  IonSegmentButton, IonLabel, IonList, IonItem, IonInput, IonTitle, IonSpinner, IonToast,
+  IonSegmentButton, IonLabel, IonList, IonItem, IonInput, IonTitle, IonSpinner, IonToast, IonItemDivider,
 } from '@ionic/react';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { closeOutline } from 'ionicons/icons';
@@ -150,8 +150,8 @@ class LoginSignUp extends React.Component<RouteComponentProps, State> {
     const isValidForm = this.isValidForm();
     return (
       <form onSubmit={this.onSubmit}>
-        <fieldset disabled={isLoading || !!error}>
-          <IonList className="login-form">
+        <fieldset className="login-form-fieldset" disabled={isLoading || !!error}>
+          <IonList className="login-form-list">
             <IonItem>
               <IonInput
                 value={email}
@@ -193,25 +193,23 @@ class LoginSignUp extends React.Component<RouteComponentProps, State> {
                 />
               </IonItem>
             )}
-            <IonItem>
-              <IonButton
-                color="primary"
-                type="submit"
-                disabled={!isValidForm}
-              >
-                {i18n.t('Confirm')}
-              </IonButton>
-            </IonItem>
-            <IonItem>
-              <IonButton
-                fill="outline"
-                type="reset"
-                disabled={!email && !password && !passwordRepeat}
-                onClick={this.onClose}
-              >
-                {i18n.t('Cancel')}
-              </IonButton>
-            </IonItem>
+            <IonItemDivider />
+            <IonButton
+              color="primary"
+              type="submit"
+              expand="block"
+              disabled={!isValidForm}
+            >
+              {i18n.t('Confirm')}
+            </IonButton>
+            <IonButton
+              fill="outline"
+              type="reset"
+              expand="block"
+              onClick={this.onClose}
+            >
+              {i18n.t('Cancel')}
+            </IonButton>
             {isLoading && (
               <IonItem>
                 <IonSpinner name="bubbles" />

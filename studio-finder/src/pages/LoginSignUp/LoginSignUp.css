@@ -1,3 +1,8 @@
-.login-form {
+.login-form-list {
   padding: 1rem;
+}
+
+.login-form-fieldset {
+  padding: 0;
+  border: none;
 }
