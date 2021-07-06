@@ -125,18 +125,9 @@ class LoginSignUp extends React.Component<RouteComponentProps, State> {
         } catch (error) {
           // eslint-disable-next-line no-console
           console.warn('error - onSubmit', error);
-          let errorMsg = (screen === RouteNames.signUp)
-            ? i18n.t('An error occurred during sign up')
-            : i18n.t('An error occurred during login');
-          switch (error?.status) {
-            case 400:
-              errorMsg = i18n.t('Invalid email or password');
-              break;
-            default:
-          }
           this.setState({
             isLoading: false,
-            error: new Error(errorMsg),
+            error,
           });
         }
       });
