@@ -213,9 +213,9 @@ class LoginSignUp extends React.Component<RouteComponentProps, State> {
               {i18n.t('Cancel')}
             </IonButton>
             {isLoading && (
-              <IonItem>
+              <div className="login-loading login-spacer">
                 <IonSpinner name="bubbles" />
-              </IonItem>
+              </div>
             )}
           </IonList>
           <IonToast

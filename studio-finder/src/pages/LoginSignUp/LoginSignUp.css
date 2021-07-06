@@ -6,3 +6,11 @@
   padding: 0;
   border: none;
 }
+
+.login-spacer {
+  margin: 1rem 0;
+}
+
+.login-loading {
+  text-align: center;
+}
