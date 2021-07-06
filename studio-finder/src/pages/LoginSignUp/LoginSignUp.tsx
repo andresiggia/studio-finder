@@ -2,7 +2,7 @@ import React from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
 import {
   IonContent, IonPage, IonModal, IonToolbar, IonIcon, IonButton, IonButtons, IonSegment,
-  IonSegmentButton, IonLabel, IonList, IonItem, IonInput, IonTitle, IonSpinner, IonToast, IonItemDivider,
+  IonSegmentButton, IonLabel, IonList, IonItem, IonInput, IonTitle, IonSpinner,
 } from '@ionic/react';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { closeOutline } from 'ionicons/icons';
@@ -12,6 +12,7 @@ import AppContext from '../../context/AppContext';
 
 // components
 import Header from '../../components/Header/Header';
+import Notification, { NotificationProps } from '../../components/Notification/Notification';
 
 // services
 import i18n from '../../services/i18n/i18n';
@@ -27,6 +28,7 @@ interface State {
   passwordRepeat: string;
   isLoading: boolean,
   error: Error | null,
+  notification: NotificationProps | null,
 }
 
 class LoginSignUp extends React.Component<RouteComponentProps, State> {
@@ -41,6 +43,7 @@ class LoginSignUp extends React.Component<RouteComponentProps, State> {
       passwordRepeat: '',
       isLoading: false,
       error: null,
+      notification: null,
     };
   }
 
@@ -102,6 +105,7 @@ class LoginSignUp extends React.Component<RouteComponentProps, State> {
         try {
           const { email, password } = this.state;
           const { auth } = this.context;
+          let notification = null;
           if (screen === RouteNames.signUp) {
             const { error: signUpError } = await auth.signUp({
               email,
@@ -110,6 +114,11 @@ class LoginSignUp extends React.Component<RouteComponentProps, State> {
             if (signUpError) {
               throw signUpError;
             }
+            notification = {
+              header: i18n.t('Sign up success'),
+              message: i18n.t('Please check your email to confirm your registration before logging in'),
+              type: 'success',
+            } as NotificationProps;
           } else {
             const { error: signInError } = await auth.signIn({
               email,
@@ -118,9 +127,15 @@ class LoginSignUp extends React.Component<RouteComponentProps, State> {
             if (signInError) {
               throw signInError;
             }
+            notification = {
+              header: i18n.t('Log in success'),
+              message: i18n.t('Please wait while we log you in...'),
+              type: 'success',
+            } as NotificationProps;
           }
           this.setState({
             isLoading: false,
+            notification,
           }, () => this.onLogin);
         } catch (error) {
           // eslint-disable-next-line no-console
@@ -146,7 +161,7 @@ class LoginSignUp extends React.Component<RouteComponentProps, State> {
 
   renderForm = () => {
     const {
-      email, password, passwordRepeat, isLoading, error,
+      email, password, passwordRepeat, isLoading, error, notification,
     } = this.state;
     const screen = this.getScreen();
     const isValidForm = this.isValidForm();
@@ -195,7 +210,8 @@ class LoginSignUp extends React.Component<RouteComponentProps, State> {
                 />
               </IonItem>
             )}
-            <IonItemDivider />
+          </IonList>
+          <div className="login-footer">
             <IonButton
               color="primary"
               type="submit"
@@ -217,16 +233,25 @@ class LoginSignUp extends React.Component<RouteComponentProps, State> {
                 <IonSpinner name="bubbles" />
               </div>
             )}
-          </IonList>
-          <IonToast
-            isOpen={!!error}
-            onDidDismiss={() => this.setState({ error: null })}
-            header="Error"
-            position="bottom"
-            color="danger"
-            message={error?.message || i18n.t('An error occurred, please try again later')}
-            duration={3000}
-          />
+            {!!error && (
+              <Notification
+                type="danger"
+                className="login-spacer"
+                header={i18n.t('Error')}
+                message={error?.message || i18n.t('An error occurred, please try again later')}
+                onDismiss={() => this.setState({ error: null })}
+              />
+            )}
+            {!!notification && (
+              <Notification
+                type={notification?.type}
+                className="login-spacer"
+                header={notification?.header}
+                message={notification?.message}
+                onDismiss={() => this.setState({ notification: null })}
+              />
+            )}
+          </div>
         </fieldset>
       </form>
     );
