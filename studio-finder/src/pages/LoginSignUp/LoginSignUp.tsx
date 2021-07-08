@@ -196,15 +196,17 @@ class LoginSignUp extends React.Component<RouteComponentProps, State> {
     } = this.state;
     const screen = this.getScreen();
     const isValidForm = this.isValidForm();
+    const disabled = isLoading || !!error;
     return (
       <form onSubmit={this.onSubmit}>
-        <fieldset className="login-form-fieldset" disabled={isLoading || !!error}>
+        <fieldset className="login-form-fieldset" disabled={disabled}>
           <IonList className="login-form-list">
             <IonItem>
               <IonInput
                 value={email}
                 type="text"
                 required
+                disabled={disabled}
                 placeholder={i18n.t('Email')}
                 onIonChange={(e) => {
                   this.setMountedState({
@@ -218,6 +220,7 @@ class LoginSignUp extends React.Component<RouteComponentProps, State> {
                 value={password}
                 type="password"
                 required
+                disabled={disabled}
                 placeholder={i18n.t('Password')}
                 onIonChange={(e) => {
                   this.setMountedState({
@@ -232,6 +235,7 @@ class LoginSignUp extends React.Component<RouteComponentProps, State> {
                   value={passwordRepeat}
                   type="password"
                   required
+                  disabled={disabled}
                   placeholder={i18n.t('Repeat password')}
                   onIonChange={(e) => {
                     this.setMountedState({
@@ -247,7 +251,7 @@ class LoginSignUp extends React.Component<RouteComponentProps, State> {
               color="primary"
               type="submit"
               expand="block"
-              disabled={!isValidForm}
+              disabled={disabled || !isValidForm}
             >
               {i18n.t('Confirm')}
             </IonButton>
@@ -255,6 +259,7 @@ class LoginSignUp extends React.Component<RouteComponentProps, State> {
               fill="outline"
               type="reset"
               expand="block"
+              disabled={disabled}
               onClick={this.onClose}
             >
               {i18n.t('Cancel')}
