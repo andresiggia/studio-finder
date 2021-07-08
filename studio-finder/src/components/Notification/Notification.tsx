@@ -14,13 +14,14 @@ export interface NotificationProps {
   message: string,
   type: 'success' | 'info' | 'warning' | 'danger',
   className?: string,
+  preventDismiss?: boolean,
   onDismiss?: () => void,
 }
 
 class Notification extends React.Component<NotificationProps> {
   render() {
     const {
-      header, message, type, className, onDismiss,
+      header, message, type, className, preventDismiss, onDismiss,
     } = this.props;
     return (
       <div className={`notification notification-${type} ${className || ''}`}>
@@ -33,7 +34,7 @@ class Notification extends React.Component<NotificationProps> {
           <div className="notification-message">
             {message}
           </div>
-          {!!onDismiss && (
+          {(!preventDismiss && !!onDismiss) && (
             <IonButton
               color="light"
               fill="clear"
