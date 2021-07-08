@@ -145,6 +145,7 @@ class LoginSignUp extends React.Component<RouteComponentProps, State> {
               header: i18n.t('Log in success'),
               message: i18n.t('Please wait while we log you in...'),
               type: 'success',
+              preventDismiss: true,
             } as NotificationProps;
           }
           this.setMountedState({
@@ -262,6 +263,7 @@ class LoginSignUp extends React.Component<RouteComponentProps, State> {
                 className="login-spacer"
                 header={notification?.header}
                 message={notification?.message}
+                preventDismiss={notification?.preventDismiss}
                 onDismiss={() => this.setMountedState({ notification: null })}
               />
             )}
