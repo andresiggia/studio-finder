@@ -83,16 +83,19 @@ class Header extends React.Component<RouteComponentProps, State> {
         {!!route.routes && (
           route.routes.map((subRoute) => {
             const { location } = this.props;
-            const fill = subRoute.name === RouteNames.login
-              ? 'outline'
-              : 'solid';
             const { getLoginUrl } = this.context;
+            const { match } = this.props;
+            const isActive = matchPath(match.path, {
+              path: route.path,
+              exact: route.exact,
+              strict: route.strict,
+            });
             return this.renderRoute(subRoute, {
-              fill,
               path: getLoginUrl({
                 screen: subRoute.path,
                 backUrl: location.pathname,
               }),
+              disabled: !!isActive,
             });
           })
         )}
@@ -116,7 +119,7 @@ class Header extends React.Component<RouteComponentProps, State> {
   )
 
   renderRoute = (route: Route, options: {
-    path?: string, fill?: string, color?: string,
+    path?: string, fill?: string, color?: string, disabled?: boolean,
   } = {}) => {
     const { match } = this.props;
     const isActive = matchPath(match.path, {
@@ -126,7 +129,11 @@ class Header extends React.Component<RouteComponentProps, State> {
     });
     return (
       <Link key={route.path} to={options.path || route.path}>
-        <IonButton fill={options.fill || isActive ? 'solid' : 'clear'} color={options.color}>
+        <IonButton
+          disabled={options.disabled}
+          fill={options.fill || isActive ? 'solid' : 'clear'}
+          color={options.color || 'primary'}
+        >
           {route.getLabel ? route.getLabel() : ''}
         </IonButton>
       </Link>
