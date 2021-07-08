@@ -24,9 +24,10 @@ class Account extends React.Component<RouteComponentProps> {
     const { history, location } = this.props;
     const { state, getLoginUrl } = this.context;
     if (!state.user) {
-      history.push(getLoginUrl({
+      const loginUrl = getLoginUrl({
         redirectTo: location.pathname,
-      }));
+      });
+      history.push(loginUrl);
     }
   }
 
