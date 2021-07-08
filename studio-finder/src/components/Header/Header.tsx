@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  IonHeader, IonTitle, IonToolbar, IonButtons, IonButton,
+  IonHeader, IonTitle, IonToolbar, IonButtons, IonButton, IonSpinner, IonToast,
 } from '@ionic/react';
 import {
   Link, RouteComponentProps, withRouter, matchPath,
@@ -10,12 +10,75 @@ import {
 import {
   defaultRoute, getRoutesByName, Route, RouteNames,
 } from '../../services/routes/routes';
+import i18n from '../../services/i18n/i18n';
+
+// components
+import AppContext from '../../context/AppContext';
 
 // css
 import './Header.css';
-import AppContext from '../../context/AppContext';
 
-class Header extends React.Component<RouteComponentProps> {
+interface State {
+  isLoading: boolean,
+  error: Error | null,
+}
+
+class Header extends React.Component<RouteComponentProps, State> {
+  mounted = false
+
+  constructor(props: RouteComponentProps) {
+    super(props);
+
+    this.state = {
+      isLoading: false,
+      error: null,
+    };
+  }
+
+  componentDidMount() {
+    this.mounted = true;
+  }
+
+  componentWillUnmount() {
+    this.mounted = false;
+  }
+
+  setMountedState = (state: any, callback?: () => any) => {
+    if (this.mounted) {
+      this.setState(state, callback);
+    } else if (typeof callback === 'function') {
+      // eslint-disable-next-line no-console
+      console.log('unmounted request', state);
+      callback();
+    }
+  }
+
+  onLogout = () => {
+    this.setMountedState({
+      isLoading: true,
+    }, async () => {
+      try {
+        const { updateUser } = this.context;
+        await updateUser();
+        // const { auth } = this.context;
+        // const { error } = await auth.signOut();
+        // if (error) {
+        //   throw error;
+        // }
+        this.setMountedState({
+          isLoading: false,
+        });
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.warn('error - onLogout', error);
+        this.setMountedState({
+          isLoading: false,
+          error,
+        });
+      }
+    });
+  }
+
   renderLoginButtons = () => (
     getRoutesByName([RouteNames.loginSignUp]).map((route) => (
       <React.Fragment key={route.name}>
@@ -48,6 +111,12 @@ class Header extends React.Component<RouteComponentProps> {
     getRoutesByName([RouteNames.account]).map((route) => this.renderRoute(route))
   )
 
+  renderLogout = () => (
+    <IonButton fill="clear" onClick={this.onLogout}>
+      {i18n.t('Logout')}
+    </IonButton>
+  )
+
   renderRoute = (route: Route, options: {
     path?: string, fill?: string, color?: string,
   } = {}) => {
@@ -66,8 +135,30 @@ class Header extends React.Component<RouteComponentProps> {
     );
   }
 
-  render() {
+  renderRightMenu = () => {
+    const { isLoading } = this.state;
     const { state } = this.context;
+    if (isLoading) {
+      return (
+        <IonSpinner slot="end" name="bubbles" />
+      );
+    }
+
+    return (
+      <IonButtons slot="end">
+        {state.user
+          ? (
+            <>
+              {this.renderAccountLink()}
+              {this.renderLogout()}
+            </>
+          ) : this.renderLoginButtons()}
+      </IonButtons>
+    );
+  }
+
+  render() {
+    const { error } = this.state;
     return (
       <IonHeader>
 
@@ -83,12 +174,15 @@ class Header extends React.Component<RouteComponentProps> {
             {this.renderMainLinks()}
           </IonButtons>
 
-          <IonButtons slot="end">
-            {state.user
-              ? this.renderAccountLink()
-              : this.renderLoginButtons()}
-          </IonButtons>
+          {this.renderRightMenu()}
         </IonToolbar>
+
+        <IonToast
+          isOpen={!!error}
+          onDidDismiss={() => this.setMountedState({ error: null })}
+          message={error?.message}
+          position="bottom"
+        />
 
       </IonHeader>
     );
