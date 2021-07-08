@@ -32,6 +32,8 @@ interface State {
 }
 
 class LoginSignUp extends React.Component<RouteComponentProps, State> {
+  mounted = false
+
   defaultScreen = RouteNames.login
 
   constructor(props: RouteComponentProps) {
@@ -48,13 +50,15 @@ class LoginSignUp extends React.Component<RouteComponentProps, State> {
   }
 
   componentDidMount() {
-    this.setState({
+    this.mounted = true;
+    this.setMountedState({
       isOpen: true,
     });
   }
 
   componentWillUnmount() {
-    this.setState({
+    this.mounted = false;
+    this.setMountedState({
       isOpen: false,
     });
   }
@@ -62,6 +66,16 @@ class LoginSignUp extends React.Component<RouteComponentProps, State> {
   static getSearchParam(location: { search: string }, fieldName: string) {
     const query = new URLSearchParams(location.search);
     return query.get(fieldName);
+  }
+
+  setMountedState = (state: any, callback?: () => any) => {
+    if (this.mounted) {
+      this.setState(state, callback);
+    } else if (typeof callback === 'function') {
+      // eslint-disable-next-line no-console
+      console.log('unmounted request', state);
+      callback();
+    }
   }
 
   getScreen = () => {
@@ -98,7 +112,7 @@ class LoginSignUp extends React.Component<RouteComponentProps, State> {
     e.preventDefault();
     const isValidForm = this.isValidForm();
     if (isValidForm) {
-      this.setState({
+      this.setMountedState({
         isLoading: true,
       }, async () => {
         const screen = this.getScreen();
@@ -133,14 +147,14 @@ class LoginSignUp extends React.Component<RouteComponentProps, State> {
               type: 'success',
             } as NotificationProps;
           }
-          this.setState({
+          this.setMountedState({
             isLoading: false,
             notification,
           }, () => this.onLogin);
         } catch (error) {
           // eslint-disable-next-line no-console
           console.warn('error - onSubmit', error);
-          this.setState({
+          this.setMountedState({
             isLoading: false,
             error,
           });
@@ -176,7 +190,7 @@ class LoginSignUp extends React.Component<RouteComponentProps, State> {
                 required
                 placeholder={i18n.t('Email')}
                 onIonChange={(e) => {
-                  this.setState({
+                  this.setMountedState({
                     email: e.detail.value || '',
                   });
                 }}
@@ -189,7 +203,7 @@ class LoginSignUp extends React.Component<RouteComponentProps, State> {
                 required
                 placeholder={i18n.t('Password')}
                 onIonChange={(e) => {
-                  this.setState({
+                  this.setMountedState({
                     password: e.detail.value || '',
                   });
                 }}
@@ -203,7 +217,7 @@ class LoginSignUp extends React.Component<RouteComponentProps, State> {
                   required
                   placeholder={i18n.t('Repeat password')}
                   onIonChange={(e) => {
-                    this.setState({
+                    this.setMountedState({
                       passwordRepeat: e.detail.value || '',
                     });
                   }}
@@ -239,7 +253,7 @@ class LoginSignUp extends React.Component<RouteComponentProps, State> {
                 className="login-spacer"
                 header={i18n.t('Error')}
                 message={error?.message || i18n.t('An error occurred, please try again later')}
-                onDismiss={() => this.setState({ error: null })}
+                onDismiss={() => this.setMountedState({ error: null })}
               />
             )}
             {!!notification && (
@@ -248,7 +262,7 @@ class LoginSignUp extends React.Component<RouteComponentProps, State> {
                 className="login-spacer"
                 header={notification?.header}
                 message={notification?.message}
-                onDismiss={() => this.setState({ notification: null })}
+                onDismiss={() => this.setMountedState({ notification: null })}
               />
             )}
           </div>

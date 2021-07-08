@@ -27,6 +27,8 @@ interface State {
 }
 
 export class AppContextProvider extends React.Component<Props, State> {
+  mounted = false
+
   supabase = createClient(appKeys.url, appKeys.publicAnonKey);
 
   authResponse: AuthResponse | null = null
@@ -42,19 +44,31 @@ export class AppContextProvider extends React.Component<Props, State> {
   }
 
   componentDidMount() {
+    this.mounted = true;
     this.authResponse = this.supabase.auth.onAuthStateChange((event, session) => {
       this.updateUser(session?.user);
     });
   }
 
   componentWillUnmount() {
+    this.mounted = false;
     if (this.authResponse?.data) {
       this.authResponse.data.unsubscribe();
     }
   }
 
+  setMountedState = (state: any, callback?: () => any) => {
+    if (this.mounted) {
+      this.setState(state, callback);
+    } else if (typeof callback === 'function') {
+      // eslint-disable-next-line no-console
+      console.log('unmounted request', state);
+      callback();
+    }
+  }
+
   updateUser = async (user?: supabase.User | null) => new Promise((resolve) => {
-    this.setState({
+    this.setMountedState({
       user: user || null,
     }, () => resolve(true));
   })
