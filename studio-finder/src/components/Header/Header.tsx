@@ -58,13 +58,11 @@ class Header extends React.Component<RouteComponentProps, State> {
       isLoading: true,
     }, async () => {
       try {
-        const { updateUser } = this.context;
-        await updateUser();
-        // const { auth } = this.context;
-        // const { error } = await auth.signOut();
-        // if (error) {
-        //   throw error;
-        // }
+        const { auth } = this.context;
+        const { error } = await auth.signOut();
+        if (error) {
+          throw error;
+        }
         this.setMountedState({
           isLoading: false,
         });
