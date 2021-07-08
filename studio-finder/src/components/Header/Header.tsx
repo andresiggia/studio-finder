@@ -44,8 +44,8 @@ class Header extends React.Component<RouteComponentProps> {
       .map((route) => this.renderRoute(route))
   )
 
-  renderProfileLink = () => (
-    getRoutesByName([RouteNames.profile]).map((route) => this.renderRoute(route))
+  renderAccountLink = () => (
+    getRoutesByName([RouteNames.account]).map((route) => this.renderRoute(route))
   )
 
   renderRoute = (route: Route, options: {
@@ -85,7 +85,7 @@ class Header extends React.Component<RouteComponentProps> {
 
           <IonButtons slot="end">
             {state.user
-              ? this.renderProfileLink()
+              ? this.renderAccountLink()
               : this.renderLoginButtons()}
           </IonButtons>
         </IonToolbar>

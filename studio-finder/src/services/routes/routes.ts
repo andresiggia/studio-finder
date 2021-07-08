@@ -3,7 +3,7 @@ import Home from '../../pages/Home/Home';
 import About from '../../pages/About/About';
 import LoginSignUp from '../../pages/LoginSignUp/LoginSignUp';
 import StudioLogin from '../../pages/StudioLogin/StudioLogin';
-import Profile from '../../pages/Profile/Profile';
+import Account from '../../pages/Account/Account';
 
 // services
 import i18n from '../i18n/i18n';
@@ -15,7 +15,7 @@ export enum RouteNames {
   loginSignUp = 'loginSignUp',
   login = 'login',
   signUp = 'signUp',
-  profile = 'profile',
+  account = 'account',
 }
 
 export interface Route {
@@ -78,13 +78,13 @@ const routes: Route[] = [
     ],
   },
   {
-    name: RouteNames.profile,
-    path: '/profile',
+    name: RouteNames.account,
+    path: '/account',
     exact: false,
     strict: false,
     isDefault: false,
-    Component: Profile,
-    getLabel: () => i18n.t('Profile'),
+    Component: Account,
+    getLabel: () => i18n.t('My Account'),
   },
 ];
 

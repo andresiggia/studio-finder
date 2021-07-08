@@ -70,7 +70,7 @@ class LoginSignUp extends React.Component<RouteComponentProps, State> {
   }
 
   getDefaultLoggedRoutePath = () => {
-    const [defaultLoggedRoute] = getRoutesByName([RouteNames.profile]);
+    const [defaultLoggedRoute] = getRoutesByName([RouteNames.account]);
     return defaultLoggedRoute.path;
   }
 

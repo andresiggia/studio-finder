@@ -9,29 +9,43 @@ import AppContext from '../../context/AppContext';
 import Header from '../../components/Header/Header';
 
 // css
-import './Profile.css';
+import './Account.css';
 
-class Profile extends React.Component<RouteComponentProps> {
-  render() {
+class Account extends React.Component<RouteComponentProps> {
+  componentDidMount() {
+    this.checkLogin();
+  }
+
+  componentDidUpdate() {
+    this.checkLogin();
+  }
+
+  checkLogin = () => {
     const { history, location } = this.props;
     const { state, getLoginUrl } = this.context;
     if (!state.user) {
       history.push(getLoginUrl({
         redirectTo: location.pathname,
       }));
-      return null;
     }
+  }
+
+  render() {
+    const { state } = this.context;
     return (
       <IonPage>
         <IonContent fullscreen>
           <Header />
-          <p>Profile - Under development</p>
+          <p>Account - Under development</p>
+          {!!state.user && (
+            <p>{`Email: ${state.user.email}`}</p>
+          )}
         </IonContent>
       </IonPage>
     );
   }
 }
 
-Profile.contextType = AppContext;
+Account.contextType = AppContext;
 
-export default withRouter(Profile);
+export default withRouter(Account);
