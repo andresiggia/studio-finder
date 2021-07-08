@@ -53,13 +53,25 @@ class LoginSignUp extends React.Component<RouteComponentProps, State> {
     this.mounted = true;
     this.setMountedState({
       isOpen: true,
+    }, () => {
+      console.warn('mounting');
+      this.checkLogin();
     });
   }
 
+  componentDidUpdate(prevProps: RouteComponentProps) {
+    const { location } = this.props;
+    if (location !== prevProps.location) {
+      this.checkLogin();
+    }
+  }
+
   componentWillUnmount() {
-    this.mounted = false;
     this.setMountedState({
       isOpen: false,
+    }, () => {
+      console.warn('dismounting');
+      this.mounted = false;
     });
   }
 
@@ -78,6 +90,16 @@ class LoginSignUp extends React.Component<RouteComponentProps, State> {
     }
   }
 
+  checkLogin = () => {
+    const { state } = this.context;
+    const { location, history } = this.props;
+    if (state.user) {
+      const redirectTo = LoginSignUp.getSearchParam(location, 'redirectTo') || this.getDefaultLoggedRoutePath() || '/';
+      history.push(redirectTo);
+      this.onClose();
+    }
+  }
+
   getScreen = () => {
     const { location } = this.props;
     return LoginSignUp.getSearchParam(location, 'screen') || this.defaultScreen;
@@ -92,12 +114,6 @@ class LoginSignUp extends React.Component<RouteComponentProps, State> {
     const { location, history } = this.props;
     const backUrl = LoginSignUp.getSearchParam(location, 'backUrl') || defaultRoute?.path || '/';
     history.push(backUrl);
-  }
-
-  onLogin = () => {
-    const { location, history } = this.props;
-    const redirectTo = LoginSignUp.getSearchParam(location, 'redirectTo') || this.getDefaultLoggedRoutePath() || '/';
-    history.push(redirectTo);
   }
 
   onRouteChange = (e: any) => {
@@ -149,9 +165,9 @@ class LoginSignUp extends React.Component<RouteComponentProps, State> {
             } as NotificationProps;
           }
           this.setMountedState({
-            isLoading: false,
+            // isLoading: false, // leave it loading until user is logged in
             notification,
-          }, () => this.onLogin);
+          }, () => this.checkLogin());
         } catch (error) {
           // eslint-disable-next-line no-console
           console.warn('error - onSubmit', error);
