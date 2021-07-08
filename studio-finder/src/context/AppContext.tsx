@@ -22,26 +22,29 @@ interface AuthResponse {
   error: Error | null,
 }
 
-export class AppContextProvider extends React.Component<Props> {
+interface State {
+  user: supabase.User | null,
+}
+
+export class AppContextProvider extends React.Component<Props, State> {
   supabase = createClient(appKeys.url, appKeys.publicAnonKey);
 
-  authResponse: AuthResponse;
+  authResponse: AuthResponse | null = null
 
   constructor(props: never) {
     super(props);
 
-    // user
     this.state = {
       user: this.supabase.auth.user(),
     };
-    this.authResponse = this.supabase.auth.onAuthStateChange((event, session) => {
-      this.setState({
-        user: session?.user || null,
-      });
-    });
 
-    // i18n
     i18nInit();
+  }
+
+  componentDidMount() {
+    this.authResponse = this.supabase.auth.onAuthStateChange((event, session) => {
+      this.updateUser(session?.user);
+    });
   }
 
   componentWillUnmount() {
@@ -49,6 +52,12 @@ export class AppContextProvider extends React.Component<Props> {
       this.authResponse.data.unsubscribe();
     }
   }
+
+  updateUser = async (user?: supabase.User | null) => new Promise((resolve) => {
+    this.setState({
+      user: user || null,
+    }, () => resolve(true));
+  })
 
   getLoginUrl = (options: {
     backUrl?: string, redirectTo?: string, screen?: string,
@@ -73,6 +82,7 @@ export class AppContextProvider extends React.Component<Props> {
         value={{
           state: this.state,
           auth: this.supabase.auth,
+          updateUser: this.updateUser,
           getLoginUrl: this.getLoginUrl,
         }}
       >
