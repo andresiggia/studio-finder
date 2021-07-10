@@ -77,14 +77,15 @@ class Header extends React.Component<RouteComponentProps, State> {
     });
   }
 
+  // render
+
   renderLoginButtons = () => (
     getRoutesByName([RouteNames.musicianLogin]).map((route) => (
       <React.Fragment key={route.name}>
         {!!route.routes && (
           route.routes.map((subRoute) => {
-            const { location } = this.props;
+            const { location, match } = this.props;
             const { getLoginUrl } = this.context;
-            const { match } = this.props;
             const isActive = matchPath(match.path, {
               path: route.path,
               exact: route.exact,
