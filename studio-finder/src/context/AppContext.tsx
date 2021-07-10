@@ -74,10 +74,10 @@ export class AppContextProvider extends React.Component<Props, State> {
   })
 
   getLoginUrl = (options: {
-    backUrl?: string, redirectTo?: string, screen?: string,
+    parentRoute: string, backUrl?: string, redirectTo?: string, screen?: string,
   }) => {
     const {
-      backUrl = '', redirectTo = '', screen = RouteNames.login,
+      parentRoute, backUrl = '', redirectTo = '', screen = RouteNames.login,
     } = options;
     const params = [
       ['backUrl', backUrl],
@@ -85,7 +85,7 @@ export class AppContextProvider extends React.Component<Props, State> {
       ['screen', screen],
     ].filter((item) => !!item[0] && !!item[1])
       .map((item) => item.join('='));
-    const [url] = getRoutesByName([RouteNames.loginSignUp]).map((route) => `${route.path}?${params.join('&')}`);
+    const [url] = getRoutesByName([parentRoute]).map((route) => `${route.path}?${params.join('&')}`);
     return url;
   }
 

@@ -10,6 +10,7 @@ import Header from '../../components/Header/Header';
 
 // css
 import './Account.css';
+import { RouteNames } from '../../services/routes/routes';
 
 class Account extends React.Component<RouteComponentProps> {
   componentDidMount() {
@@ -26,6 +27,7 @@ class Account extends React.Component<RouteComponentProps> {
     if (!state.user) {
       const loginUrl = getLoginUrl({
         redirectTo: location.pathname,
+        parentRoute: RouteNames.musicianLogin,
       });
       history.push(loginUrl);
     }

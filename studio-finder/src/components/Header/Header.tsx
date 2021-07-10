@@ -94,6 +94,7 @@ class Header extends React.Component<RouteComponentProps, State> {
               path: getLoginUrl({
                 screen: subRoute.path,
                 backUrl: location.pathname,
+                parentRoute: RouteNames.musicianLogin,
               }),
               disabled: !!isActive,
             });
