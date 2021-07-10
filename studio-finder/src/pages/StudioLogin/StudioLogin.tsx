@@ -1,28 +1,31 @@
 import React from 'react';
 import { IonContent, IonPage } from '@ionic/react';
-
-// context
-import AppContext from '../../context/AppContext';
+import { RouteComponentProps, withRouter } from 'react-router';
 
 // components
 import Header from '../../components/Header/Header';
+import LoginSignUp from '../../components/LoginSignUp/LoginSignUp';
 
-// css
-import './StudioLogin.css';
+// services
+import i18n from '../../services/i18n/i18n';
+import { RouteNames } from '../../services/routes/routes';
 
-class StudioLogin extends React.Component {
+class StudioLogin extends React.Component<RouteComponentProps> {
   render() {
     return (
       <IonPage>
         <IonContent fullscreen>
           <Header />
-          <p>Studio Login - Under development</p>
+          <LoginSignUp
+            routeName={RouteNames.studioLogin}
+            routeNameAfterLogin={RouteNames.account}
+            title={i18n.t('Studio Log In / Sign Up')}
+            defaultScreen={RouteNames.login}
+          />
         </IonContent>
       </IonPage>
     );
   }
 }
 
-StudioLogin.contextType = AppContext;
-
-export default StudioLogin;
+export default withRouter(StudioLogin);

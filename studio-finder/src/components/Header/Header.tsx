@@ -106,7 +106,7 @@ class Header extends React.Component<RouteComponentProps, State> {
   )
 
   renderMainLinks = () => (
-    getRoutesByName([RouteNames.home, RouteNames.about, RouteNames.studioLogin])
+    getRoutesByName([RouteNames.home, RouteNames.about])
       .map((route) => this.renderRoute(route))
   )
 
@@ -139,6 +139,35 @@ class Header extends React.Component<RouteComponentProps, State> {
           {route.getLabel ? route.getLabel() : ''}
         </IonButton>
       </Link>
+    );
+  }
+
+  renderStudioLogin = () => {
+    const { location } = this.props;
+    const { isLoading } = this.state;
+    const { state, getLoginUrl } = this.context;
+    if (isLoading) {
+      return (
+        <IonSpinner slot="end" name="bubbles" />
+      );
+    }
+    if (state.user) {
+      return null;
+    }
+    return (
+      getRoutesByName([RouteNames.studioLogin]).map((route) => {
+        if (!Array.isArray(route?.routes)) {
+          return null;
+        }
+        const [subRoute] = getRoutesByName([RouteNames.login], route.routes);
+        return this.renderRoute(route, {
+          path: getLoginUrl({
+            screen: subRoute.path,
+            backUrl: location.pathname,
+            parentRoute: RouteNames.studioLogin,
+          }),
+        });
+      })
     );
   }
 
@@ -179,6 +208,7 @@ class Header extends React.Component<RouteComponentProps, State> {
 
           <IonButtons>
             {this.renderMainLinks()}
+            {this.renderStudioLogin()}
           </IonButtons>
 
           {this.renderRightMenu()}
