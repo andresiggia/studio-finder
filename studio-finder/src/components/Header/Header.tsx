@@ -78,7 +78,7 @@ class Header extends React.Component<RouteComponentProps, State> {
   }
 
   renderLoginButtons = () => (
-    getRoutesByName([RouteNames.loginSignUp]).map((route) => (
+    getRoutesByName([RouteNames.musicianLogin]).map((route) => (
       <React.Fragment key={route.name}>
         {!!route.routes && (
           route.routes.map((subRoute) => {

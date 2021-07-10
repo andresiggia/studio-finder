@@ -1,7 +1,7 @@
 // pages
 import Home from '../../pages/Home/Home';
 import About from '../../pages/About/About';
-import LoginSignUp from '../../pages/LoginSignUp/LoginSignUp';
+import MusicianLogin from '../../pages/MusicianLogin/MusicianLogin';
 import StudioLogin from '../../pages/StudioLogin/StudioLogin';
 import Account from '../../pages/Account/Account';
 
@@ -12,7 +12,7 @@ export enum RouteNames {
   home = 'home',
   about = 'about',
   studioLogin = 'studioLogin',
-  loginSignUp = 'loginSignUp',
+  musicianLogin = 'musicianLogin',
   login = 'login',
   signUp = 'signUp',
   account = 'account',
@@ -28,6 +28,19 @@ export interface Route {
   routes?: Route[],
   getLabel?: () => string;
 }
+
+const loginRoutes = [
+  {
+    name: RouteNames.login,
+    path: RouteNames.login,
+    getLabel: () => i18n.t('Log In'),
+  },
+  {
+    name: RouteNames.signUp,
+    path: RouteNames.signUp,
+    getLabel: () => i18n.t('Sign Up'),
+  },
+];
 
 const routes: Route[] = [
   {
@@ -56,26 +69,16 @@ const routes: Route[] = [
     isDefault: false,
     Component: StudioLogin,
     getLabel: () => i18n.t('Studio Login'),
+    routes: loginRoutes,
   },
   {
-    name: RouteNames.loginSignUp,
+    name: RouteNames.musicianLogin,
     path: '/login',
     exact: false,
     strict: false,
     isDefault: false,
-    Component: LoginSignUp,
-    routes: [
-      {
-        name: RouteNames.login,
-        path: RouteNames.login,
-        getLabel: () => i18n.t('Log In'),
-      },
-      {
-        name: RouteNames.signUp,
-        path: RouteNames.signUp,
-        getLabel: () => i18n.t('Sign Up'),
-      },
-    ],
+    Component: MusicianLogin,
+    routes: loginRoutes,
   },
   {
     name: RouteNames.account,

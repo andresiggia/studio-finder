@@ -1,7 +1,7 @@
 import React from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
 import {
-  IonContent, IonPage, IonButton, IonSegment, IonSegmentButton, IonLabel, IonList, IonGrid, IonRow, IonCol,
+  IonButton, IonSegment, IonSegmentButton, IonLabel, IonList, IonGrid, IonRow, IonCol,
   IonItem, IonInput, IonSpinner, IonCard, IonCardContent, IonCardHeader, IonCardTitle,
 } from '@ionic/react';
 
@@ -9,8 +9,7 @@ import {
 import AppContext from '../../context/AppContext';
 
 // components
-import Header from '../../components/Header/Header';
-import Notification, { NotificationProps } from '../../components/Notification/Notification';
+import Notification, { NotificationProps } from '../Notification/Notification';
 
 // services
 import i18n from '../../services/i18n/i18n';
@@ -28,12 +27,17 @@ interface State {
   notification: NotificationProps | null,
 }
 
-class LoginSignUp extends React.Component<RouteComponentProps, State> {
+interface Props extends RouteComponentProps {
+  routeName: string,
+  title: string,
+  routeNameAfterLogin?: string,
+  defaultScreen?: string,
+}
+
+class LoginSignUp extends React.Component<Props, State> {
   mounted = false
 
-  defaultScreen = RouteNames.login
-
-  constructor(props: RouteComponentProps) {
+  constructor(props: Props) {
     super(props);
     this.state = {
       email: '',
@@ -50,7 +54,7 @@ class LoginSignUp extends React.Component<RouteComponentProps, State> {
     this.checkLogin();
   }
 
-  componentDidUpdate(prevProps: RouteComponentProps) {
+  componentDidUpdate(prevProps: Props) {
     const { location } = this.props;
     if (location !== prevProps.location) {
       this.checkLogin();
@@ -87,12 +91,16 @@ class LoginSignUp extends React.Component<RouteComponentProps, State> {
   }
 
   getScreen = () => {
-    const { location } = this.props;
-    return LoginSignUp.getSearchParam(location, 'screen') || this.defaultScreen;
+    const { location, defaultScreen = RouteNames.login } = this.props;
+    return LoginSignUp.getSearchParam(location, 'screen') || defaultScreen;
   }
 
   getDefaultLoggedRoutePath = () => {
-    const [defaultLoggedRoute] = getRoutesByName([RouteNames.account]);
+    const { routeNameAfterLogin } = this.props;
+    if (!routeNameAfterLogin) {
+      return '';
+    }
+    const [defaultLoggedRoute] = getRoutesByName([routeNameAfterLogin]);
     return defaultLoggedRoute?.path;
   }
 
@@ -281,47 +289,45 @@ class LoginSignUp extends React.Component<RouteComponentProps, State> {
   }
 
   render() {
+    const { routeName, title } = this.props;
     const screen = this.getScreen();
+    const [route] = getRoutesByName([routeName]);
+    if (!route) {
+      // eslint-disable-next-line no-console
+      console.warn(`${i18n.t('Invalid routeName')} (${routeName})`);
+      return null;
+    }
     return (
-      <IonPage>
-        <IonContent fullscreen>
-          <Header />
-          <IonGrid>
-            <IonRow>
-              <IonCol size="12" size-lg="4" offset-lg="4" size-md="6" offset-md="3">
-                <IonCard>
-                  <IonCardHeader>
-                    <IonCardTitle>
-                      {i18n.t('Musician Log In / Sign Up')}
-                    </IonCardTitle>
-                  </IonCardHeader>
-                  <IonCardContent>
-                    <IonSegment
-                      value={screen}
-                      onIonChange={this.onRouteChange}
-                    >
-                      {getRoutesByName([RouteNames.loginSignUp]).map((route) => (
-                        <React.Fragment key={route.name}>
-                          {!!route.routes && (
-                            route.routes.map((subRoute) => (
-                              <IonSegmentButton key={subRoute.name} value={subRoute.name}>
-                                <IonLabel>
-                                  {subRoute.getLabel ? subRoute.getLabel() : ''}
-                                </IonLabel>
-                              </IonSegmentButton>
-                            ))
-                          )}
-                        </React.Fragment>
-                      ))}
-                    </IonSegment>
-                    {this.renderForm()}
-                  </IonCardContent>
-                </IonCard>
-              </IonCol>
-            </IonRow>
-          </IonGrid>
-        </IonContent>
-      </IonPage>
+      <IonGrid>
+        <IonRow>
+          <IonCol size="12" size-lg="4" offset-lg="4" size-md="6" offset-md="3">
+            <IonCard>
+              <IonCardHeader>
+                <IonCardTitle>
+                  {title}
+                </IonCardTitle>
+              </IonCardHeader>
+              <IonCardContent>
+                <IonSegment
+                  value={screen}
+                  onIonChange={this.onRouteChange}
+                >
+                  {!!route.routes && (
+                    route.routes.map((subRoute) => (
+                      <IonSegmentButton key={subRoute.name} value={subRoute.name}>
+                        <IonLabel>
+                          {subRoute.getLabel ? subRoute.getLabel() : ''}
+                        </IonLabel>
+                      </IonSegmentButton>
+                    ))
+                  )}
+                </IonSegment>
+                {this.renderForm()}
+              </IonCardContent>
+            </IonCard>
+          </IonCol>
+        </IonRow>
+      </IonGrid>
     );
   }
 }
