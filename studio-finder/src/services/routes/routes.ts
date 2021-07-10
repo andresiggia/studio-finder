@@ -93,6 +93,7 @@ const routes: Route[] = [
 
 export default routes;
 
-export const getRoutesByName = (names: string[]) => routes.filter((item) => names.includes(item.name));
+export const getRoutesByName = (names: string[], customRoutes?: Route[]) => (customRoutes || routes)
+  .filter((item) => names.includes(item.name));
 
 export const defaultRoute = routes.find((route) => route.isDefault);
