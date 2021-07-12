@@ -1,0 +1,36 @@
+.profile-form {
+  padding: 1rem;
+}
+
+.profile-form-fieldset {
+  padding: 0;
+  border: none;
+}
+
+.profile-form-title {
+  margin-bottom: 1.5rem;
+}
+
+.profile-form-type-label {
+  text-align: center;
+  display: block;
+  margin-bottom: 1rem;
+  font-size: .75rem;
+}
+
+.profile-form-type-icon {
+  margin-bottom: .5rem;
+  font-size: 3rem;
+}
+
+.profile-form-footer {
+  margin-top: 2rem;
+}
+
+.profile-form-spacer {
+  margin: 1rem 0;
+}
+
+.profile-form-loading {
+  text-align: center;
+}
