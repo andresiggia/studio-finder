@@ -12,6 +12,9 @@ import {
 } from '../../services/routes/routes';
 import i18n from '../../services/i18n/i18n';
 
+// constants
+import { USER_TYPES } from '../../constants/user-types';
+
 // components
 import AppContext from '../../context/AppContext';
 
@@ -110,9 +113,14 @@ class Header extends React.Component<RouteComponentProps, State> {
       .map((route) => this.renderRoute(route))
   )
 
-  renderAccountLink = () => (
-    getRoutesByName([RouteNames.account]).map((route) => this.renderRoute(route))
-  )
+  renderAccountLink = () => {
+    const { state } = this.context;
+    let routeName = RouteNames.account;
+    if (state.user.type === USER_TYPES.studio) {
+      routeName = RouteNames.studioAccount;
+    }
+    return getRoutesByName([routeName]).map((route) => this.renderRoute(route));
+  }
 
   renderLogout = () => (
     <IonButton fill="clear" onClick={this.onLogout}>
