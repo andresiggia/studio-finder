@@ -1,5 +1,5 @@
 import React from 'react';
-import { RouteComponentProps, withRouter } from 'react-router';
+import { RouteComponentProps, withRouter, matchPath } from 'react-router';
 import {
   IonButton, IonSegment, IonSegmentButton, IonLabel, IonList, IonGrid, IonRow, IonCol,
   IonItem, IonInput, IonSpinner, IonCard, IonCardContent, IonCardHeader, IonCardTitle,
@@ -117,6 +117,16 @@ class LoginSignUp extends React.Component<Props, State> {
     history.push(`${location.pathname}?${query.toString()}`);
   }
 
+  getRedirectUrl = () => {
+    const { routeName, match } = this.props;
+    const { getLoginPath } = this.context;
+    const redirectPath = getLoginPath({
+      parentRoute: routeName, screen: RouteNames.login, redirectTo: this.getDefaultLoggedRoutePath(),
+    });
+    const [host] = window.location.href.split(match.url);
+    return `${host}${redirectPath}`;
+  }
+
   onSubmit = (e: any) => {
     // prevent form from submitting
     e.preventDefault();
@@ -134,7 +144,7 @@ class LoginSignUp extends React.Component<Props, State> {
             const { error: signUpError } = await auth.signUp({
               email,
               password,
-            });
+            }, { redirectTo: this.getRedirectUrl() });
             if (signUpError) {
               throw signUpError;
             }
