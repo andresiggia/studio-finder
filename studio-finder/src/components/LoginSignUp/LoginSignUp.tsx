@@ -30,7 +30,7 @@ interface State {
 interface Props extends RouteComponentProps {
   routeName: string,
   title: string,
-  routeNameAfterLogin?: string,
+  userType: string,
   defaultScreen?: string,
 }
 
@@ -81,27 +81,18 @@ class LoginSignUp extends React.Component<Props, State> {
   }
 
   checkLogin = () => {
-    const { state } = this.context;
-    const { location, history } = this.props;
+    const { state, getDefaultLoggedInRoutePath } = this.context;
+    const { location, history, userType } = this.props;
     if (state.user) {
       const redirectTo = LoginSignUp.getSearchParam(location, 'redirectTo');
-      const defaultLoggedRoutePath = this.getDefaultLoggedRoutePath();
-      history.push(redirectTo || defaultLoggedRoutePath || '/');
+      const routePath = getDefaultLoggedInRoutePath(userType);
+      history.push(redirectTo || routePath || '/');
     }
   }
 
   getScreen = () => {
     const { location, defaultScreen = RouteNames.login } = this.props;
     return LoginSignUp.getSearchParam(location, 'screen') || defaultScreen;
-  }
-
-  getDefaultLoggedRoutePath = () => {
-    const { routeNameAfterLogin } = this.props;
-    if (!routeNameAfterLogin) {
-      return '';
-    }
-    const [defaultLoggedRoute] = getRoutesByName([routeNameAfterLogin]);
-    return defaultLoggedRoute?.path;
   }
 
   onCancel = () => {
@@ -118,10 +109,10 @@ class LoginSignUp extends React.Component<Props, State> {
   }
 
   getRedirectUrl = () => {
-    const { routeName, match } = this.props;
-    const { getLoginPath } = this.context;
+    const { routeName, match, userType } = this.props;
+    const { getLoginPath, getDefaultLoggedInRoutePath } = this.context;
     const redirectPath = getLoginPath({
-      parentRoute: routeName, screen: RouteNames.login, redirectTo: this.getDefaultLoggedRoutePath(),
+      parentRoute: routeName, screen: RouteNames.login, redirectTo: getDefaultLoggedInRoutePath(userType),
     });
     const [host] = window.location.href.split(match.url);
     return `${host}${redirectPath}`;
