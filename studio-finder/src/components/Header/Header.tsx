@@ -85,14 +85,14 @@ class Header extends React.Component<RouteComponentProps, State> {
         {!!route.routes && (
           route.routes.map((subRoute) => {
             const { location, match } = this.props;
-            const { getLoginUrl } = this.context;
+            const { getLoginPath } = this.context;
             const isActive = matchPath(match.path, {
               path: route.path,
               exact: route.exact,
               strict: route.strict,
             });
             return this.renderRoute(subRoute, {
-              path: getLoginUrl({
+              path: getLoginPath({
                 screen: subRoute.path,
                 backUrl: location.pathname,
                 parentRoute: RouteNames.musicianLogin,
@@ -145,7 +145,7 @@ class Header extends React.Component<RouteComponentProps, State> {
   renderStudioLogin = () => {
     const { location } = this.props;
     const { isLoading } = this.state;
-    const { state, getLoginUrl } = this.context;
+    const { state, getLoginPath } = this.context;
     if (isLoading) {
       return (
         <IonSpinner slot="end" name="bubbles" />
@@ -161,7 +161,7 @@ class Header extends React.Component<RouteComponentProps, State> {
         }
         const [subRoute] = getRoutesByName([RouteNames.login], route.routes);
         return this.renderRoute(route, {
-          path: getLoginUrl({
+          path: getLoginPath({
             screen: subRoute.path,
             backUrl: location.pathname,
             parentRoute: RouteNames.studioLogin,

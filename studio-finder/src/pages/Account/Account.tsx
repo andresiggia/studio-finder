@@ -23,9 +23,9 @@ class Account extends React.Component<RouteComponentProps> {
 
   checkLogin = () => {
     const { history, location } = this.props;
-    const { state, getLoginUrl } = this.context;
+    const { state, getLoginPath } = this.context;
     if (!state.user) {
-      const loginUrl = getLoginUrl({
+      const loginUrl = getLoginPath({
         redirectTo: location.pathname,
         parentRoute: RouteNames.musicianLogin,
       });

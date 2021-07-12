@@ -73,7 +73,7 @@ export class AppContextProvider extends React.Component<Props, State> {
     }, () => resolve(true));
   })
 
-  getLoginUrl = (options: {
+  getLoginPath = (options: {
     parentRoute: string, backUrl?: string, redirectTo?: string, screen?: string,
   }) => {
     const {
@@ -97,7 +97,7 @@ export class AppContextProvider extends React.Component<Props, State> {
           state: this.state,
           auth: this.supabase.auth,
           updateUser: this.updateUser,
-          getLoginUrl: this.getLoginUrl,
+          getLoginPath: this.getLoginPath,
         }}
       >
         {children}
