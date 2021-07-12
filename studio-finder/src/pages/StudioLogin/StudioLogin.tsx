@@ -1,6 +1,5 @@
 import React from 'react';
 import { IonContent, IonPage } from '@ionic/react';
-import { RouteComponentProps, withRouter } from 'react-router';
 
 // components
 import Header from '../../components/Header/Header';
@@ -10,7 +9,7 @@ import LoginSignUp from '../../components/LoginSignUp/LoginSignUp';
 import i18n from '../../services/i18n/i18n';
 import { RouteNames } from '../../services/routes/routes';
 
-class StudioLogin extends React.Component<RouteComponentProps> {
+class StudioLogin extends React.Component {
   render() {
     return (
       <IonPage>
@@ -28,4 +27,4 @@ class StudioLogin extends React.Component<RouteComponentProps> {
   }
 }
 
-export default withRouter(StudioLogin);
+export default StudioLogin;
