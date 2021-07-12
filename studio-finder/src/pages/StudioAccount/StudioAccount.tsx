@@ -1,38 +1,17 @@
 import React from 'react';
 import { IonContent, IonPage } from '@ionic/react';
-import { RouteComponentProps, withRouter } from 'react-router';
 
 // context
 import AppContext from '../../context/AppContext';
 
 // components
 import Header from '../../components/Header/Header';
+import withUserValidation, { UserValidationProps } from '../../components/withUserValidation/withUserValidation';
 
 // css
 import './StudioAccount.css';
-import { RouteNames } from '../../services/routes/routes';
 
-class StudioAccount extends React.Component<RouteComponentProps> {
-  componentDidMount() {
-    this.checkLogin();
-  }
-
-  componentDidUpdate() {
-    this.checkLogin();
-  }
-
-  checkLogin = () => {
-    const { history, location } = this.props;
-    const { state, getLoginPath } = this.context;
-    if (!state.user) {
-      const loginUrl = getLoginPath({
-        redirectTo: location.pathname,
-        parentRoute: RouteNames.musicianLogin,
-      });
-      history.push(loginUrl);
-    }
-  }
-
+class StudioAccount extends React.Component<UserValidationProps> {
   render() {
     const { state } = this.context;
     return (
@@ -51,4 +30,4 @@ class StudioAccount extends React.Component<RouteComponentProps> {
 
 StudioAccount.contextType = AppContext;
 
-export default withRouter(StudioAccount);
+export default withUserValidation(StudioAccount);
