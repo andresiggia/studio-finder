@@ -6,6 +6,7 @@ import AppContext from '../../context/AppContext';
 
 // components
 import Header from '../../components/Header/Header';
+import withUserValidation from '../../components/withUserValidation/withUserValidation';
 
 // css
 import './Account.css';
@@ -29,4 +30,4 @@ class Account extends React.Component {
 
 Account.contextType = AppContext;
 
-export default Account;
+export default withUserValidation(Account);
