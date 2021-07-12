@@ -13,7 +13,7 @@ import Notification, { NotificationProps } from '../Notification/Notification';
 
 // services
 import i18n from '../../services/i18n/i18n';
-import { defaultRoute, getRoutesByName, RouteNames } from '../../services/routes/routes';
+import { defaultRoute, getRoutesByName, LoginRouteNames } from '../../services/routes/routes';
 
 // css
 import './LoginSignUp.css';
@@ -91,7 +91,7 @@ class LoginSignUp extends React.Component<Props, State> {
   }
 
   getScreen = () => {
-    const { location, defaultScreen = RouteNames.login } = this.props;
+    const { location, defaultScreen = LoginRouteNames.login } = this.props;
     return LoginSignUp.getSearchParam(location, 'screen') || defaultScreen;
   }
 
@@ -112,7 +112,7 @@ class LoginSignUp extends React.Component<Props, State> {
     const { routeName, match, userType } = this.props;
     const { getLoginPath, getDefaultLoggedInRoutePath } = this.context;
     const redirectPath = getLoginPath({
-      parentRoute: routeName, screen: RouteNames.login, redirectTo: getDefaultLoggedInRoutePath(userType),
+      parentRoute: routeName, screen: LoginRouteNames.login, redirectTo: getDefaultLoggedInRoutePath(userType),
     });
     const [host] = window.location.href.split(match.url);
     return `${host}${redirectPath}`;
@@ -131,7 +131,7 @@ class LoginSignUp extends React.Component<Props, State> {
           const { email, password } = this.state;
           const { auth } = this.context;
           let notification = null;
-          if (screen === RouteNames.signUp) {
+          if (screen === LoginRouteNames.signUp) {
             const { error: signUpError } = await auth.signUp({
               email,
               password,
@@ -180,7 +180,7 @@ class LoginSignUp extends React.Component<Props, State> {
     const screen = this.getScreen();
     const MIN_PASSWORD_CHARS = 4;
     return !!email && !!password && password.length >= MIN_PASSWORD_CHARS
-      && (screen !== RouteNames.signUp || (!!passwordRepeat && password === passwordRepeat));
+      && (screen !== LoginRouteNames.signUp || (!!passwordRepeat && password === passwordRepeat));
   }
 
   // render
@@ -224,7 +224,7 @@ class LoginSignUp extends React.Component<Props, State> {
                 }}
               />
             </IonItem>
-            {screen === RouteNames.signUp && (
+            {screen === LoginRouteNames.signUp && (
               <IonItem>
                 <IonInput
                   value={passwordRepeat}

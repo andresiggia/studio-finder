@@ -8,7 +8,7 @@ import {
 
 // services
 import {
-  defaultRoute, getRoutesByName, Route, RouteNames,
+  defaultRoute, getRoutesByName, Route, RouteNames, LoginRouteNames,
 } from '../../services/routes/routes';
 import i18n from '../../services/i18n/i18n';
 
@@ -83,7 +83,7 @@ class Header extends React.Component<RouteComponentProps, State> {
   // render
 
   renderLoginButtons = () => (
-    getRoutesByName([RouteNames.musicianLogin]).map((route) => (
+    getRoutesByName([RouteNames.login]).map((route) => (
       <React.Fragment key={route.name}>
         {!!route.routes && (
           route.routes.map((subRoute) => {
@@ -98,7 +98,7 @@ class Header extends React.Component<RouteComponentProps, State> {
               path: getLoginPath({
                 screen: subRoute.path,
                 backUrl: location.pathname,
-                parentRoute: RouteNames.musicianLogin,
+                parentRoute: RouteNames.login,
               }),
               disabled: !!isActive,
             });
@@ -167,7 +167,7 @@ class Header extends React.Component<RouteComponentProps, State> {
         if (!Array.isArray(route?.routes)) {
           return null;
         }
-        const [subRoute] = getRoutesByName([RouteNames.login], route.routes);
+        const [subRoute] = getRoutesByName([LoginRouteNames.login], route.routes);
         return this.renderRoute(route, {
           path: getLoginPath({
             screen: subRoute.path,

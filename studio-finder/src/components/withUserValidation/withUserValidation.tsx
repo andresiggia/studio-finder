@@ -34,7 +34,7 @@ const withUserValidation = (userType = USER_TYPES.musician) => <TOriginalProps e
           return RouteNames.studioLogin;
         case USER_TYPES.musician:
         default:
-          return RouteNames.musicianLogin;
+          return RouteNames.login;
       }
     }
 

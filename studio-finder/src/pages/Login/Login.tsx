@@ -7,22 +7,22 @@ import LoginSignUp from '../../components/LoginSignUp/LoginSignUp';
 
 // services
 import i18n from '../../services/i18n/i18n';
-import { RouteNames } from '../../services/routes/routes';
+import { RouteNames, LoginRouteNames } from '../../services/routes/routes';
 
 // constants
 import { USER_TYPES } from '../../constants/user-types';
 
-class MusicianLogin extends React.Component {
+class Login extends React.Component {
   render() {
     return (
       <IonPage>
         <IonContent fullscreen>
           <Header />
           <LoginSignUp
-            routeName={RouteNames.musicianLogin}
+            routeName={RouteNames.login}
             userType={USER_TYPES.musician}
             title={i18n.t('Musician Log In / Sign Up')}
-            defaultScreen={RouteNames.login}
+            defaultScreen={LoginRouteNames.login}
           />
         </IonContent>
       </IonPage>
@@ -30,4 +30,4 @@ class MusicianLogin extends React.Component {
   }
 }
 
-export default MusicianLogin;
+export default Login;

@@ -8,7 +8,7 @@ import { USER_TYPES } from '../constants/user-types';
 
 // services
 import { i18nInit } from '../services/i18n/i18n';
-import { getRoutesByName, RouteNames } from '../services/routes/routes';
+import { getRoutesByName, RouteNames, LoginRouteNames } from '../services/routes/routes';
 
 const AppContext = React.createContext({});
 
@@ -78,7 +78,7 @@ export class AppContextProvider extends React.Component<Props, State> {
     parentRoute: string, backUrl?: string, redirectTo?: string, screen?: string,
   }) => {
     const {
-      parentRoute, backUrl = '', redirectTo = '', screen = RouteNames.login,
+      parentRoute, backUrl = '', redirectTo = '', screen = LoginRouteNames.login,
     } = options;
     const params = [
       ['backUrl', backUrl],
