@@ -18,7 +18,7 @@ class StudioLogin extends React.Component<RouteComponentProps> {
           <Header />
           <LoginSignUp
             routeName={RouteNames.studioLogin}
-            routeNameAfterLogin={RouteNames.account}
+            routeNameAfterLogin={RouteNames.studioAccount}
             title={i18n.t('Studio Log In / Sign Up')}
             defaultScreen={RouteNames.login}
           />
