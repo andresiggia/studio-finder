@@ -16,7 +16,7 @@ import i18n from '../../services/i18n/i18n';
 import { defaultRoute, getRoutesByName, LoginRouteNames } from '../../services/routes/routes';
 
 // css
-import './LoginSignUp.css';
+import './LoginForm.css';
 
 interface State {
   email: string;
@@ -34,7 +34,7 @@ interface Props extends RouteComponentProps {
   defaultScreen?: string,
 }
 
-class LoginSignUp extends React.Component<Props, State> {
+class LoginForm extends React.Component<Props, State> {
   mounted = false
 
   constructor(props: Props) {
@@ -84,7 +84,7 @@ class LoginSignUp extends React.Component<Props, State> {
     const { state, getDefaultLoggedInRoutePath } = this.context;
     const { location, history, userType } = this.props;
     if (state.user) {
-      const redirectTo = LoginSignUp.getSearchParam(location, 'redirectTo');
+      const redirectTo = LoginForm.getSearchParam(location, 'redirectTo');
       const routePath = getDefaultLoggedInRoutePath(userType);
       history.push(redirectTo || routePath || '/');
     }
@@ -92,12 +92,12 @@ class LoginSignUp extends React.Component<Props, State> {
 
   getScreen = () => {
     const { location, defaultScreen = LoginRouteNames.login } = this.props;
-    return LoginSignUp.getSearchParam(location, 'screen') || defaultScreen;
+    return LoginForm.getSearchParam(location, 'screen') || defaultScreen;
   }
 
   onCancel = () => {
     const { location, history } = this.props;
-    const backUrl = LoginSignUp.getSearchParam(location, 'backUrl') || defaultRoute?.path || '/';
+    const backUrl = LoginForm.getSearchParam(location, 'backUrl') || defaultRoute?.path || '/';
     history.push(backUrl);
   }
 
@@ -333,6 +333,6 @@ class LoginSignUp extends React.Component<Props, State> {
   }
 }
 
-LoginSignUp.contextType = AppContext;
+LoginForm.contextType = AppContext;
 
-export default withRouter(LoginSignUp);
+export default withRouter(LoginForm);

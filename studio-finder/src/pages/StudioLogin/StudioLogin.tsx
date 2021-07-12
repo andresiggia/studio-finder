@@ -3,7 +3,7 @@ import { IonContent, IonPage } from '@ionic/react';
 
 // components
 import Header from '../../components/Header/Header';
-import LoginSignUp from '../../components/LoginSignUp/LoginSignUp';
+import LoginForm from '../../components/LoginForm/LoginForm';
 
 // services
 import i18n from '../../services/i18n/i18n';
@@ -18,7 +18,7 @@ class StudioLogin extends React.Component {
       <IonPage>
         <IonContent fullscreen>
           <Header />
-          <LoginSignUp
+          <LoginForm
             routeName={RouteNames.studioLogin}
             userType={USER_TYPES.studio}
             title={i18n.t('Studio Log In / Sign Up')}
