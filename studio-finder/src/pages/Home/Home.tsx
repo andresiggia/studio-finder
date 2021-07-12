@@ -1,9 +1,6 @@
 import React from 'react';
 import { IonContent, IonPage } from '@ionic/react';
 
-// context
-import AppContext from '../../context/AppContext';
-
 // components
 import Header from '../../components/Header/Header';
 
@@ -22,7 +19,5 @@ class Home extends React.Component {
     );
   }
 }
-
-Home.contextType = AppContext;
 
 export default Home;
