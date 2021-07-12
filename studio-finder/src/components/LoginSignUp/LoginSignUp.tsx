@@ -1,5 +1,5 @@
 import React from 'react';
-import { RouteComponentProps, withRouter, matchPath } from 'react-router';
+import { RouteComponentProps, withRouter } from 'react-router';
 import {
   IonButton, IonSegment, IonSegmentButton, IonLabel, IonList, IonGrid, IonRow, IonCol,
   IonItem, IonInput, IonSpinner, IonCard, IonCardContent, IonCardHeader, IonCardTitle,
