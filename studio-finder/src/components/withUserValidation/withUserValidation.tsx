@@ -1,11 +1,11 @@
 import React, { ComponentClass, FunctionComponent } from 'react';
-import { RouteComponentProps, withRouter } from 'react-router';
+import { matchPath, RouteComponentProps, withRouter } from 'react-router';
 
 // context
 import AppContext from '../../context/AppContext';
 
 // services
-import { RouteNames } from '../../services/routes/routes';
+import { getRoutesByName, RouteNames } from '../../services/routes/routes';
 
 // constants
 import { USER_TYPES } from '../../constants/user-types';
@@ -38,8 +38,18 @@ const withUserValidation = (userType = USER_TYPES.musician) => <TOriginalProps e
       }
     }
 
+    getCreateProfileRouteName = () => {
+      switch (userType) {
+        case USER_TYPES.studio:
+          return RouteNames.studioProfile;
+        case USER_TYPES.musician:
+        default:
+          return RouteNames.profile;
+      }
+    }
+
     checkLogin = () => {
-      const { history, location } = this.props;
+      const { history, location, match } = this.props;
       const { state, getLoginPath, getDefaultLoggedInRoutePath } = this.context;
       if (!state.user) {
         const loginUrl = getLoginPath({
@@ -48,7 +58,17 @@ const withUserValidation = (userType = USER_TYPES.musician) => <TOriginalProps e
         });
         history.push(loginUrl);
       } else if (!state.user.userType) {
-        // to do: redirect to create profile
+        const [route] = getRoutesByName([this.getCreateProfileRouteName()]);
+        const isProfileActive = matchPath(match.path, {
+          path: route.path,
+          exact: route.exact,
+          strict: route.strict,
+        });
+        if (!isProfileActive) {
+          // eslint-disable-next-line no-console
+          console.log('redirecting user to create profile...');
+          history.push(route.path);
+        }
       } else if (state.user.userType !== userType) {
         // redirect to correct page
         const routePath = getDefaultLoggedInRoutePath(state.user.userType);
