@@ -4,6 +4,9 @@ import { IonContent, IonPage } from '@ionic/react';
 // context
 import AppContext from '../../context/AppContext';
 
+// constants
+import { USER_TYPES } from '../../constants/user-types';
+
 // components
 import Header from '../../components/Header/Header';
 import withUserValidation, { UserValidationProps } from '../../components/withUserValidation/withUserValidation';
@@ -30,4 +33,4 @@ class StudioAccount extends React.Component<UserValidationProps> {
 
 StudioAccount.contextType = AppContext;
 
-export default withUserValidation(StudioAccount);
+export default withUserValidation(USER_TYPES.studio)(StudioAccount);

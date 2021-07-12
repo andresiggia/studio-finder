@@ -6,12 +6,12 @@ import AppContext from '../../context/AppContext';
 
 // components
 import Header from '../../components/Header/Header';
-import withUserValidation from '../../components/withUserValidation/withUserValidation';
+import withUserValidation, { UserValidationProps } from '../../components/withUserValidation/withUserValidation';
 
 // css
 import './Account.css';
 
-class Account extends React.Component {
+class Account extends React.Component<UserValidationProps> {
   render() {
     const { state } = this.context;
     return (
@@ -30,4 +30,4 @@ class Account extends React.Component {
 
 Account.contextType = AppContext;
 
-export default withUserValidation(Account);
+export default withUserValidation()(Account);
