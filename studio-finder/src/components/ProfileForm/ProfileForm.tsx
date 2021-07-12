@@ -1,7 +1,7 @@
 import React from 'react';
 import {
   IonLabel, IonIcon, IonSegmentButton, IonSegment, IonTitle, IonSpinner, IonButton,
-  IonGrid, IonRow, IonCol, IonList, IonItem, IonInput,
+  IonGrid, IonRow, IonCol, IonList, IonItem, IonInput, IonDatetime,
 } from '@ionic/react';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { musicalNotesOutline, storefrontOutline } from 'ionicons/icons';
@@ -33,6 +33,11 @@ interface State {
   userType: string,
   name: string,
   surname: string,
+  birthday: Date | null,
+  // postCode: string,
+  // city: string,
+  // region: string,
+  // country: string,
 }
 
 class ProfileForm extends React.Component<Props, State> {
@@ -47,6 +52,11 @@ class ProfileForm extends React.Component<Props, State> {
       userType: props.userType,
       name: '',
       surname: '',
+      birthday: null,
+      // postCode: '',
+      // city: '',
+      // region: '',
+      // country: '',
     };
   }
 
@@ -220,7 +230,7 @@ class ProfileForm extends React.Component<Props, State> {
   )
 
   renderFields = (disabled: boolean) => {
-    const { name, surname } = this.state;
+    const { name, surname, birthday } = this.state;
     return (
       <IonList className="login-form-list">
         <IonItem>
@@ -240,6 +250,25 @@ class ProfileForm extends React.Component<Props, State> {
             disabled,
             required: true,
           })}
+        </IonItem>
+        <IonItem>
+          <IonLabel position="stacked">
+            {i18n.t('Date of birth')}
+          </IonLabel>
+          <IonDatetime
+            displayFormat="DD MM YYYY"
+            disabled={disabled}
+            value={birthday instanceof Date
+              ? birthday.toString()
+              : null}
+            onIonChange={(e: any) => {
+              this.setMountedState({
+                birthday: e.detail.value
+                  ? new Date(e.detail.value)
+                  : null,
+              });
+            }}
+          />
         </IonItem>
       </IonList>
     );
