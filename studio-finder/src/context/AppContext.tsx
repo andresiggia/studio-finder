@@ -126,12 +126,17 @@ export class AppContextProvider extends React.Component<Props, State> {
   updateProfile = async (originalProfile: UserProfile) => {
     try {
       const { user } = this.state;
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { createdAt, ...profile } = originalProfile; // remove createdAt from profile
-      const userProfileData = updateObjectKeysToUnderscoreCase({
-        ...profile,
-        id: user?.id,
-      });
+      const profile: any = {
+        ...originalProfile,
+        id: user?.id || '', // inject user id
+        modifiedAt: new Date(), // modifiedAt to be updated to current date/time
+      };
+      if (!profile.createdAt) { // createdAt should be created by back-end if not set
+        delete profile.createdAt;
+      }
+      const userProfileData = updateObjectKeysToUnderscoreCase(profile);
+      // eslint-disable-next-line no-console
+      console.log('will update user profile', userProfileData);
       const { data, error } = await this.supabase
         .from(TABLE_NAMES.users)
         .upsert([userProfileData]);
