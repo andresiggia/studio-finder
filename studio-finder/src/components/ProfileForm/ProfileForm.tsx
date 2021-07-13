@@ -33,6 +33,7 @@ interface State {
   // fields
   userType: string,
   userProfile: UserProfile,
+  userProfileOriginal: UserProfile | null,
 }
 
 class ProfileForm extends React.Component<Props, State> {
@@ -46,16 +47,20 @@ class ProfileForm extends React.Component<Props, State> {
       notification: null,
       userType: props.userType,
       userProfile: defaultUserProfile,
+      userProfileOriginal: null,
     };
   }
 
   componentDidMount() {
     this.mounted = true;
+    this.updateState();
   }
 
   componentDidUpdate(prevProps: Props) {
+    const { state } = this.context;
     const { userType } = this.props;
-    if (userType !== prevProps.userType) {
+    const { userProfileOriginal } = this.state;
+    if (userType !== prevProps.userType || state.profile !== userProfileOriginal) {
       this.updateState();
     }
   }
@@ -77,13 +82,14 @@ class ProfileForm extends React.Component<Props, State> {
   }
 
   updateState = () => {
-    // eslint-disable-next-line no-console
-    console.log('updating state...');
     const { state } = this.context;
     const { userType } = this.props;
+    // eslint-disable-next-line no-console
+    console.log('updating state...', state.profile);
     this.setMountedState({
       userType: state.user.user_metadata?.type || userType,
       userProfile: state.profile || defaultUserProfile,
+      userProfileOriginal: state.profile,
     });
   }
 
