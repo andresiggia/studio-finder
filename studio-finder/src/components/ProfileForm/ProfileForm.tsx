@@ -14,6 +14,7 @@ import i18n from '../../services/i18n/i18n';
 
 // constants
 import { USER_TYPES } from '../../constants/user-types';
+import { defaultUserProfile, UserProfile } from '../../constants/tables';
 
 // components
 import Notification, { NotificationProps } from '../Notification/Notification';
@@ -31,13 +32,7 @@ interface State {
   notification: NotificationProps | null,
   // fields
   userType: string,
-  name: string,
-  surname: string,
-  birthday: Date | null,
-  // postCode: string,
-  // city: string,
-  // region: string,
-  // country: string,
+  userProfile: UserProfile,
 }
 
 class ProfileForm extends React.Component<Props, State> {
@@ -50,13 +45,7 @@ class ProfileForm extends React.Component<Props, State> {
       error: null,
       notification: null,
       userType: props.userType,
-      name: '',
-      surname: '',
-      birthday: null,
-      // postCode: '',
-      // city: '',
-      // region: '',
-      // country: '',
+      userProfile: defaultUserProfile,
     };
   }
 
@@ -75,14 +64,6 @@ class ProfileForm extends React.Component<Props, State> {
     this.mounted = false;
   }
 
-  updateState = () => {
-    const { state } = this.context;
-    const { userType } = this.props;
-    this.setState({
-      userType: state.user.user_metadata?.type || userType,
-    });
-  }
-
   setMountedState = (state: any, callback?: () => any) => {
     if (this.mounted) {
       this.setState(state, callback);
@@ -93,13 +74,43 @@ class ProfileForm extends React.Component<Props, State> {
     }
   }
 
+  updateState = () => {
+    // eslint-disable-next-line no-console
+    console.log('updating state...');
+    const { state } = this.context;
+    const { userType } = this.props;
+    this.setMountedState({
+      userType: state.user.user_metadata?.type || userType,
+      userProfile: state.profile || defaultUserProfile,
+    });
+  }
+
+  profileHasChanges = () => {
+    const { userProfile } = this.state;
+    return Object.keys(userProfile).some((key: string) => (
+      userProfile[key as keyof UserProfile] !== defaultUserProfile[key as keyof UserProfile]
+    ));
+  }
+
+  typeHasChanges = () => {
+    const { userType } = this.state;
+    const { state } = this.context;
+    return state.user.user_metadata.type !== userType;
+  }
+
+  hasChanges = () => this.typeHasChanges() || this.profileHasChanges()
+
   onSubmit = (e: any) => {
     // prevent form from submitting
     e.preventDefault();
-    // to do
     if (!this.isValidForm) {
       // eslint-disable-next-line no-console
       console.warn('Invalid form');
+      return;
+    }
+    if (!this.hasChanges) {
+      // eslint-disable-next-line no-console
+      console.warn('Form has no changes');
       return;
     }
     this.setMountedState({
@@ -195,6 +206,7 @@ class ProfileForm extends React.Component<Props, State> {
   renderFooter = (disabled: boolean) => {
     const { isLoading, error, notification } = this.state;
     const isValidForm = this.isValidForm();
+    const hasChanges = this.hasChanges();
     return (
       <div className="profile-form-footer">
         <p className="profile-form-footer-note-required">
@@ -207,7 +219,7 @@ class ProfileForm extends React.Component<Props, State> {
                 fill="outline"
                 type="reset"
                 expand="block"
-                disabled={disabled}
+                disabled={disabled || !hasChanges}
                 onClick={this.updateState}
               >
                 {i18n.t('Reset')}
@@ -218,7 +230,7 @@ class ProfileForm extends React.Component<Props, State> {
                 color="primary"
                 type="submit"
                 expand="block"
-                disabled={disabled || !isValidForm}
+                disabled={disabled || !isValidForm || !hasChanges}
               >
                 {i18n.t('Save')}
               </IonButton>
@@ -266,8 +278,12 @@ class ProfileForm extends React.Component<Props, State> {
         required={required}
         disabled={disabled}
         onIonChange={(e: any) => {
+          const { userProfile } = this.state;
           this.setMountedState({
-            [fieldName]: e.detail.value || '',
+            userProfile: {
+              ...userProfile,
+              [fieldName]: e.detail.value || '',
+            },
           });
         }}
       />
@@ -276,7 +292,7 @@ class ProfileForm extends React.Component<Props, State> {
 
   renderFields = (disabled: boolean) => {
     const { state } = this.context;
-    const { name, surname, birthday } = this.state;
+    const { userProfile } = this.state;
     return (
       <IonList className="login-form-list">
         <IonItem>
@@ -289,7 +305,7 @@ class ProfileForm extends React.Component<Props, State> {
         </IonItem>
         <IonItem>
           {this.renderTextInput({
-            value: name,
+            value: userProfile.name,
             fieldName: 'name',
             label: i18n.t('Name'),
             disabled,
@@ -298,7 +314,7 @@ class ProfileForm extends React.Component<Props, State> {
         </IonItem>
         <IonItem>
           {this.renderTextInput({
-            value: surname,
+            value: userProfile.surname,
             fieldName: 'surname',
             label: i18n.t('Surname'),
             disabled,
@@ -310,14 +326,16 @@ class ProfileForm extends React.Component<Props, State> {
           <IonDatetime
             displayFormat="DD MM YYYY"
             disabled={disabled}
-            value={birthday instanceof Date
-              ? birthday.toString()
+            value={userProfile.birthday instanceof Date
+              ? userProfile.birthday.toString()
               : null}
             onIonChange={(e: any) => {
               this.setMountedState({
-                birthday: e.detail.value
-                  ? new Date(e.detail.value)
-                  : null,
+                userProfile: {
+                  birthday: e.detail.value
+                    ? new Date(e.detail.value)
+                    : null,
+                },
               });
             }}
           />
