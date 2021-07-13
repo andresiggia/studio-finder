@@ -100,6 +100,13 @@ export class AppContextProvider extends React.Component<Props, State> {
         [profileData] = data;
       }
       const profile: any = updateObjectKeysToCamelCase(profileData);
+      const dateFields = ['birthday', 'createdAt', 'modifiedAt'];
+      dateFields.forEach((fieldName: string) => {
+        const value = profile[fieldName as keyof UserProfile];
+        profile[fieldName as keyof UserProfile] = value
+          ? new Date(value)
+          : null;
+      });
       // eslint-disable-next-line no-console
       console.log('got user profile', profile);
       return new Promise((resolve) => {
