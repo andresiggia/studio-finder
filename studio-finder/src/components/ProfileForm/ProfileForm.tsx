@@ -339,6 +339,7 @@ class ProfileForm extends React.Component<Props, State> {
             onIonChange={(e: any) => {
               this.setMountedState({
                 userProfile: {
+                  ...userProfile,
                   birthday: e.detail.value
                     ? new Date(e.detail.value)
                     : null,
