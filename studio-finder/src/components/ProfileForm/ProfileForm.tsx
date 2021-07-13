@@ -231,9 +231,18 @@ class ProfileForm extends React.Component<Props, State> {
   )
 
   renderFields = (disabled: boolean) => {
+    const { state } = this.context;
     const { name, surname, birthday } = this.state;
     return (
       <IonList className="login-form-list">
+        <IonItem>
+          {this.renderTextInput({
+            value: state.user.email,
+            fieldName: 'email',
+            label: i18n.t('Email'),
+            disabled: true, // read-only field
+          })}
+        </IonItem>
         <IonItem>
           {this.renderTextInput({
             value: name,
