@@ -66,7 +66,9 @@ const withUserValidation = (userType = USER_TYPES.musician) => <TOriginalProps e
         });
         if (!isProfileActive) {
           // eslint-disable-next-line no-console
-          console.log('redirecting user to create profile...');
+          console.log('redirecting user to create profile...', {
+            userType: state.user.user_metadata?.type, userProfile: state.profile,
+          });
           history.push(route.path);
         }
       } else if (state.user.user_metadata.type !== userType) {
