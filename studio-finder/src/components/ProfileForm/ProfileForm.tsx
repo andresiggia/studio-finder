@@ -125,8 +125,9 @@ class ProfileForm extends React.Component<Props, State> {
     }, async () => {
       try {
         const { state, supabase } = this.context;
-        const { userType } = this.state;
-        if (!state.user.user_metadata?.type || state.user.user_metadata.type !== userType) {
+        const { updateProfile } = this.context;
+        const { userType, userProfile } = this.state;
+        if (!state.user.user_metadata?.type || this.typeHasChanges()) {
           // update user
           const { user, error } = await supabase.auth.update({
             data: {
@@ -138,10 +139,13 @@ class ProfileForm extends React.Component<Props, State> {
           }
           // eslint-disable-next-line no-console
           console.log('user type updated', user);
-          this.setMountedState({
-            isLoading: false,
-          });
         }
+        if (this.profileHasChanges()) {
+          await updateProfile(userProfile);
+        }
+        this.setMountedState({
+          isLoading: false,
+        }, () => this.updateState());
       } catch (error) {
         // eslint-disable-next-line no-console
         console.warn('error - onSubmit', error);
@@ -155,7 +159,7 @@ class ProfileForm extends React.Component<Props, State> {
 
   isEditing = () => {
     const { state } = this.context;
-    return !!state.user.user_metadata?.type;
+    return !!state.profile;
   }
 
   isValidForm = () => {
@@ -224,10 +228,10 @@ class ProfileForm extends React.Component<Props, State> {
             <IonCol size="12" size-md="6">
               <IonButton
                 fill="outline"
-                type="reset"
+                type="button"
                 expand="block"
                 disabled={disabled || !hasChanges}
-                onClick={this.updateState}
+                onClick={() => this.updateState()}
               >
                 {i18n.t('Reset')}
               </IonButton>
