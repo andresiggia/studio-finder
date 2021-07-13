@@ -53,7 +53,7 @@ export class AppContextProvider extends React.Component<Props, State> {
     this.authResponse = this.supabase.auth.onAuthStateChange((event, session) => {
       // eslint-disable-next-line no-console
       console.log('user updated', session);
-      this.updateUser(session?.user);
+      this.updateUserState(session?.user);
     });
   }
 
@@ -112,7 +112,7 @@ export class AppContextProvider extends React.Component<Props, State> {
     }
   }
 
-  updateUser = (user?: supabase.User | null) => new Promise((resolve) => {
+  updateUserState = (user?: supabase.User | null) => new Promise((resolve) => {
     const { user: currentUser } = this.state;
     if (user === currentUser) {
       resolve(true);
@@ -166,7 +166,6 @@ export class AppContextProvider extends React.Component<Props, State> {
         value={{
           state: this.state,
           supabase: this.supabase,
-          updateUser: this.updateUser,
           getLoginPath: this.getLoginPath,
           getDefaultLoggedInRouteName: this.getDefaultLoggedInRouteName,
           getDefaultLoggedInRoutePath: this.getDefaultLoggedInRoutePath,
