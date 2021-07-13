@@ -49,10 +49,12 @@ class Header extends React.Component<RouteComponentProps, State> {
   setMountedState = (state: any, callback?: () => any) => {
     if (this.mounted) {
       this.setState(state, callback);
-    } else if (typeof callback === 'function') {
+    } else {
       // eslint-disable-next-line no-console
       console.log('unmounted request', state);
-      callback();
+      if (typeof callback === 'function') {
+        callback();
+      }
     }
   }
 
