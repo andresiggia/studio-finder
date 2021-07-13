@@ -99,14 +99,16 @@ export class AppContextProvider extends React.Component<Props, State> {
       if (data && Array.isArray(data) && data.length > 0) {
         [profileData] = data;
       }
-      const profile: any = updateObjectKeysToCamelCase(profileData);
-      const dateFields = ['birthday', 'createdAt', 'modifiedAt'];
-      dateFields.forEach((fieldName: string) => {
-        const value = profile[fieldName as keyof UserProfile];
-        profile[fieldName as keyof UserProfile] = value
-          ? new Date(value)
-          : null;
-      });
+      const profile: any | null = updateObjectKeysToCamelCase(profileData);
+      if (profile) {
+        const dateFields = ['birthday', 'createdAt', 'modifiedAt'];
+        dateFields.forEach((fieldName: string) => {
+          const value = profile[fieldName as keyof UserProfile];
+          profile[fieldName as keyof UserProfile] = value
+            ? new Date(value)
+            : null;
+        });
+      }
       // eslint-disable-next-line no-console
       console.log('got user profile', profile);
       return new Promise((resolve) => {
@@ -121,9 +123,11 @@ export class AppContextProvider extends React.Component<Props, State> {
     }
   }
 
-  updateProfile = async (profile: UserProfile) => {
+  updateProfile = async (originalProfile: UserProfile) => {
     try {
       const { user } = this.state;
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { createdAt, ...profile } = originalProfile; // remove createdAt from profile
       const userProfileData = updateObjectKeysToUnderscoreCase({
         ...profile,
         id: user?.id,
