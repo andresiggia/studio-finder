@@ -1,7 +1,8 @@
-// from https://www.geeksforgeeks.org/how-to-convert-string-to-camel-case-in-javascript/
-export const toCamelCase = (str: string) => str.replace(/(?:^\w|[A-Z]|\b\w)/g, (word, index) => (
-  index === 0 ? word.toLowerCase() : word.toUpperCase()
-)).replace(/\s+/g, '');
+// from https://www.tutorialspoint.com/converting-any-case-to-camelcase-in-javascript
+export const toCamelCase = (str: string) => str
+  .replace(/[^a-z0-9]/gi, ' ').toLowerCase().split(' ')
+  .map((el, ind) => (ind === 0 ? el : el[0].toUpperCase() + el.substring(1, el.length)))
+  .join('');
 
 // from https://stackoverflow.com/questions/30970286/convert-javascript-object-camelcase-keys-to-underscore-case
 export const toUnderscoreCase = (str: string) => str.replace(/([A-Z])/g, '_$1').toLowerCase();
