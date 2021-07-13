@@ -47,6 +47,8 @@ export class AppContextProvider extends React.Component<Props, State> {
   componentDidMount() {
     this.mounted = true;
     this.authResponse = this.supabase.auth.onAuthStateChange((event, session) => {
+      // eslint-disable-next-line no-console
+      console.log('user updated', session);
       this.updateUser(session?.user);
     });
   }

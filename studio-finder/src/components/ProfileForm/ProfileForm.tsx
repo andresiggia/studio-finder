@@ -97,7 +97,42 @@ class ProfileForm extends React.Component<Props, State> {
     // prevent form from submitting
     e.preventDefault();
     // to do
-    console.log('onSubmit');
+    if (!this.isValidForm) {
+      // eslint-disable-next-line no-console
+      console.warn('Invalid form');
+      return;
+    }
+    this.setMountedState({
+      isLoading: true,
+    }, async () => {
+      try {
+        const { state, auth } = this.context;
+        const { userType } = this.state;
+        if (!state.user.user_metadata?.type || state.user.user_metadata.type !== userType) {
+          // update user
+          const { user, error } = await auth.update({
+            data: {
+              type: userType,
+            },
+          });
+          if (error) {
+            throw error;
+          }
+          // eslint-disable-next-line no-console
+          console.log('user type updated', user);
+          this.setMountedState({
+            isLoading: false,
+          });
+        }
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.warn('error - onSubmit', error);
+        this.setMountedState({
+          isLoading: false,
+          error,
+        });
+      }
+    });
   }
 
   isEditing = () => {
