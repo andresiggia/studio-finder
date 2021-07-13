@@ -106,11 +106,11 @@ class ProfileForm extends React.Component<Props, State> {
       isLoading: true,
     }, async () => {
       try {
-        const { state, auth } = this.context;
+        const { state, supabase } = this.context;
         const { userType } = this.state;
         if (!state.user.user_metadata?.type || state.user.user_metadata.type !== userType) {
           // update user
-          const { user, error } = await auth.update({
+          const { user, error } = await supabase.auth.update({
             data: {
               type: userType,
             },

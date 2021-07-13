@@ -61,8 +61,8 @@ class Header extends React.Component<RouteComponentProps, State> {
       isLoading: true,
     }, async () => {
       try {
-        const { auth } = this.context;
-        const { error } = await auth.signOut();
+        const { supabase } = this.context;
+        const { error } = await supabase.auth.signOut();
         if (error) {
           throw error;
         }

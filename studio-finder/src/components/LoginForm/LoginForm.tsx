@@ -129,10 +129,10 @@ class LoginForm extends React.Component<Props, State> {
         const screen = this.getScreen();
         try {
           const { email, password } = this.state;
-          const { auth } = this.context;
+          const { supabase } = this.context;
           let notification = null;
           if (screen === LoginRouteNames.signUp) {
-            const { error: signUpError } = await auth.signUp({
+            const { error: signUpError } = await supabase.auth.signUp({
               email,
               password,
             }, { redirectTo: this.getRedirectUrl() });
@@ -145,7 +145,7 @@ class LoginForm extends React.Component<Props, State> {
               type: 'success',
             } as NotificationProps;
           } else {
-            const { error: signInError } = await auth.signIn({
+            const { error: signInError } = await supabase.auth.signIn({
               email,
               password,
             });

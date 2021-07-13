@@ -165,7 +165,7 @@ export class AppContextProvider extends React.Component<Props, State> {
       <AppContext.Provider
         value={{
           state: this.state,
-          auth: this.supabase.auth,
+          supabase: this.supabase,
           updateUser: this.updateUser,
           getLoginPath: this.getLoginPath,
           getDefaultLoggedInRouteName: this.getDefaultLoggedInRouteName,
