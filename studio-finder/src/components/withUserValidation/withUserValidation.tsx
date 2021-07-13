@@ -57,7 +57,7 @@ const withUserValidation = (userType = USER_TYPES.musician) => <TOriginalProps e
           parentRoute: this.getParentRouteName(),
         });
         history.push(loginUrl);
-      } else if (!state.user.userType) {
+      } else if (!state.user.user_metadata?.type) {
         const [route] = getRoutesByName([this.getCreateProfileRouteName()]);
         const isProfileActive = matchPath(match.path, {
           path: route.path,
@@ -69,9 +69,9 @@ const withUserValidation = (userType = USER_TYPES.musician) => <TOriginalProps e
           console.log('redirecting user to create profile...');
           history.push(route.path);
         }
-      } else if (state.user.userType !== userType) {
+      } else if (state.user.user_metadata.type !== userType) {
         // redirect to correct page
-        const routePath = getDefaultLoggedInRoutePath(state.user.userType);
+        const routePath = getDefaultLoggedInRoutePath(state.user.user_metadata.type);
         history.push(routePath);
       }
     }

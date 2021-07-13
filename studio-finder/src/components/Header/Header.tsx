@@ -116,7 +116,7 @@ class Header extends React.Component<RouteComponentProps, State> {
   renderAccountLink = () => {
     const { state } = this.context;
     let routeName = RouteNames.account;
-    if (state.user.type === USER_TYPES.studio) {
+    if (state.user.user_metadata?.type === USER_TYPES.studio) {
       routeName = RouteNames.studioAccount;
     }
     return getRoutesByName([routeName]).map((route) => this.renderRoute(route));

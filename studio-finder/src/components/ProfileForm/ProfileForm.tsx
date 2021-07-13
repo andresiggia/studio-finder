@@ -76,9 +76,10 @@ class ProfileForm extends React.Component<Props, State> {
   }
 
   updateState = () => {
+    const { state } = this.context;
     const { userType } = this.props;
     this.setState({
-      userType,
+      userType: state.user.user_metadata?.type || userType,
     });
   }
 
@@ -101,7 +102,7 @@ class ProfileForm extends React.Component<Props, State> {
 
   isEditing = () => {
     const { state } = this.context;
-    return !!state.user.type;
+    return !!state.user.user_metadata?.type;
   }
 
   isValidForm = () => {
@@ -275,6 +276,7 @@ class ProfileForm extends React.Component<Props, State> {
   }
 
   render() {
+    const { state } = this.context;
     const { isLoading, error } = this.state;
     const disabled = isLoading || !!error;
     const isEditing = this.isEditing();
@@ -289,7 +291,9 @@ class ProfileForm extends React.Component<Props, State> {
                     ? i18n.t('Edit Profile')
                     : i18n.t('Create Profile')}
                 </IonTitle>
-                {this.renderUserType(disabled)}
+                {!state.user.user_metadata?.type && (
+                  this.renderUserType(disabled)
+                )}
                 {this.renderFields(disabled)}
                 {this.renderFooter(disabled)}
               </fieldset>
