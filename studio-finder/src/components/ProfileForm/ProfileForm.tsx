@@ -335,7 +335,7 @@ class ProfileForm extends React.Component<Props, State> {
                     ? i18n.t('Edit Profile')
                     : i18n.t('Create Profile')}
                 </IonTitle>
-                {!state.user.user_metadata?.type && (
+                {(!state.user.user_metadata?.type || !state.profile) && (
                   this.renderUserType(disabled)
                 )}
                 {this.renderFields(disabled)}
