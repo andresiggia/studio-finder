@@ -1,5 +1,5 @@
 CREATE TABLE "users" (
-  "id" SERIAL PRIMARY KEY,
+  "id" varchar PRIMARY KEY,
   "name" varchar,
   "surname" varchar,
   "birthday" date,
@@ -7,7 +7,9 @@ CREATE TABLE "users" (
   "city" varchar,
   "region" varchar,
   "country" varchar,
-  "created_at" timestamp DEFAULT (now())
+  "photo_url" varchar,
+  "created_at" timestamp DEFAULT (now()),
+  "modified_at" timestamp DEFAULT (now())
 );
 
 CREATE TABLE "acts" (
