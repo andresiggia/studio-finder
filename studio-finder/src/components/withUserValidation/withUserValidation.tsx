@@ -57,7 +57,7 @@ const withUserValidation = (userType = USER_TYPES.musician) => <TOriginalProps e
           parentRoute: this.getParentRouteName(),
         });
         history.push(loginUrl);
-      } else if (!state.user.user_metadata?.type) {
+      } else if (!state.user.user_metadata?.type || !state.profile) {
         const [route] = getRoutesByName([this.getCreateProfileRouteName()]);
         const isProfileActive = matchPath(match.path, {
           path: route.path,
