@@ -94,10 +94,9 @@ class ProfileForm extends React.Component<Props, State> {
   }
 
   profileHasChanges = () => {
+    const { state } = this.context;
     const { userProfile } = this.state;
-    return Object.keys(userProfile).some((key: string) => (
-      userProfile[key as keyof UserProfile] !== defaultUserProfile[key as keyof UserProfile]
-    ));
+    return userProfile !== (state.profile || defaultUserProfile);
   }
 
   typeHasChanges = () => {
