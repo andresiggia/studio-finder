@@ -27,6 +27,11 @@
   margin-top: 2rem;
 }
 
+.profile-form-footer-note-required {
+  font-size: .75rem;
+  font-style: oblique;
+}
+
 .profile-form-spacer {
   margin: 1rem 0;
 }

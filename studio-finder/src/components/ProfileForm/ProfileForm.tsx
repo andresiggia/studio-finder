@@ -147,6 +147,14 @@ class ProfileForm extends React.Component<Props, State> {
 
   // render
 
+  renderLabel = (label: string, required = false) => (
+    <IonLabel position="stacked">
+      {`${label} ${required
+        ? '*'
+        : ''}`}
+    </IonLabel>
+  )
+
   renderUserType = (disabled: boolean) => {
     const { userType } = this.state;
     const options = [
@@ -189,6 +197,9 @@ class ProfileForm extends React.Component<Props, State> {
     const isValidForm = this.isValidForm();
     return (
       <div className="profile-form-footer">
+        <p className="profile-form-footer-note-required">
+          {`* ${i18n.t('Required')}`}
+        </p>
         <IonGrid>
           <IonRow>
             <IonCol size="12" size-md="6">
@@ -248,9 +259,7 @@ class ProfileForm extends React.Component<Props, State> {
     value: string, disabled: boolean, required?: boolean, label: string, fieldName: string,
   }) => (
     <>
-      <IonLabel position="stacked">
-        {label}
-      </IonLabel>
+      {this.renderLabel(label, required)}
       <IonInput
         value={value}
         type="text"
@@ -297,9 +306,7 @@ class ProfileForm extends React.Component<Props, State> {
           })}
         </IonItem>
         <IonItem>
-          <IonLabel position="stacked">
-            {i18n.t('Date of birth')}
-          </IonLabel>
+          {this.renderLabel(i18n.t('Date of birth'))}
           <IonDatetime
             displayFormat="DD MM YYYY"
             disabled={disabled}
