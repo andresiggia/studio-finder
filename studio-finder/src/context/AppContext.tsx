@@ -152,20 +152,18 @@ export class AppContextProvider extends React.Component<Props, State> {
     }
   }
 
-  updateUserState = (user?: supabase.User | null) => new Promise((resolve) => {
+  updateUserState = async (user?: supabase.User | null) => {
     const { user: currentUser } = this.state;
     if (user === currentUser) {
-      resolve(true);
-    } else {
+      return Promise.resolve(true);
+    }
+    await this.loadUserProfile();
+    return new Promise((resolve) => {
       this.setMountedState({
         user: user || null,
-        profile: null, // reset user profile when auth user changes
-      }, async () => {
-        await this.loadUserProfile();
-        resolve(true);
-      });
-    }
-  })
+      }, () => resolve(true));
+    });
+  }
 
   getLoginPath = (options: {
     parentRoute: string, backUrl?: string, redirectTo?: string, screen?: string,
