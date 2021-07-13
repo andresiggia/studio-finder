@@ -20,7 +20,7 @@ CREATE TABLE "acts" (
 
 CREATE TABLE "act_users" (
   "act_id" int,
-  "user_id" int,
+  "user_id" varchar,
   "user_role_name" varchar,
   PRIMARY KEY ("act_id", "user_id")
 );
@@ -32,7 +32,7 @@ CREATE TABLE "payment_vendors" (
 
 CREATE TABLE "user_payment_methods" (
   "id" SERIAL,
-  "user_id" int,
+  "user_id" varchar,
   "title" varchar UNIQUE,
   "vendor" varchar,
   "metadata" jsonb,
@@ -62,7 +62,7 @@ CREATE TABLE "studio_photos" (
 
 CREATE TABLE "studio_users" (
   "studio_id" int,
-  "user_id" int,
+  "user_id" varchar,
   "studio_role_name" varchar,
   PRIMARY KEY ("studio_id", "user_id")
 );
@@ -84,7 +84,7 @@ CREATE TABLE "space_photos" (
 
 CREATE TABLE "space_users" (
   "space_id" int,
-  "user_id" int,
+  "user_id" varchar,
   "space_role_name" varchar,
   PRIMARY KEY ("space_id", "user_id")
 );
@@ -113,7 +113,7 @@ CREATE TABLE "space_services" (
 CREATE TABLE "bookings" (
   "id" SERIAL PRIMARY KEY,
   "studio_id" int,
-  "user_id" int,
+  "user_id" varchar,
   "act_id" int,
   "created_at" timestamp DEFAULT (now())
 );
@@ -121,7 +121,7 @@ CREATE TABLE "bookings" (
 CREATE TABLE "booking_payments" (
   "id" SERIAL PRIMARY KEY,
   "booking_id" int,
-  "user_id" int,
+  "user_id" varchar,
   "vendor" varchar,
   "metadata" jsonb,
   "value" money,
