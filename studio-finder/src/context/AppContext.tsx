@@ -10,7 +10,7 @@ import { TABLE_NAMES, UserProfile } from '../constants/tables';
 // services
 import { i18nInit } from '../services/i18n/i18n';
 import { getRoutesByName, RouteNames, LoginRouteNames } from '../services/routes/routes';
-import { updateObjectKeysToCamelCase } from '../services/api/api';
+import { updateObjectKeysToCamelCase, updateObjectKeysToUnderscoreCase } from '../services/api/api';
 
 const AppContext = React.createContext({});
 
@@ -112,6 +112,24 @@ export class AppContextProvider extends React.Component<Props, State> {
     }
   }
 
+  updateProfile = async (profile?: UserProfile | null) => {
+    try {
+      const userProfileData = updateObjectKeysToUnderscoreCase(profile);
+      const { data, error } = await this.supabase
+        .from(TABLE_NAMES.users)
+        .upsert([userProfileData]);
+      if (error) {
+        throw error;
+      }
+      // eslint-disable-next-line no-console
+      console.log('user profile updated', data);
+      await this.loadUserProfile();
+      return Promise.resolve(data);
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  }
+
   updateUserState = (user?: supabase.User | null) => new Promise((resolve) => {
     const { user: currentUser } = this.state;
     if (user === currentUser) {
@@ -166,6 +184,7 @@ export class AppContextProvider extends React.Component<Props, State> {
         value={{
           state: this.state,
           supabase: this.supabase,
+          updateProfile: this.updateProfile,
           getLoginPath: this.getLoginPath,
           getDefaultLoggedInRouteName: this.getDefaultLoggedInRouteName,
           getDefaultLoggedInRoutePath: this.getDefaultLoggedInRoutePath,
