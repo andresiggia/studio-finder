@@ -114,9 +114,13 @@ export class AppContextProvider extends React.Component<Props, State> {
     }
   }
 
-  updateProfile = async (profile?: UserProfile | null) => {
+  updateProfile = async (profile: UserProfile) => {
     try {
-      const userProfileData = updateObjectKeysToUnderscoreCase(profile);
+      const { user } = this.state;
+      const userProfileData = updateObjectKeysToUnderscoreCase({
+        ...profile,
+        id: user?.id,
+      });
       const { data, error } = await this.supabase
         .from(TABLE_NAMES.users)
         .upsert([userProfileData]);
