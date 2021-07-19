@@ -7,6 +7,9 @@ import { Switch } from 'react-router';
 // services
 import routes, { defaultRoute } from './services/routes/routes';
 
+// components
+import PageRoute from './components/PageRoute/PageRoute';
+
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
 
@@ -33,14 +36,21 @@ class App extends React.Component {
         <IonReactRouter>
           <Switch>
             {routes.map((route) => {
-              const { Component, exact, path } = route;
+              const {
+                Component, exact, strict, path, getLabel,
+              } = route;
               if (!Component) {
                 return null;
               }
               return (
-                <Route key={path} exact={exact} path={path}>
-                  <Component />
-                </Route>
+                <PageRoute
+                  key={path}
+                  title={getLabel ? getLabel() : ''}
+                  path={path}
+                  exact={exact}
+                  strict={strict}
+                  component={Component}
+                />
               );
             }).filter((item) => item)}
             {!!defaultRoute && (
