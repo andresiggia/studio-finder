@@ -87,6 +87,7 @@ const routes: Route[] = [
     strict: false,
     isDefault: false,
     Component: Login,
+    getLabel: () => i18n.t('Login'),
     routes: loginRoutes,
   },
   {
