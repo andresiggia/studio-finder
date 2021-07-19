@@ -103,11 +103,16 @@ class LoginForm extends React.Component<Props, State> {
     history.push(backUrl);
   }
 
-  onRouteChange = (e: any) => {
+  changeScreen = (value: string) => {
     const { location, history } = this.props;
     const query = new URLSearchParams(location.search);
-    query.set('screen', e.detail.value || '');
+    query.set('screen', value || '');
     history.push(`${location.pathname}?${query.toString()}`);
+  }
+
+  onScreenChange = (e: any) => {
+    const { value } = e.detail;
+    this.changeScreen(value);
   }
 
   getRedirectUrl = () => {
@@ -133,7 +138,8 @@ class LoginForm extends React.Component<Props, State> {
           const { email, password } = this.state;
           const { supabase } = this.context;
           let notification = null;
-          if (screen === LoginRouteNames.signUp) {
+          const isSignUp = screen === LoginRouteNames.signUp;
+          if (isSignUp) {
             const { error: signUpError } = await supabase.auth.signUp({
               email,
               password,
@@ -162,9 +168,17 @@ class LoginForm extends React.Component<Props, State> {
             } as NotificationProps;
           }
           this.setMountedState({
-            // isLoading: false, // leave it loading until user is logged in
+            isLoading: !isSignUp, // leave it loading until user is logged in
             notification,
-          }, () => this.checkLogin());
+          }, () => {
+            if (isSignUp) {
+              // redirect to login screen after successful sign up
+              this.changeScreen(LoginRouteNames.login);
+            } else {
+              // check login
+              this.checkLogin();
+            }
+          });
         } catch (error) {
           // eslint-disable-next-line no-console
           console.warn('error - onSubmit', error);
@@ -313,7 +327,7 @@ class LoginForm extends React.Component<Props, State> {
               <IonCardContent>
                 <IonSegment
                   value={screen}
-                  onIonChange={this.onRouteChange}
+                  onIonChange={this.onScreenChange}
                 >
                   {!!route.routes && (
                     route.routes.map((subRoute) => (
