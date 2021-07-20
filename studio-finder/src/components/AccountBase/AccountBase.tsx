@@ -12,6 +12,7 @@ import { UserTypes } from '../../services/api/user';
 // components
 import ProfileForm from '../ProfileForm/ProfileForm';
 import { UserValidationProps } from '../withUserValidation/withUserValidation';
+import StudioList from '../StudioList/StudioList';
 
 class AccountBase extends React.Component<UserValidationProps> {
   renderProfile = (hasProfile: boolean) => {
@@ -29,9 +30,9 @@ class AccountBase extends React.Component<UserValidationProps> {
     );
   }
 
-  renderStudioProfile = () => (
+  renderStudioList = () => (
     <IonCol size="12" size-md="6" size-lg="4">
-      <p>Coming soon</p>
+      <StudioList />
     </IonCol>
   )
 
@@ -46,7 +47,7 @@ class AccountBase extends React.Component<UserValidationProps> {
           {hasProfile && (
             <>
               {isStudio && (
-                this.renderStudioProfile()
+                this.renderStudioList()
               )}
             </>
           )}
