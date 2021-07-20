@@ -13,7 +13,7 @@ import {
 import i18n from '../../services/i18n/i18n';
 
 // constants
-import { USER_TYPES } from '../../constants/user-types';
+import { userTypes } from '../../constants/user-types';
 
 // components
 import AppContext from '../../context/AppContext';
@@ -118,7 +118,7 @@ class Header extends React.Component<RouteComponentProps, State> {
   renderAccountLink = () => {
     const { state } = this.context;
     let routeName = RouteNames.account;
-    if (state.user.user_metadata?.type === USER_TYPES.studio) {
+    if (state.user.user_metadata?.type === userTypes.studio) {
       routeName = RouteNames.studioAccount;
     }
     return getRoutesByName([routeName]).map((route) => this.renderRoute(route));

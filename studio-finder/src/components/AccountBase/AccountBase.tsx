@@ -7,7 +7,7 @@ import {
 import AppContext from '../../context/AppContext';
 
 // constants
-import { USER_TYPES } from '../../constants/user-types';
+import { userTypes } from '../../constants/user-types';
 
 // components
 import ProfileForm from '../ProfileForm/ProfileForm';
@@ -38,7 +38,7 @@ class AccountBase extends React.Component<UserValidationProps> {
   render() {
     const { state } = this.context;
     const hasProfile = state.user.user_metadata?.type && !!state.profile;
-    const isStudio = state.user.user_metadata?.type === USER_TYPES.studio;
+    const isStudio = state.user.user_metadata?.type === userTypes.studio;
     return (
       <IonGrid>
         <IonRow>

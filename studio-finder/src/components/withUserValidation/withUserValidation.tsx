@@ -8,7 +8,7 @@ import AppContext from '../../context/AppContext';
 import { getRoutesByName, RouteNames } from '../../services/routes/routes';
 
 // constants
-import { USER_TYPES } from '../../constants/user-types';
+import { userTypes } from '../../constants/user-types';
 
 export interface InjectedProps {
   userType: string;
@@ -16,7 +16,7 @@ export interface InjectedProps {
 
 export type UserValidationProps = RouteComponentProps & InjectedProps;
 
-const withUserValidation = (userType = USER_TYPES.musician) => <TOriginalProps extends RouteComponentProps>(
+const withUserValidation = (userType = userTypes.musician) => <TOriginalProps extends RouteComponentProps>(
   Component: (ComponentClass<TOriginalProps> | FunctionComponent<TOriginalProps>),
 ) => {
   class ValidatedUser extends React.Component<TOriginalProps> {
@@ -30,9 +30,9 @@ const withUserValidation = (userType = USER_TYPES.musician) => <TOriginalProps e
 
     getParentRouteName = () => {
       switch (userType) {
-        case USER_TYPES.studio:
+        case userTypes.studio:
           return RouteNames.studioLogin;
-        case USER_TYPES.musician:
+        case userTypes.musician:
         default:
           return RouteNames.login;
       }
@@ -40,9 +40,9 @@ const withUserValidation = (userType = USER_TYPES.musician) => <TOriginalProps e
 
     getCreateProfileRouteName = () => {
       switch (userType) {
-        case USER_TYPES.studio:
+        case userTypes.studio:
           return RouteNames.studioAccount;
-        case USER_TYPES.musician:
+        case userTypes.musician:
         default:
           return RouteNames.account;
       }

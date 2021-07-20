@@ -1,4 +1,4 @@
-export const USER_TYPES = {
+export const userTypes = {
   studio: 'studio',
   musician: 'musician',
 };

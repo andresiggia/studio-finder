@@ -10,7 +10,7 @@ import i18n from '../../services/i18n/i18n';
 import { RouteNames, LoginRouteNames } from '../../services/routes/routes';
 
 // constants
-import { USER_TYPES } from '../../constants/user-types';
+import { userTypes } from '../../constants/user-types';
 
 class StudioLogin extends React.Component {
   render() {
@@ -20,7 +20,7 @@ class StudioLogin extends React.Component {
           <Header />
           <LoginForm
             routeName={RouteNames.studioLogin}
-            userType={USER_TYPES.studio}
+            userType={userTypes.studio}
             title={i18n.t('Studio Log In / Sign Up')}
             defaultScreen={LoginRouteNames.login}
           />

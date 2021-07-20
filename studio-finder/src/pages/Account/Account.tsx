@@ -4,7 +4,7 @@ import {
 } from '@ionic/react';
 
 // constants
-import { USER_TYPES } from '../../constants/user-types';
+import { userTypes } from '../../constants/user-types';
 
 // components
 import Header from '../../components/Header/Header';
@@ -28,4 +28,4 @@ class StudioAccount extends React.Component<UserValidationProps> {
   }
 }
 
-export default withUserValidation(USER_TYPES.musician)(StudioAccount);
+export default withUserValidation(userTypes.musician)(StudioAccount);
