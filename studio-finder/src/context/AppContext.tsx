@@ -10,7 +10,7 @@ import { tableNames, UserProfile } from '../constants/tables';
 // services
 import { i18nInit } from '../services/i18n/i18n';
 import { getRoutesByName, RouteNames, LoginRouteNames } from '../services/routes/routes';
-import { updateObjectKeysToCamelCase, updateObjectKeysToUnderscoreCase } from '../services/api/api';
+import { updateObjectKeysToCamelCase, updateObjectKeysToUnderscoreCase } from '../services/api/helpers';
 
 const AppContext = React.createContext({});
 
