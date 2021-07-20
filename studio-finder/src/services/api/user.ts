@@ -1,6 +1,7 @@
-export const tableNames = {
-  users: 'users',
-};
+export enum userTypes {
+  studio = 'studio',
+  musician = 'musician',
+}
 
 export interface UserProfile {
   id: string,

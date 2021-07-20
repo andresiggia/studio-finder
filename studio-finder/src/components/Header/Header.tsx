@@ -13,7 +13,7 @@ import {
 import i18n from '../../services/i18n/i18n';
 
 // constants
-import { userTypes } from '../../constants/user-types';
+import { userTypes } from '../../services/api/user';
 
 // components
 import AppContext from '../../context/AppContext';

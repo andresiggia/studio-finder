@@ -15,8 +15,7 @@ import AppContext from '../../context/AppContext';
 import i18n from '../../services/i18n/i18n';
 
 // constants
-import { userTypes } from '../../constants/user-types';
-import { defaultUserProfile, UserProfile } from '../../constants/tables';
+import { userTypes, defaultUserProfile, UserProfile } from '../../services/api/user';
 
 // components
 import Notification, { NotificationProps } from '../Notification/Notification';

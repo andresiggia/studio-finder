@@ -10,7 +10,7 @@ import i18n from '../../services/i18n/i18n';
 import { RouteNames, LoginRouteNames } from '../../services/routes/routes';
 
 // constants
-import { userTypes } from '../../constants/user-types';
+import { userTypes } from '../../services/api/user';
 
 class Login extends React.Component {
   render() {
