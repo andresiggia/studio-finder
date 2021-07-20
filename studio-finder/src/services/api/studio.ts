@@ -1,10 +1,11 @@
 import { AppContextValue } from '../../context/AppContext';
 
-import { updateObjectKeysToCamelCase } from './helpers';
+import { updateObjectKeysToCamelCase, updateObjectKeysToUnderscoreCase } from './helpers';
 import { TableNames } from './tables';
 
 export enum StudioErrors {
   missingUserId = 'missingUserId',
+  invalidResponse = 'invalidResponse',
 }
 
 export interface StudioProfile {
@@ -82,4 +83,44 @@ export const getStudio = async (context: AppContextValue, studioId: number) => {
     }
   }
   return studio;
+};
+
+export const insertStudio = async (context: AppContextValue, studioProfile: StudioProfile) => {
+  const { supabase, state } = context;
+  const userId = state.user?.id;
+  if (!userId) {
+    throw StudioErrors.missingUserId;
+  }
+  const profile: any = {
+    ...studioProfile,
+    // modifiedAt: new Date(), // modifiedAt to be updated to current date/time
+  };
+  if (!profile.createdAt) { // createdAt should be created by back-end if not set
+    delete profile.createdAt;
+  }
+  const studioProfileData = updateObjectKeysToUnderscoreCase(profile);
+  const { data, error } = await supabase
+    .from(TableNames.studios)
+    .insert([studioProfileData]);
+  if (error) {
+    throw error;
+  }
+  if (!data) {
+    throw StudioErrors.invalidResponse;
+  }
+  const [newItem] = data;
+  // create studio_users foreign key
+  const studioUser: StudioUser = {
+    userId,
+    studioId: newItem?.id,
+    studioRoleName: '', // to do
+  };
+  const studioUserData = updateObjectKeysToUnderscoreCase(studioUser);
+  const { data: joinData, error: joinError } = await supabase
+    .from(TableNames.studioUsers)
+    .insert([studioUserData]);
+  if (joinError) {
+    throw joinError;
+  }
+  return data;
 };
