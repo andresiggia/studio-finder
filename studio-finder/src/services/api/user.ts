@@ -88,3 +88,16 @@ export const setUserProfile = async (context: AppContextValue, userProfile: User
   }
   return data;
 };
+
+export const updateUserType = async (context: AppContextValue, userType: string) => {
+  const { supabase } = context;
+  const { user, error } = await supabase.auth.update({
+    data: {
+      type: userType,
+    },
+  });
+  if (error) {
+    throw error;
+  }
+  return user;
+};

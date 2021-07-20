@@ -15,7 +15,9 @@ import AppContext from '../../context/AppContext';
 import i18n from '../../services/i18n/i18n';
 
 // constants
-import { userTypes, defaultUserProfile, UserProfile } from '../../services/api/user';
+import {
+  userTypes, defaultUserProfile, UserProfile, updateUserType,
+} from '../../services/api/user';
 
 // components
 import Notification, { NotificationProps } from '../Notification/Notification';
@@ -130,19 +132,10 @@ class ProfileForm extends React.Component<Props, State> {
       isLoading: true,
     }, async () => {
       try {
-        const { state, supabase } = this.context;
-        const { updateProfile } = this.context;
+        const { state, updateProfile } = this.context;
         const { userType, userProfile } = this.state;
         if (!state.user.user_metadata?.type || this.typeHasChanges()) {
-          // update user
-          const { user, error } = await supabase.auth.update({
-            data: {
-              type: userType,
-            },
-          });
-          if (error) {
-            throw error;
-          }
+          const user = await updateUserType(this.context, userType);
           // eslint-disable-next-line no-console
           console.log('user type updated', user);
         }
