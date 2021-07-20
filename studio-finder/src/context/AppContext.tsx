@@ -5,7 +5,7 @@ import supabase, { createClient } from '@supabase/supabase-js';
 // constants
 import appKeys from '../constants/supabase-keys';
 import { userTypes } from '../constants/user-types';
-import { TABLE_NAMES, UserProfile } from '../constants/tables';
+import { tableNames, UserProfile } from '../constants/tables';
 
 // services
 import { i18nInit } from '../services/i18n/i18n';
@@ -87,7 +87,7 @@ export class AppContextProvider extends React.Component<Props, State> {
       // eslint-disable-next-line no-console
       console.log('loading user profile...');
       const { data, error } = await this.supabase
-        .from(TABLE_NAMES.users)
+        .from(tableNames.users)
         .select()
         .match({
           id: user.id,
@@ -138,7 +138,7 @@ export class AppContextProvider extends React.Component<Props, State> {
       // eslint-disable-next-line no-console
       console.log('will update user profile', userProfileData);
       const { data, error } = await this.supabase
-        .from(TABLE_NAMES.users)
+        .from(tableNames.users)
         .upsert([userProfileData]);
       if (error) {
         throw error;

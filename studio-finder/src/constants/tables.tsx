@@ -1,4 +1,4 @@
-export const TABLE_NAMES = {
+export const tableNames = {
   users: 'users',
 };
 
