@@ -4,13 +4,13 @@ import supabase, { createClient } from '@supabase/supabase-js';
 
 // constants
 import appKeys from '../constants/supabase-keys';
-import { userTypes, UserProfile } from '../services/api/user';
-import { tableNames } from '../services/api/tables';
+import {
+  userTypes, UserProfile, getUserProfile, setUserProfile,
+} from '../services/api/user';
 
 // services
 import { i18nInit } from '../services/i18n/i18n';
 import { getRoutesByName, RouteNames, LoginRouteNames } from '../services/routes/routes';
-import { updateObjectKeysToCamelCase, updateObjectKeysToUnderscoreCase } from '../services/api/helpers';
 
 const AppContext = React.createContext({});
 
@@ -25,9 +25,18 @@ interface AuthResponse {
   error: Error | null,
 }
 
-interface State {
+export interface State {
   user: supabase.User | null,
   profile: UserProfile | null,
+}
+
+export interface AppContextValue {
+  state: State,
+  supabase: supabase.SupabaseClient,
+  updateProfile: any,
+  getLoginPath: any,
+  getDefaultLoggedInRouteName: any,
+  getDefaultLoggedInRoutePath: any,
 }
 
 export class AppContextProvider extends React.Component<Props, State> {
@@ -80,26 +89,11 @@ export class AppContextProvider extends React.Component<Props, State> {
     try {
       const { user } = this.state;
       if (!user) {
-        // eslint-disable-next-line no-console
-        console.log('loading user profile...');
         return Promise.resolve({ data: null });
       }
       // eslint-disable-next-line no-console
       console.log('loading user profile...');
-      const { data, error } = await this.supabase
-        .from(tableNames.users)
-        .select()
-        .match({
-          id: user.id,
-        });
-      if (error) {
-        throw error;
-      }
-      let profileData: any;
-      if (data && Array.isArray(data) && data.length > 0) {
-        [profileData] = data;
-      }
-      const profile: any | null = updateObjectKeysToCamelCase(profileData);
+      const profile = await getUserProfile(this.getContext());
       if (profile) {
         const dateFields = ['birthday', 'createdAt', 'modifiedAt'];
         dateFields.forEach((fieldName: string) => {
@@ -123,30 +117,15 @@ export class AppContextProvider extends React.Component<Props, State> {
     }
   }
 
-  updateProfile = async (originalProfile: UserProfile) => {
+  updateProfile = async (profile: UserProfile) => {
     try {
-      const { user } = this.state;
-      const profile: any = {
-        ...originalProfile,
-        id: user?.id || '', // inject user id
-        modifiedAt: new Date(), // modifiedAt to be updated to current date/time
-      };
-      if (!profile.createdAt) { // createdAt should be created by back-end if not set
-        delete profile.createdAt;
-      }
-      const userProfileData = updateObjectKeysToUnderscoreCase(profile);
       // eslint-disable-next-line no-console
-      console.log('will update user profile', userProfileData);
-      const { data, error } = await this.supabase
-        .from(tableNames.users)
-        .upsert([userProfileData]);
-      if (error) {
-        throw error;
-      }
+      console.log('will update user profile', profile);
+      const response = await setUserProfile(this.getContext(), profile);
       // eslint-disable-next-line no-console
-      console.log('user profile updated', data);
+      console.log('user profile updated', response);
       await this.loadUserProfile();
-      return Promise.resolve(data);
+      return Promise.resolve(response);
     } catch (error) {
       return Promise.reject(error);
     }
@@ -197,18 +176,22 @@ export class AppContextProvider extends React.Component<Props, State> {
     return route?.path || '';
   }
 
+  getContext = () => ({
+    state: this.state,
+    supabase: this.supabase,
+    updateProfile: this.updateProfile,
+    getLoginPath: this.getLoginPath,
+    getDefaultLoggedInRouteName: this.getDefaultLoggedInRouteName,
+    getDefaultLoggedInRoutePath: this.getDefaultLoggedInRoutePath,
+  })
+
+  // render
+
   render() {
     const { children } = this.props;
     return (
       <AppContext.Provider
-        value={{
-          state: this.state,
-          supabase: this.supabase,
-          updateProfile: this.updateProfile,
-          getLoginPath: this.getLoginPath,
-          getDefaultLoggedInRouteName: this.getDefaultLoggedInRouteName,
-          getDefaultLoggedInRoutePath: this.getDefaultLoggedInRoutePath,
-        }}
+        value={this.getContext()}
       >
         {children}
       </AppContext.Provider>
