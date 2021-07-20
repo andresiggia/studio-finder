@@ -3,9 +3,6 @@ import {
   IonContent, IonPage,
 } from '@ionic/react';
 
-// context
-import AppContext from '../../context/AppContext';
-
 // constants
 import { USER_TYPES } from '../../constants/user-types';
 
@@ -30,7 +27,5 @@ class StudioAccount extends React.Component<UserValidationProps> {
     );
   }
 }
-
-StudioAccount.contextType = AppContext;
 
 export default withUserValidation(USER_TYPES.musician)(StudioAccount);
