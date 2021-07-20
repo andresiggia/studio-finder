@@ -62,7 +62,7 @@ export const getUserProfile = async (context: AppContextValue) => {
       profile = updateObjectKeysToCamelCase(profileData);
     }
   }
-  return Promise.resolve(profile);
+  return profile;
 };
 
 export const setUserProfile = async (context: AppContextValue, userProfile: UserProfile) => {
@@ -86,5 +86,5 @@ export const setUserProfile = async (context: AppContextValue, userProfile: User
   if (error) {
     throw error;
   }
-  return Promise.resolve(data);
+  return data;
 };
