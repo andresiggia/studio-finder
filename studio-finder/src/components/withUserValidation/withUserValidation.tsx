@@ -41,10 +41,10 @@ const withUserValidation = (userType = USER_TYPES.musician) => <TOriginalProps e
     getCreateProfileRouteName = () => {
       switch (userType) {
         case USER_TYPES.studio:
-          return RouteNames.studioProfile;
+          return RouteNames.studioAccount;
         case USER_TYPES.musician:
         default:
-          return RouteNames.profile;
+          return RouteNames.account;
       }
     }
 

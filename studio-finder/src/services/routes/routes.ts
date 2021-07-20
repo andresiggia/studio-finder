@@ -5,8 +5,6 @@ import Login from '../../pages/Login/Login';
 import StudioLogin from '../../pages/StudioLogin/StudioLogin';
 import Account from '../../pages/Account/Account';
 import StudioAccount from '../../pages/StudioAccount/StudioAccount';
-import Profile from '../../pages/Profile/Profile';
-import StudioProfile from '../../pages/StudioProfile/StudioProfile';
 
 // services
 import i18n from '../i18n/i18n';
@@ -16,10 +14,8 @@ export enum RouteNames {
   about = 'about',
   login = 'login',
   account = 'account',
-  profile = 'profile',
   studioLogin = 'studioLogin',
   studioAccount = 'studioAccount',
-  studioProfile = 'studioProfile',
 }
 
 export interface Route {
@@ -107,24 +103,6 @@ const routes: Route[] = [
     isDefault: false,
     Component: StudioAccount,
     getLabel: () => i18n.t('Studio Account'),
-  },
-  {
-    name: RouteNames.profile,
-    path: '/profile',
-    exact: false,
-    strict: false,
-    isDefault: false,
-    Component: Profile,
-    getLabel: () => i18n.t('My Profile'),
-  },
-  {
-    name: RouteNames.studioProfile,
-    path: '/studio-profile',
-    exact: false,
-    strict: false,
-    isDefault: false,
-    Component: StudioProfile,
-    getLabel: () => i18n.t('Studio Profile'),
   },
 ];
 

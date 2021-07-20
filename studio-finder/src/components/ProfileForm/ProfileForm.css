@@ -1,5 +1,5 @@
 .profile-form {
-  padding: 1rem;
+  padding: 0;
 }
 
 .profile-form-fieldset {
@@ -34,6 +34,10 @@
 
 .profile-form-spacer {
   margin: 1rem 0;
+}
+
+.profile-form-list {
+  padding: 0;
 }
 
 .profile-form-loading {

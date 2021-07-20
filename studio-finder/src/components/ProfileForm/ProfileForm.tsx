@@ -1,7 +1,7 @@
 import React from 'react';
 import {
-  IonLabel, IonIcon, IonSegmentButton, IonSegment, IonTitle, IonSpinner, IonButton,
-  IonGrid, IonRow, IonCol, IonList, IonItem, IonInput, IonDatetime,
+  IonLabel, IonIcon, IonSegmentButton, IonSegment, IonSpinner, IonButton, IonGrid, IonRow, IonCol,
+  IonList, IonItem, IonInput, IonDatetime, IonCard, IonCardContent, IonCardHeader, IonCardTitle,
 } from '@ionic/react';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { musicalNotesOutline, storefrontOutline } from 'ionicons/icons';
@@ -24,9 +24,11 @@ import './ProfileForm.css';
 
 interface Props {
   userType: string,
+  unlockToEdit?: boolean,
 }
 
 interface State {
+  allowEdit: boolean,
   isLoading: boolean,
   error: Error | null,
   notification: NotificationProps | null,
@@ -42,6 +44,7 @@ class ProfileForm extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
+      allowEdit: !props.unlockToEdit,
       isLoading: false,
       error: null,
       notification: null,
@@ -214,38 +217,67 @@ class ProfileForm extends React.Component<Props, State> {
     );
   }
 
-  renderFooter = (disabled: boolean) => {
-    const { isLoading, error, notification } = this.state;
+  renderFooter = (showRequired: boolean) => {
+    const { unlockToEdit } = this.props;
+    const {
+      isLoading, error, notification, allowEdit,
+    } = this.state;
     const isValidForm = this.isValidForm();
     const hasChanges = this.hasChanges();
     return (
       <div className="profile-form-footer">
-        <p className="profile-form-footer-note-required">
-          {`* ${i18n.t('Required')}`}
-        </p>
+        {showRequired && (
+          <p className="profile-form-footer-note-required">
+            {`* ${i18n.t('Required')}`}
+          </p>
+        )}
         <IonGrid>
           <IonRow>
-            <IonCol size="12" size-md="6">
-              <IonButton
-                fill="outline"
-                type="button"
-                expand="block"
-                disabled={disabled || !hasChanges}
-                onClick={() => this.updateState()}
-              >
-                {i18n.t('Reset')}
-              </IonButton>
-            </IonCol>
-            <IonCol size="12" size-md="6">
-              <IonButton
-                color="primary"
-                type="submit"
-                expand="block"
-                disabled={disabled || !isValidForm || !hasChanges}
-              >
-                {i18n.t('Save')}
-              </IonButton>
-            </IonCol>
+            {(unlockToEdit && !allowEdit)
+              ? (
+                <IonCol size="12" size-md="6">
+                  <IonButton
+                    fill="outline"
+                    type="button"
+                    expand="block"
+                    onClick={() => this.setMountedState({ allowEdit: true })}
+                  >
+                    {i18n.t('Edit')}
+                  </IonButton>
+                </IonCol>
+              ) : (
+                <>
+                  <IonCol size="12" size-md="6">
+                    <IonButton
+                      fill="outline"
+                      type="button"
+                      expand="block"
+                      disabled={isLoading || !!error || (!unlockToEdit && !hasChanges)}
+                      onClick={() => {
+                        if (hasChanges) {
+                          this.updateState();
+                        } else if (unlockToEdit) {
+                          this.setMountedState({ allowEdit: false });
+                        }
+                      }}
+                    >
+                      {(hasChanges || !unlockToEdit)
+                        ? i18n.t('Reset')
+                        : i18n.t('Cancel')}
+                    </IonButton>
+                  </IonCol>
+                  <IonCol size="12" size-md="6">
+                    <IonButton
+                      color="primary"
+                      type="submit"
+                      expand="block"
+                      disabled={isLoading || !!error || !isValidForm || !hasChanges}
+                    >
+                      {i18n.t('Save')}
+                    </IonButton>
+                  </IonCol>
+                </>
+              )}
           </IonRow>
         </IonGrid>
         {isLoading && (
@@ -301,11 +333,11 @@ class ProfileForm extends React.Component<Props, State> {
     </>
   )
 
-  renderFields = (disabled: boolean) => {
+  renderFields = (disabled: boolean, showRequired: boolean) => {
     const { state } = this.context;
     const { userProfile } = this.state;
     return (
-      <IonList className="login-form-list">
+      <IonList className="profile-form-list">
         <IonItem>
           {this.renderTextInput({
             value: state.user.email,
@@ -320,7 +352,7 @@ class ProfileForm extends React.Component<Props, State> {
             fieldName: 'name',
             label: i18n.t('Name'),
             disabled,
-            required: true,
+            required: showRequired,
           })}
         </IonItem>
         <IonItem>
@@ -329,7 +361,7 @@ class ProfileForm extends React.Component<Props, State> {
             fieldName: 'surname',
             label: i18n.t('Surname'),
             disabled,
-            required: true,
+            required: showRequired,
           })}
         </IonItem>
         <IonItem>
@@ -357,31 +389,33 @@ class ProfileForm extends React.Component<Props, State> {
   }
 
   render() {
+    const { unlockToEdit } = this.props;
     const { state } = this.context;
-    const { isLoading, error } = this.state;
-    const disabled = isLoading || !!error;
+    const { isLoading, error, allowEdit } = this.state;
+    const showRequired = !unlockToEdit || !!allowEdit;
+    const disabled = isLoading || !!error || !showRequired;
     const isEditing = this.isEditing();
     return (
-      <IonGrid>
-        <IonRow>
-          <IonCol size="12" size-lg="6" offset-lg="3" size-md="8" offset-md="2">
-            <form className="profile-form" onSubmit={this.onSubmit}>
-              <fieldset className="profile-form-fieldset" disabled={disabled}>
-                <IonTitle class="profile-form-title">
-                  {isEditing
-                    ? i18n.t('Edit Profile')
-                    : i18n.t('Create Profile')}
-                </IonTitle>
-                {(!state.user.user_metadata?.type || !state.profile) && (
-                  this.renderUserType(disabled)
-                )}
-                {this.renderFields(disabled)}
-                {this.renderFooter(disabled)}
-              </fieldset>
-            </form>
-          </IonCol>
-        </IonRow>
-      </IonGrid>
+      <form className="profile-form" onSubmit={this.onSubmit}>
+        <IonCard>
+          <IonCardHeader>
+            <IonCardTitle>
+              {isEditing
+                ? i18n.t('My Profile')
+                : i18n.t('Create Profile')}
+            </IonCardTitle>
+          </IonCardHeader>
+          <IonCardContent>
+            <fieldset className="profile-form-fieldset" disabled={disabled}>
+              {(!state.user.user_metadata?.type || !state.profile) && (
+                this.renderUserType(disabled)
+              )}
+              {this.renderFields(disabled, showRequired)}
+              {this.renderFooter(showRequired)}
+            </fieldset>
+          </IonCardContent>
+        </IonCard>
+      </form>
     );
   }
 }
