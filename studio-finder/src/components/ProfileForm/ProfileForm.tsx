@@ -13,8 +13,6 @@ import AppContext from '../../context/AppContext';
 
 // services
 import i18n from '../../services/i18n/i18n';
-
-// constants
 import {
   UserTypes, defaultUserProfile, UserProfile, updateUserType,
 } from '../../services/api/user';
