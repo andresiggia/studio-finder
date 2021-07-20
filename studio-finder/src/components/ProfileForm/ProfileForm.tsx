@@ -42,6 +42,8 @@ interface State {
 class ProfileForm extends React.Component<Props, State> {
   mounted = false
 
+  requiredFields = ['name', 'surname']
+
   constructor(props: Props) {
     super(props);
     this.state = {
@@ -167,8 +169,12 @@ class ProfileForm extends React.Component<Props, State> {
   }
 
   isValidForm = () => {
-    const { userType } = this.state;
-    return !!userType;
+    const { userType, userProfile } = this.state;
+    return !!userType
+      // check all required fields
+      && Object.keys(userProfile).every((key: string) => (
+        !this.requiredFields.includes(key) || !!userProfile[key as keyof UserProfile]
+      ));
   }
 
   // render
@@ -313,29 +319,32 @@ class ProfileForm extends React.Component<Props, State> {
   }
 
   renderTextInput = ({
-    value, disabled, required = false, label, fieldName,
+    value, disabled = false, required = false, label, fieldName,
   }: {
-    value: string, disabled: boolean, required?: boolean, label: string, fieldName: string,
-  }) => (
-    <>
-      {this.renderLabel(label, required)}
-      <IonInput
-        value={value}
-        type="text"
-        required={required}
-        disabled={disabled}
-        onIonChange={(e: any) => {
-          const { userProfile } = this.state;
-          this.setMountedState({
-            userProfile: {
-              ...userProfile,
-              [fieldName]: e.detail.value || '',
-            },
-          });
-        }}
-      />
-    </>
-  )
+    value: string, disabled?: boolean, required?: boolean, label: string, fieldName: string,
+  }, showRequired: boolean) => {
+    const isRequired = showRequired && (required || this.requiredFields.includes(fieldName));
+    return (
+      <>
+        {this.renderLabel(label, isRequired)}
+        <IonInput
+          value={value}
+          type="text"
+          required={isRequired}
+          disabled={disabled}
+          onIonChange={(e: any) => {
+            const { userProfile } = this.state;
+            this.setMountedState({
+              userProfile: {
+                ...userProfile,
+                [fieldName]: e.detail.value || '',
+              },
+            });
+          }}
+        />
+      </>
+    );
+  }
 
   renderFields = (disabled: boolean, showRequired: boolean) => {
     const { state } = this.context;
@@ -348,7 +357,7 @@ class ProfileForm extends React.Component<Props, State> {
             fieldName: 'email',
             label: i18n.t('Email'),
             disabled: true, // read-only field
-          })}
+          }, showRequired)}
         </IonItem>
         <IonItem>
           {this.renderTextInput({
@@ -356,8 +365,7 @@ class ProfileForm extends React.Component<Props, State> {
             fieldName: 'name',
             label: i18n.t('Name'),
             disabled,
-            required: showRequired,
-          })}
+          }, showRequired)}
         </IonItem>
         <IonItem>
           {this.renderTextInput({
@@ -365,8 +373,7 @@ class ProfileForm extends React.Component<Props, State> {
             fieldName: 'surname',
             label: i18n.t('Surname'),
             disabled,
-            required: showRequired,
-          })}
+          }, showRequired)}
         </IonItem>
         <IonItem>
           {this.renderLabel(i18n.t('Date of birth'))}
