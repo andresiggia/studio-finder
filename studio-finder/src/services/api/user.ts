@@ -1,13 +1,13 @@
 import { AppContextValue } from '../../context/AppContext';
+
 import { updateObjectKeysToCamelCase, updateObjectKeysToUnderscoreCase } from './helpers';
+import { TableNames } from './tables';
 
-import { tableNames } from './tables';
-
-export enum userErrors {
+export enum UserErrors {
   missingUserId = 'missingUserId',
 }
 
-export enum userTypes {
+export enum UserTypes {
   studio = 'studio',
   musician = 'musician',
 }
@@ -44,10 +44,10 @@ export const getUserProfile = async (context: AppContextValue) => {
   const { supabase, state } = context;
   const id = state.user?.id;
   if (!id) {
-    throw userErrors.missingUserId;
+    throw UserErrors.missingUserId;
   }
   const { data, error } = await supabase
-    .from(tableNames.users)
+    .from(TableNames.users)
     .select()
     .match({
       id,
@@ -69,7 +69,7 @@ export const setUserProfile = async (context: AppContextValue, userProfile: User
   const { supabase, state } = context;
   const id = state.user?.id;
   if (!id) {
-    throw userErrors.missingUserId;
+    throw UserErrors.missingUserId;
   }
   const profile: any = {
     ...userProfile,
@@ -81,7 +81,7 @@ export const setUserProfile = async (context: AppContextValue, userProfile: User
   }
   const userProfileData = updateObjectKeysToUnderscoreCase(profile);
   const { data, error } = await supabase
-    .from(tableNames.users)
+    .from(TableNames.users)
     .upsert([userProfileData]);
   if (error) {
     throw error;

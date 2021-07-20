@@ -16,7 +16,7 @@ import i18n from '../../services/i18n/i18n';
 
 // constants
 import {
-  userTypes, defaultUserProfile, UserProfile, updateUserType,
+  UserTypes, defaultUserProfile, UserProfile, updateUserType,
 } from '../../services/api/user';
 
 // components
@@ -184,12 +184,12 @@ class ProfileForm extends React.Component<Props, State> {
     const { userType } = this.state;
     const options = [
       {
-        key: userTypes.musician,
+        key: UserTypes.musician,
         title: i18n.t('Musician / Artist'),
         icon: musicalNotesOutline,
       },
       {
-        key: userTypes.studio,
+        key: UserTypes.studio,
         title: i18n.t('Studio Representative'),
         icon: storefrontOutline,
       },

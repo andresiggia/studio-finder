@@ -5,7 +5,7 @@ import supabase, { createClient } from '@supabase/supabase-js';
 // constants
 import appKeys from '../constants/supabase-keys';
 import {
-  userTypes, UserProfile, getUserProfile, setUserProfile,
+  UserTypes, UserProfile, getUserProfile, setUserProfile,
 } from '../services/api/user';
 
 // services
@@ -160,17 +160,17 @@ export class AppContextProvider extends React.Component<Props, State> {
     return url;
   }
 
-  getDefaultLoggedInRouteName = (userType = userTypes.musician) => {
+  getDefaultLoggedInRouteName = (userType = UserTypes.musician) => {
     switch (userType) {
-      case userTypes.studio:
+      case UserTypes.studio:
         return RouteNames.studioAccount;
-      case userTypes.musician:
+      case UserTypes.musician:
       default:
         return RouteNames.account;
     }
   }
 
-  getDefaultLoggedInRoutePath = (userType: userTypes) => {
+  getDefaultLoggedInRoutePath = (userType: UserTypes) => {
     const routeName = this.getDefaultLoggedInRouteName(userType);
     const [route] = getRoutesByName([routeName]);
     return route?.path || '';
