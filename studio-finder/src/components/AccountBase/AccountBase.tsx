@@ -6,6 +6,9 @@ import {
 // context
 import AppContext from '../../context/AppContext';
 
+// constants
+import { USER_TYPES } from '../../constants/user-types';
+
 // components
 import ProfileForm from '../ProfileForm/ProfileForm';
 import { UserValidationProps } from '../withUserValidation/withUserValidation';
@@ -26,13 +29,27 @@ class AccountBase extends React.Component<UserValidationProps> {
     );
   }
 
+  renderStudioProfile = () => (
+    <IonCol size="12" size-md="6" size-lg="4">
+      <p>Coming soon</p>
+    </IonCol>
+  )
+
   render() {
     const { state } = this.context;
     const hasProfile = state.user.user_metadata?.type && !!state.profile;
+    const isStudio = state.user.user_metadata?.type === USER_TYPES.studio;
     return (
       <IonGrid>
         <IonRow>
           {this.renderProfile(hasProfile)}
+          {hasProfile && (
+            <>
+              {isStudio && (
+                this.renderStudioProfile()
+              )}
+            </>
+          )}
         </IonRow>
       </IonGrid>
     );
