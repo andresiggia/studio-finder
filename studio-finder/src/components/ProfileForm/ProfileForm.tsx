@@ -4,7 +4,9 @@ import {
   IonList, IonItem, IonInput, IonDatetime, IonCard, IonCardContent, IonCardHeader, IonCardTitle,
 } from '@ionic/react';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { musicalNotesOutline, storefrontOutline } from 'ionicons/icons';
+import {
+  musicalNotesOutline, storefrontOutline, createOutline, refreshOutline, saveOutline,
+} from 'ionicons/icons';
 
 // context
 import AppContext from '../../context/AppContext';
@@ -242,6 +244,7 @@ class ProfileForm extends React.Component<Props, State> {
                     expand="block"
                     onClick={() => this.setMountedState({ allowEdit: true })}
                   >
+                    <IonIcon slot="start" icon={createOutline} />
                     {i18n.t('Edit')}
                   </IonButton>
                 </IonCol>
@@ -261,6 +264,7 @@ class ProfileForm extends React.Component<Props, State> {
                         }
                       }}
                     >
+                      <IonIcon slot="start" icon={refreshOutline} />
                       {(hasChanges || !unlockToEdit)
                         ? i18n.t('Reset')
                         : i18n.t('Cancel')}
@@ -273,6 +277,7 @@ class ProfileForm extends React.Component<Props, State> {
                       expand="block"
                       disabled={isLoading || !!error || !isValidForm || !hasChanges}
                     >
+                      <IonIcon slot="start" icon={saveOutline} />
                       {i18n.t('Save')}
                     </IonButton>
                   </IonCol>
