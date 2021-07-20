@@ -1,9 +1,10 @@
 import React from 'react';
 import {
-  IonButton, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonIcon, IonSpinner,
+  IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonContent, IonIcon, IonModal,
+  IonSpinner, IonTitle, IonToolbar,
 } from '@ionic/react';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { addOutline } from 'ionicons/icons';
+import { addOutline, closeOutline } from 'ionicons/icons';
 
 // services
 import { getStudios, StudioProfile } from '../../services/api/studio';
@@ -12,11 +13,14 @@ import i18n from '../../services/i18n/i18n';
 // components
 import Notification from '../Notification/Notification';
 import AppContext from '../../context/AppContext';
+import StudioForm from '../StudioForm/StudioForm';
 
 // css
 import './StudioList.css';
 
 interface State {
+  showModal: boolean,
+  selectedStudioId: number,
   isLoading: boolean,
   error: Error | null,
   items: StudioProfile[] | null,
@@ -28,6 +32,8 @@ class StudioList extends React.Component<any, State> {
   constructor(props: any) {
     super(props);
     this.state = {
+      showModal: false,
+      selectedStudioId: 0,
       isLoading: false,
       error: null,
       items: null,
@@ -40,6 +46,9 @@ class StudioList extends React.Component<any, State> {
   }
 
   componentWillUnmount() {
+    this.setMountedState({
+      showModal: false,
+    });
     this.mounted = false;
   }
 
@@ -76,8 +85,17 @@ class StudioList extends React.Component<any, State> {
     });
   }
 
-  onAddItem = () => {
-    // to do
+  onModalOpen = (selectedStudioId = 0) => {
+    this.setMountedState({
+      showModal: true,
+      selectedStudioId,
+    });
+  }
+
+  onModalClose = () => {
+    this.setMountedState({
+      showModal: false,
+    });
   }
 
   // render
@@ -112,28 +130,66 @@ class StudioList extends React.Component<any, State> {
     );
   }
 
+  renderModal = () => {
+    const { showModal, selectedStudioId } = this.state;
+    return (
+      <IonModal isOpen={showModal}>
+        <IonToolbar>
+          <IonTitle>
+            {selectedStudioId
+              ? i18n.t('Edit Studio Profile')
+              : i18n.t('Create Studio Profile')}
+          </IonTitle>
+          <IonButtons slot="end">
+            <IonButton
+              color="primary"
+              onClick={() => this.onModalClose()}
+            >
+              <IonIcon icon={closeOutline} ariaLabel={i18n.t('Close')} />
+            </IonButton>
+          </IonButtons>
+        </IonToolbar>
+        <IonContent>
+          {showModal && (
+            <StudioForm
+              id={selectedStudioId}
+              onCancel={() => this.onModalClose()}
+              onSave={() => {
+                this.onModalClose();
+                this.loadItems();
+              }}
+            />
+          )}
+        </IonContent>
+      </IonModal>
+    );
+  }
+
   render() {
     return (
-      <IonCard>
-        <IonCardHeader>
-          <IonCardTitle>
-            <IonButton
-              type="button"
-              fill="solid"
-              color="primary"
-              className="studio-list-add-button"
-              title={i18n.t('Add')}
-              onClick={() => this.onAddItem()}
-            >
-              <IonIcon icon={addOutline} />
-            </IonButton>
-            {i18n.t('My Studios')}
-          </IonCardTitle>
-        </IonCardHeader>
-        <IonCardContent>
-          {this.renderContent()}
-        </IonCardContent>
-      </IonCard>
+      <>
+        <IonCard>
+          <IonCardHeader>
+            <IonCardTitle>
+              <IonButton
+                type="button"
+                fill="solid"
+                color="primary"
+                className="studio-list-add-button"
+                title={i18n.t('Add')}
+                onClick={() => this.onModalOpen()}
+              >
+                <IonIcon icon={addOutline} />
+              </IonButton>
+              {i18n.t('My Studios')}
+            </IonCardTitle>
+          </IonCardHeader>
+          <IonCardContent>
+            {this.renderContent()}
+          </IonCardContent>
+        </IonCard>
+        {this.renderModal()}
+      </>
     );
   }
 }

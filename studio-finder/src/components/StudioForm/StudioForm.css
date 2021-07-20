@@ -1,0 +1,46 @@
+.studio-form {
+  padding: 0;
+}
+
+.studio-form-fieldset {
+  padding: 0;
+  border: none;
+}
+
+.studio-form-title {
+  margin-bottom: 1.5rem;
+}
+
+.studio-form-type-label {
+  text-align: center;
+  display: block;
+  margin-bottom: 1rem;
+  font-size: .75rem;
+}
+
+.studio-form-type-icon {
+  margin-bottom: .5rem;
+  font-size: 3rem;
+}
+
+.studio-form-footer {
+  margin-top: 2rem;
+}
+
+.studio-form-footer-note-required {
+  padding: 0 1rem;
+  font-size: .75rem;
+  font-style: oblique;
+}
+
+.studio-form-spacer {
+  margin: 1rem 0;
+}
+
+.studio-form-list {
+  padding: 1rem;
+}
+
+.studio-form-loading {
+  text-align: center;
+}
