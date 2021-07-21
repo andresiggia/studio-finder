@@ -237,7 +237,7 @@ class StudioForm extends React.Component<Props, State> {
         {!!error && (
           <Notification
             type="danger"
-            className="studio-form-spacer"
+            className="studio-form-notification studio-form-spacer"
             header={i18n.t('Error')}
             message={error?.message || i18n.t('An error occurred, please try again later')}
             onDismiss={() => this.setMountedState({ error: null })}

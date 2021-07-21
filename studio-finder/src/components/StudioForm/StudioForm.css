@@ -28,13 +28,20 @@
 }
 
 .studio-form-footer-note-required {
-  padding: 0 1rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
   font-size: .75rem;
   font-style: oblique;
 }
 
+.studio-form-notification {
+  margin-left: 1rem;
+  margin-right: 1rem;
+}
+
 .studio-form-spacer {
-  margin: 1rem 0;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
 }
 
 .studio-form-list {
