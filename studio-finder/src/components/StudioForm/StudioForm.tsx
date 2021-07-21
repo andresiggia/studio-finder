@@ -19,7 +19,7 @@ import {
 } from '../../services/api/studio';
 
 // components
-import Notification, { NotificationProps } from '../Notification/Notification';
+import Notification from '../Notification/Notification';
 
 // css
 import './StudioForm.css';
@@ -33,7 +33,6 @@ interface Props {
 interface State {
   isLoading: boolean,
   error: Error | null,
-  notification: NotificationProps | null,
   // fields
   studioProfile: StudioProfile,
   studioProfileOriginal: StudioProfile | null,
@@ -49,7 +48,6 @@ class StudioForm extends React.Component<Props, State> {
     this.state = {
       isLoading: false,
       error: null,
-      notification: null,
       studioProfile: defaultStudioProfile,
       studioProfileOriginal: null,
     };
@@ -182,9 +180,7 @@ class StudioForm extends React.Component<Props, State> {
 
   renderFooter = () => {
     const { onCancel } = this.props;
-    const {
-      isLoading, error, notification,
-    } = this.state;
+    const { isLoading, error } = this.state;
     const isValidForm = this.isValidForm();
     const hasChanges = this.hasChanges();
     const canCancel = typeof onCancel === 'function';
@@ -241,16 +237,6 @@ class StudioForm extends React.Component<Props, State> {
             header={i18n.t('Error')}
             message={error?.message || i18n.t('An error occurred, please try again later')}
             onDismiss={() => this.setMountedState({ error: null })}
-          />
-        )}
-        {!!notification && (
-          <Notification
-            type={notification?.type}
-            className="studio-form-spacer"
-            header={notification?.header}
-            message={notification?.message}
-            preventDismiss={notification?.preventDismiss}
-            onDismiss={() => this.setMountedState({ notification: null })}
           />
         )}
       </div>
