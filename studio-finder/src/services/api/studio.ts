@@ -103,25 +103,40 @@ export const insertStudio = async (context: AppContextValue, studioProfile: Stud
   if (!data) {
     throw StudioErrors.invalidResponse;
   }
-  const [newItem] = data;
+  const [newRow] = data;
   // eslint-disable-next-line no-console
-  console.log('got new studio info', newItem, data);
+  console.log('got new studio info', newRow, data);
+  const studioId = newRow.id;
   // create studioUser foreign key
   const studioUser: StudioUser = {
     userId,
-    studioId: newItem?.id,
+    studioId,
     studioRoleName: '', // to do
   };
   const studioUserData = updateObjectKeysToUnderscoreCase(studioUser);
-  const { data: joinData, error: joinError } = await supabase
+  const { data: newJoinRow, error: joinError } = await supabase
     .from(TableNames.studioUsers)
     .insert([studioUserData]);
   if (joinError) {
     // eslint-disable-next-line no-console
     console.warn('error during join creation', joinError);
+    // roll back studio creation
+    const { data: deletedRow, error: deleteError } = await supabase
+      .from(TableNames.studios)
+      .delete()
+      .match({
+        id: studioId,
+      });
+    if (deleteError) {
+      // eslint-disable-next-line no-console
+      console.warn('error during studio creation rollback', deleteError);
+      throw deleteError;
+    }
+    // eslint-disable-next-line no-console
+    console.log('rolled back studio creation', deletedRow);
     throw joinError;
   }
   // eslint-disable-next-line no-console
-  console.log('added join', joinData);
+  console.log('added join', newJoinRow);
   return data;
 };
