@@ -78,7 +78,11 @@ const withUserValidation = (userType = UserTypes.musician) => <TOriginalProps ex
       }
     }
 
-    render(): JSX.Element {
+    render() {
+      const { state } = this.context;
+      if (!state.user) {
+        return null;
+      }
       return (
         // eslint-disable-next-line react/jsx-props-no-spreading
         <Component {...this.props} userType={userType} />
