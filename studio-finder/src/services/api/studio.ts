@@ -91,13 +91,8 @@ export const insertStudio = async (context: AppContextValue, studioProfile: Stud
   if (!userId) {
     throw StudioErrors.missingUserId;
   }
-  const profile: any = {
-    ...studioProfile,
-    // modifiedAt: new Date(), // modifiedAt to be updated to current date/time
-  };
-  if (!profile.createdAt) { // createdAt should be created by back-end if not set
-    delete profile.createdAt;
-  }
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { createdAt, id, ...profile } = studioProfile; // createdAt and id should be automatically created
   const studioProfileData = updateObjectKeysToUnderscoreCase(profile);
   const { data, error } = await supabase
     .from(TableNames.studios)
@@ -109,7 +104,9 @@ export const insertStudio = async (context: AppContextValue, studioProfile: Stud
     throw StudioErrors.invalidResponse;
   }
   const [newItem] = data;
-  // create studio_users foreign key
+  // eslint-disable-next-line no-console
+  console.log('got new studio info', newItem, data);
+  // create studioUser foreign key
   const studioUser: StudioUser = {
     userId,
     studioId: newItem?.id,
@@ -120,7 +117,11 @@ export const insertStudio = async (context: AppContextValue, studioProfile: Stud
     .from(TableNames.studioUsers)
     .insert([studioUserData]);
   if (joinError) {
+    // eslint-disable-next-line no-console
+    console.warn('error during join creation', joinError);
     throw joinError;
   }
+  // eslint-disable-next-line no-console
+  console.log('added join', joinData);
   return data;
 };
