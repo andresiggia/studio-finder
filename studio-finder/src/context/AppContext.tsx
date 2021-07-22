@@ -11,6 +11,7 @@ import {
 // services
 import { i18nInit } from '../services/i18n/i18n';
 import { getRoutesByName, RouteNames, LoginRouteNames } from '../services/routes/routes';
+import { getRoles, Role } from '../services/api/roles';
 
 const AppContext = React.createContext({});
 
@@ -28,6 +29,9 @@ interface AuthResponse {
 export interface State {
   user: supabase.User | null,
   profile: UserProfile | null,
+  userRoles: Role[] | null,
+  studioRoles: Role[] | null,
+  spaceRoles: Role[] | null,
 }
 
 export interface AppContextValue {
@@ -52,6 +56,9 @@ export class AppContextProvider extends React.Component<Props, State> {
     this.state = {
       user: this.supabase.auth.user(),
       profile: null,
+      userRoles: null,
+      studioRoles: null,
+      spaceRoles: null,
     };
 
     i18nInit();
@@ -64,6 +71,7 @@ export class AppContextProvider extends React.Component<Props, State> {
       console.log('user updated', session);
       this.updateUserState(session?.user);
     });
+    this.loadRoles();
   }
 
   componentWillUnmount() {
@@ -82,6 +90,25 @@ export class AppContextProvider extends React.Component<Props, State> {
       if (typeof callback === 'function') {
         callback();
       }
+    }
+  }
+
+  loadRoles = async () => {
+    try {
+      const { userRoles, studioRoles, spaceRoles } = await getRoles(this.getContext());
+      // eslint-disable-next-line no-console
+      console.log('got roles', { userRoles, studioRoles, spaceRoles });
+      return new Promise((resolve) => {
+        this.setMountedState({
+          userRoles,
+          studioRoles,
+          spaceRoles,
+        }, () => resolve(true));
+      });
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.warn('error - loadRoles', error);
+      return Promise.reject(error);
     }
   }
 
@@ -179,6 +206,7 @@ export class AppContextProvider extends React.Component<Props, State> {
   getContext = () => ({
     state: this.state,
     supabase: this.supabase,
+    loadRoles: this.loadRoles,
     updateProfile: this.updateProfile,
     getLoginPath: this.getLoginPath,
     getDefaultLoggedInRouteName: this.getDefaultLoggedInRouteName,
