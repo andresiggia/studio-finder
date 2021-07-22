@@ -4,14 +4,14 @@ import supabase, { createClient } from '@supabase/supabase-js';
 
 // constants
 import appKeys from '../constants/supabase-keys';
-import {
-  UserTypes, UserProfile, getUserProfile, setUserProfile,
-} from '../services/api/user';
 
 // services
 import { i18nInit } from '../services/i18n/i18n';
 import { getRoutesByName, RouteNames, LoginRouteNames } from '../services/routes/routes';
 import { getRoles, Role } from '../services/api/roles';
+import {
+  UserTypes, UserProfile, getUserProfile, setUserProfile,
+} from '../services/api/user';
 
 const AppContext = React.createContext({});
 
@@ -121,15 +121,6 @@ export class AppContextProvider extends React.Component<Props, State> {
       // eslint-disable-next-line no-console
       console.log('loading user profile...');
       const profile = await getUserProfile(this.getContext());
-      if (profile) {
-        const dateFields = ['birthday', 'createdAt', 'modifiedAt'];
-        dateFields.forEach((fieldName: string) => {
-          const value = profile[fieldName as keyof UserProfile];
-          profile[fieldName as keyof UserProfile] = value
-            ? new Date(value)
-            : null;
-        });
-      }
       // eslint-disable-next-line no-console
       console.log('got user profile', profile);
       return new Promise((resolve) => {

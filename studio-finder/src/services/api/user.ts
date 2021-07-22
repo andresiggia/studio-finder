@@ -26,6 +26,8 @@ export interface UserProfile {
   modifiedAt: Date | null,
 }
 
+const dateFields = ['birthday', 'createdAt', 'modifiedAt'];
+
 export const defaultUserProfile: UserProfile = {
   id: '',
   name: '',
@@ -55,11 +57,20 @@ export const getUserProfile = async (context: AppContextValue) => {
   if (error) {
     throw error;
   }
-  let profile: any;
+  let profile: any = null;
   if (data && Array.isArray(data) && data.length > 0) {
     const [profileData] = data;
     if (profileData?.id === id) {
       profile = updateObjectKeysToCamelCase(profileData);
+      if (profile) {
+        // convert date fields
+        dateFields.forEach((fieldName: string) => {
+          const value = profile[fieldName as keyof UserProfile];
+          profile[fieldName as keyof UserProfile] = value
+            ? new Date(value)
+            : null;
+        });
+      }
     }
   }
   return profile;
