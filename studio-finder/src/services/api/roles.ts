@@ -2,10 +2,6 @@ import { AppContextValue } from '../../context/AppContext';
 
 import { TableNames } from './tables';
 
-export enum UserErrors {
-  // missingUserId = 'missingUserId',
-}
-
 export enum PermissionType {
   read = 'read',
   list = 'list',
@@ -37,6 +33,8 @@ export const defaultRole: Role = {
   title: '',
   permissions: null,
 };
+
+export const defaultStudioRoleName = 'owner'; // to do: remove hard-coded value
 
 export const getRoles = async (context: AppContextValue) => {
   const { supabase } = context;

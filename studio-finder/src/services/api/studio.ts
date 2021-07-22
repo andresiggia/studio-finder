@@ -1,11 +1,13 @@
 import { AppContextValue } from '../../context/AppContext';
 
 import { updateObjectKeysToCamelCase, updateObjectKeysToUnderscoreCase } from './helpers';
+import { defaultStudioRoleName, Role } from './roles';
 import { TableNames } from './tables';
 
 export enum StudioErrors {
   missingUserId = 'missingUserId',
   invalidResponse = 'invalidResponse',
+  missingStudioRoles = 'missingStudioRoles',
 }
 
 export interface StudioProfile {
@@ -98,6 +100,10 @@ export const getStudio = async (context: AppContextValue, studioId: number) => {
 
 export const insertStudio = async (context: AppContextValue, studioProfile: StudioProfile) => {
   const { supabase, state } = context;
+  const { studioRoles } = state;
+  if (!studioRoles || !studioRoles.some((item: Role) => item.name === defaultStudioRoleName)) {
+    throw StudioErrors.missingStudioRoles;
+  }
   const userId = state.user?.id;
   if (!userId) {
     throw StudioErrors.missingUserId;
@@ -122,9 +128,11 @@ export const insertStudio = async (context: AppContextValue, studioProfile: Stud
   const studioUser: StudioUser = {
     userId,
     studioId,
-    studioRoleName: '', // to do
+    studioRoleName: defaultStudioRoleName,
   };
   const studioUserData = updateObjectKeysToUnderscoreCase(studioUser);
+  // eslint-disable-next-line no-console
+  console.log('will add new studio user', studioUserData);
   const { data: newJoinRow, error: joinError } = await supabase
     .from(TableNames.studioUsers)
     .insert([studioUserData]);
