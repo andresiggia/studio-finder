@@ -22,6 +22,8 @@ export interface StudioProfile {
   createdAt: Date | null,
 }
 
+const dateFields = ['createdAt'];
+
 export interface StudioUser {
   studioId: number,
   userId: string,
@@ -75,11 +77,20 @@ export const getStudio = async (context: AppContextValue, studioId: number) => {
   if (error) {
     throw error;
   }
-  let studio = null;
+  let studio: any = null;
   if (data && Array.isArray(data) && data.length > 0) {
     const [studioData] = data;
     if (studioData?.id === studioId) {
       studio = updateObjectKeysToCamelCase(studioData);
+      if (studio) {
+        // convert date fields
+        dateFields.forEach((fieldName: string) => {
+          const value = studio[fieldName as keyof StudioProfile];
+          studio[fieldName as keyof StudioProfile] = value
+            ? new Date(value)
+            : null;
+        });
+      }
     }
   }
   return studio;
