@@ -1,6 +1,6 @@
 CREATE TABLE "settings" (
   "key" varchar PRIMARY KEY,
-  "value" varchar,
+  "value" jsonb,
 );
 
 CREATE TABLE "users" (
