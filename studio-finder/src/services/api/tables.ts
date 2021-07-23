@@ -6,4 +6,6 @@ export enum TableNames {
   userRoles = 'user_roles',
   studioRoles = 'studio_roles',
   spaceRoles = 'space_roles',
+  // settings
+  settings = 'settings',
 }

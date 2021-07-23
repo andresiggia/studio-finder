@@ -12,6 +12,7 @@ import { getRoles, Role } from '../services/api/roles';
 import {
   UserTypes, UserProfile, getUserProfile, setUserProfile,
 } from '../services/api/user';
+import { getSettings, Setting } from '../services/api/settings';
 
 const AppContext = React.createContext({});
 
@@ -32,6 +33,7 @@ export interface State {
   userRoles: Role[] | null,
   studioRoles: Role[] | null,
   spaceRoles: Role[] | null,
+  settings: Setting[] | null,
 }
 
 export interface AppContextValue {
@@ -59,6 +61,7 @@ export class AppContextProvider extends React.Component<Props, State> {
       userRoles: null,
       studioRoles: null,
       spaceRoles: null,
+      settings: null,
     };
 
     i18nInit();
@@ -72,6 +75,7 @@ export class AppContextProvider extends React.Component<Props, State> {
       this.updateUserState(session?.user);
     });
     this.loadRoles();
+    this.loadSettings();
   }
 
   componentWillUnmount() {
@@ -108,6 +112,23 @@ export class AppContextProvider extends React.Component<Props, State> {
     } catch (error) {
       // eslint-disable-next-line no-console
       console.warn('error - loadRoles', error);
+      return Promise.reject(error);
+    }
+  }
+
+  loadSettings = async () => {
+    try {
+      const settings = await getSettings(this.getContext());
+      // eslint-disable-next-line no-console
+      console.log('got settings', settings);
+      return new Promise((resolve) => {
+        this.setMountedState({
+          settings,
+        }, () => resolve(true));
+      });
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.warn('error - loadSettings', error);
       return Promise.reject(error);
     }
   }
@@ -198,6 +219,7 @@ export class AppContextProvider extends React.Component<Props, State> {
     state: this.state,
     supabase: this.supabase,
     loadRoles: this.loadRoles,
+    loadSettings: this.loadSettings,
     updateProfile: this.updateProfile,
     getLoginPath: this.getLoginPath,
     getDefaultLoggedInRouteName: this.getDefaultLoggedInRouteName,
