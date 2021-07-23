@@ -1,3 +1,8 @@
+CREATE TABLE "settings" (
+  "key" varchar PRIMARY KEY,
+  "value" varchar,
+);
+
 CREATE TABLE "users" (
   "id" varchar PRIMARY KEY,
   "name" varchar,
