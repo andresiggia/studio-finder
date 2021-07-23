@@ -9,7 +9,7 @@ import {
 import AppContext from '../../context/AppContext';
 
 // components
-import Notification, { NotificationProps } from '../Notification/Notification';
+import Notification, { NotificationProps, NotificationType } from '../Notification/Notification';
 
 // services
 import i18n from '../../services/i18n/i18n';
@@ -282,7 +282,7 @@ class LoginForm extends React.Component<Props, State> {
             )}
             {!!error && (
               <Notification
-                type="danger"
+                type={NotificationType.danger}
                 className="login-spacer"
                 header={i18n.t('Error')}
                 message={error?.message || i18n.t('An error occurred, please try again later')}

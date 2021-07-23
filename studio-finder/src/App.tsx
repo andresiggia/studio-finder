@@ -10,7 +10,7 @@ import i18n from './services/i18n/i18n';
 
 // components
 import PageRoute from './components/PageRoute/PageRoute';
-import Notification from './components/Notification/Notification';
+import Notification, { NotificationType } from './components/Notification/Notification';
 
 // context
 import AppContext from './context/AppContext';
@@ -138,7 +138,7 @@ class App extends React.Component<any, State> {
       return (
         <IonContent fullscreen>
           <Notification
-            type="danger"
+            type={NotificationType.danger}
             className="app-notification"
             header={i18n.t('Error')}
             message={error?.message || i18n.t('An error occurred, please try again later')}

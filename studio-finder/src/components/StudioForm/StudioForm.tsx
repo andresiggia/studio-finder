@@ -19,7 +19,7 @@ import {
 } from '../../services/api/studio';
 
 // components
-import Notification from '../Notification/Notification';
+import Notification, { NotificationType } from '../Notification/Notification';
 
 // css
 import './StudioForm.css';
@@ -232,7 +232,7 @@ class StudioForm extends React.Component<Props, State> {
         )}
         {!!error && (
           <Notification
-            type="danger"
+            type={NotificationType.danger}
             className="studio-form-notification studio-form-spacer"
             header={i18n.t('Error')}
             message={error?.message || i18n.t('An error occurred, please try again later')}

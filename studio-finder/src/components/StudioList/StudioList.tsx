@@ -11,7 +11,7 @@ import { getStudios, StudioProfile } from '../../services/api/studio';
 import i18n from '../../services/i18n/i18n';
 
 // components
-import Notification from '../Notification/Notification';
+import Notification, { NotificationType } from '../Notification/Notification';
 import AppContext from '../../context/AppContext';
 import StudioForm from '../StudioForm/StudioForm';
 
@@ -111,7 +111,7 @@ class StudioList extends React.Component<any, State> {
         )}
         {!!error && (
           <Notification
-            type="danger"
+            type={NotificationType.danger}
             className="studio-list-spacer"
             header={i18n.t('Error')}
             message={error?.message || i18n.t('An error occurred, please try again later')}

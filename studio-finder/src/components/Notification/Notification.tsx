@@ -9,10 +9,17 @@ import i18n from '../../services/i18n/i18n';
 // css
 import './Notification.css';
 
+export enum NotificationType {
+  success = 'success',
+  info = 'info',
+  warning = 'warning',
+  danger = 'danger',
+}
+
 export interface NotificationProps {
   header?: string,
   message: string,
-  type: 'success' | 'info' | 'warning' | 'danger',
+  type: NotificationType,
   className?: string,
   preventDismiss?: boolean,
   onDismiss?: () => void,
@@ -36,7 +43,9 @@ class Notification extends React.Component<NotificationProps> {
           </div>
           {(!preventDismiss && !!onDismiss) && (
             <IonButton
-              color="light"
+              color={type === NotificationType.warning
+                ? 'dark'
+                : 'light'}
               fill="clear"
               className="notification-close"
               onClick={onDismiss}
