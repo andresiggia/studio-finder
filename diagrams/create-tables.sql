@@ -20,7 +20,8 @@ CREATE TABLE "users" (
 CREATE TABLE "acts" (
   "id" SERIAL PRIMARY KEY,
   "title" varchar,
-  "created_at" timestamp DEFAULT (now())
+  "created_at" timestamp DEFAULT (now()),
+  "modified_at" timestamp DEFAULT (now())
 );
 
 CREATE TABLE "act_users" (
@@ -55,7 +56,8 @@ CREATE TABLE "studios" (
   "city" varchar,
   "region" varchar,
   "country" varchar,
-  "created_at" timestamp DEFAULT (now())
+  "created_at" timestamp DEFAULT (now()),
+  "modified_at" timestamp DEFAULT (now())
 );
 
 CREATE TABLE "studio_photos" (
@@ -77,7 +79,8 @@ CREATE TABLE "spaces" (
   "studio_id" int,
   "title" varchar,
   "description" varchar,
-  "created_at" timestamp DEFAULT (now())
+  "created_at" timestamp DEFAULT (now()),
+  "modified_at" timestamp DEFAULT (now())
 );
 
 CREATE TABLE "space_photos" (
@@ -120,7 +123,8 @@ CREATE TABLE "bookings" (
   "studio_id" int,
   "user_id" varchar,
   "act_id" int,
-  "created_at" timestamp DEFAULT (now())
+  "created_at" timestamp DEFAULT (now()),
+  "modified_at" timestamp DEFAULT (now())
 );
 
 CREATE TABLE "booking_payments" (
