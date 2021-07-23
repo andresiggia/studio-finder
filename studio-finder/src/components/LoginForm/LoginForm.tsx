@@ -15,6 +15,7 @@ import AppContext from '../../context/AppContext';
 
 // components
 import Notification, { NotificationProps, NotificationType } from '../Notification/Notification';
+import PasswordFields from '../PasswordFields/PasswordFields';
 
 // services
 import i18n from '../../services/i18n/i18n';
@@ -257,29 +258,22 @@ class LoginForm extends React.Component<Props, State> {
               />
             </IonItem>
             {!forgotPassword && (
-              <IonItem>
-                <IonInput
-                  value={password}
-                  type="password"
-                  required
-                  disabled={disabled}
-                  placeholder={i18n.t('Password')}
-                  onIonChange={(e) => {
-                    this.setMountedState({
-                      password: e.detail.value || '',
-                    });
-                  }}
-                />
-              </IonItem>
-            )}
-            {!!password && password.length < MIN_PASSWORD_CHARS && (
-              <Notification
-                type={NotificationType.danger}
-                className="forgotpass-spacer"
-                header={i18n.t('Passwords must have a minimum length of %MIN_PASSWORD_CHARS%')
-                  .replace('%MIN_PASSWORD_CHARS%', String(MIN_PASSWORD_CHARS))}
-                message=""
-                preventDismiss
+              <PasswordFields
+                password={password}
+                onPasswordChange={(e) => {
+                  this.setMountedState({
+                    password: e.detail.value || '',
+                  });
+                }}
+                showPasswordRepeat={isSignUp}
+                passwordRepeat={passwordRepeat}
+                onPasswordRepeatChange={(e) => {
+                  this.setMountedState({
+                    passwordRepeat: e.detail.value || '',
+                  });
+                }}
+                disabled={disabled}
+                notificationClassName="login-spacer"
               />
             )}
             {!isSignUp && (
@@ -297,33 +291,6 @@ class LoginForm extends React.Component<Props, State> {
                     </>
                   ) : i18n.t('Forgot password')}
               </IonButton>
-            )}
-            {isSignUp && (
-              <>
-                <IonItem>
-                  <IonInput
-                    value={passwordRepeat}
-                    type="password"
-                    required
-                    disabled={disabled}
-                    placeholder={i18n.t('Repeat password')}
-                    onIonChange={(e) => {
-                      this.setMountedState({
-                        passwordRepeat: e.detail.value || '',
-                      });
-                    }}
-                  />
-                </IonItem>
-                {!!passwordRepeat && passwordRepeat !== password && (
-                  <Notification
-                    type={NotificationType.danger}
-                    className="forgotpass-spacer"
-                    header={i18n.t('Passwords do not match')}
-                    message=""
-                    preventDismiss
-                  />
-                )}
-              </>
             )}
           </IonList>
           <div className="login-footer">
