@@ -19,14 +19,10 @@ export const getSettings = async (context: AppContextValue) => {
   }
   let settings: Setting[] = [];
   if (data && Array.isArray(data) && data.length > 0) {
-    settings = data.map((item: any) => {
-      // eslint-disable-next-line no-console
-      console.info('setting', item);
-      return {
-        key: toCamelCase(item.key),
-        value: item.value?.value || null,
-      };
-    });
+    settings = data.map((item: any) => ({
+      key: toCamelCase(item.key),
+      value: item.value?.value || null,
+    }));
   }
   return settings;
 };
