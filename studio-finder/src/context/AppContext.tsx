@@ -27,7 +27,7 @@ interface AuthResponse {
   error: Error | null,
 }
 
-export interface State {
+interface State {
   user: supabase.User | null,
   profile: UserProfile | null,
   userRoles: Role[] | null,
@@ -74,8 +74,6 @@ export class AppContextProvider extends React.Component<Props, State> {
       console.log('user updated', session);
       this.updateUserState(session?.user);
     });
-    this.loadRoles();
-    this.loadSettings();
   }
 
   componentWillUnmount() {
