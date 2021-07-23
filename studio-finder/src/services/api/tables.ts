@@ -1,4 +1,4 @@
-export enum TableNames {
+export enum TableName {
   users = 'users',
   studios = 'studios',
   studioUsers = 'studio_users',

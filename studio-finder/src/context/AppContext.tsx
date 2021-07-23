@@ -10,7 +10,7 @@ import { i18nInit } from '../services/i18n/i18n';
 import { getRoutesByName, RouteNames, LoginRouteNames } from '../services/routes/routes';
 import { getRoles, Role } from '../services/api/roles';
 import {
-  UserTypes, UserProfile, getUserProfile, setUserProfile,
+  UserType, UserProfile, getUserProfile, setUserProfile,
 } from '../services/api/user';
 import { getSettings, Setting } from '../services/api/settings';
 
@@ -197,17 +197,17 @@ export class AppContextProvider extends React.Component<Props, State> {
     return url;
   }
 
-  getDefaultLoggedInRouteName = (userType = UserTypes.musician) => {
+  getDefaultLoggedInRouteName = (userType = UserType.musician) => {
     switch (userType) {
-      case UserTypes.studio:
+      case UserType.studio:
         return RouteNames.studioAccount;
-      case UserTypes.musician:
+      case UserType.musician:
       default:
         return RouteNames.account;
     }
   }
 
-  getDefaultLoggedInRoutePath = (userType: UserTypes) => {
+  getDefaultLoggedInRoutePath = (userType: UserType) => {
     const routeName = this.getDefaultLoggedInRouteName(userType);
     const [route] = getRoutesByName([routeName]);
     return route?.path || '';

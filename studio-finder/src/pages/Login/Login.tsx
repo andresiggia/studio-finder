@@ -10,7 +10,7 @@ import i18n from '../../services/i18n/i18n';
 import { RouteNames, LoginRouteNames } from '../../services/routes/routes';
 
 // constants
-import { UserTypes } from '../../services/api/user';
+import { UserType } from '../../services/api/user';
 
 class Login extends React.Component {
   render() {
@@ -20,7 +20,7 @@ class Login extends React.Component {
           <Header />
           <LoginForm
             routeName={RouteNames.login}
-            userType={UserTypes.musician}
+            userType={UserType.musician}
             title={i18n.t('Musician Log In / Sign Up')}
             defaultScreen={LoginRouteNames.login}
           />

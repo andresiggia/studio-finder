@@ -14,7 +14,7 @@ import AppContext from '../../context/AppContext';
 // services
 import i18n from '../../services/i18n/i18n';
 import {
-  UserTypes, defaultUserProfile, UserProfile, updateUserType,
+  UserType, defaultUserProfile, UserProfile, updateUserType,
 } from '../../services/api/user';
 
 // components
@@ -182,12 +182,12 @@ class ProfileForm extends React.Component<Props, State> {
     const { userType } = this.state;
     const options = [
       {
-        key: UserTypes.musician,
+        key: UserType.musician,
         title: i18n.t('Musician / Artist'),
         icon: musicalNotesOutline,
       },
       {
-        key: UserTypes.studio,
+        key: UserType.studio,
         title: i18n.t('Studio Representative'),
         icon: storefrontOutline,
       },

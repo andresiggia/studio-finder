@@ -2,9 +2,9 @@ import { AppContextValue } from '../../context/AppContext';
 
 import { updateObjectKeysToCamelCase, updateObjectKeysToUnderscoreCase } from './helpers';
 import { getDefaultStudioRoleName, Role } from './roles';
-import { TableNames } from './tables';
+import { TableName } from './tables';
 
-export enum StudioErrors {
+export enum StudioError {
   missingUserId = 'missingUserId',
   invalidResponse = 'invalidResponse',
   missingStudioRoles = 'missingStudioRoles',
@@ -50,10 +50,10 @@ export const getStudios = async (context: AppContextValue) => {
   const { supabase, state } = context;
   const userId = state.user?.id;
   if (!userId) {
-    throw StudioErrors.missingUserId;
+    throw StudioError.missingUserId;
   }
   const { data, error } = await supabase
-    .from(TableNames.studioUsers)
+    .from(TableName.studioUsers)
     .select('studio_id, user_id, studios(studio_id: id)')
     .match({
       user_id: userId,
@@ -71,7 +71,7 @@ export const getStudios = async (context: AppContextValue) => {
 export const getStudio = async (context: AppContextValue, studioId: number) => {
   const { supabase } = context;
   const { data, error } = await supabase
-    .from(TableNames.studios)
+    .from(TableName.studios)
     .select()
     .match({
       id: String(studioId),
@@ -103,23 +103,23 @@ export const insertStudio = async (context: AppContextValue, studioProfile: Stud
   const { studioRoles } = state;
   const defaultStudioRoleName = getDefaultStudioRoleName(context);
   if (!studioRoles || !studioRoles.some((item: Role) => item.name === defaultStudioRoleName)) {
-    throw StudioErrors.missingStudioRoles;
+    throw StudioError.missingStudioRoles;
   }
   const userId = state.user?.id;
   if (!userId) {
-    throw StudioErrors.missingUserId;
+    throw StudioError.missingUserId;
   }
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { createdAt, id, ...profile } = studioProfile; // createdAt and id should be automatically created
   const studioProfileData = updateObjectKeysToUnderscoreCase(profile);
   const { data, error } = await supabase
-    .from(TableNames.studios)
+    .from(TableName.studios)
     .insert([studioProfileData]);
   if (error) {
     throw error;
   }
   if (!data) {
-    throw StudioErrors.invalidResponse;
+    throw StudioError.invalidResponse;
   }
   const [newRow] = data;
   // eslint-disable-next-line no-console
@@ -135,14 +135,14 @@ export const insertStudio = async (context: AppContextValue, studioProfile: Stud
   // eslint-disable-next-line no-console
   console.log('will add new studio user', studioUserData);
   const { data: newJoinRow, error: joinError } = await supabase
-    .from(TableNames.studioUsers)
+    .from(TableName.studioUsers)
     .insert([studioUserData]);
   if (joinError) {
     // eslint-disable-next-line no-console
     console.warn('error during join creation', joinError);
     // roll back studio creation
     const { data: deletedRow, error: deleteError } = await supabase
-      .from(TableNames.studios)
+      .from(TableName.studios)
       .delete()
       .match({
         id: studioId,
