@@ -2,6 +2,10 @@ import { AppContextValue } from '../../context/AppContext';
 
 import { TableNames } from './tables';
 
+export enum RoleError {
+  noDefaultStudioRole = 'noDefaultStudioRole',
+}
+
 export enum PermissionType {
   read = 'read',
   list = 'list',
@@ -34,7 +38,14 @@ export const defaultRole: Role = {
   permissions: null,
 };
 
-export const defaultStudioRoleName = 'owner'; // to do: remove hard-coded value
+export const getDefaultStudioRoleName = (context: AppContextValue) => {
+  const { state } = context;
+  const setting = state.settings?.find((item) => item.key === 'defaultStudioRoleName');
+  if (!setting || !setting.value) {
+    throw RoleError.noDefaultStudioRole;
+  }
+  return setting.value;
+};
 
 export const getRoles = async (context: AppContextValue) => {
   const { supabase } = context;

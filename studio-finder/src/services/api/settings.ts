@@ -1,7 +1,7 @@
 // context
 import { AppContextValue } from '../../context/AppContext';
 
-import { updateObjectKeysToCamelCase } from './helpers';
+import { toCamelCase } from './helpers';
 import { TableNames } from './tables';
 
 export interface Setting {
@@ -22,10 +22,10 @@ export const getSettings = async (context: AppContextValue) => {
     settings = data.map((item: any) => {
       // eslint-disable-next-line no-console
       console.info('setting', item);
-      return updateObjectKeysToCamelCase({
-        ...item,
+      return {
+        key: toCamelCase(item.key),
         value: item.value?.value || null,
-      });
+      };
     });
   }
   return settings;
