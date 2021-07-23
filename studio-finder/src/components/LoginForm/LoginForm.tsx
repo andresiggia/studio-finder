@@ -2,8 +2,13 @@ import React from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
 import {
   IonButton, IonSegment, IonSegmentButton, IonLabel, IonList, IonGrid, IonRow, IonCol,
-  IonItem, IonInput, IonSpinner, IonCard, IonCardContent, IonCardHeader, IonCardTitle,
+  IonItem, IonInput, IonSpinner, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonIcon,
 } from '@ionic/react';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { chevronBackOutline } from 'ionicons/icons';
+
+// constants
+import { MIN_PASSWORD_CHARS } from '../../constants/settings';
 
 // context
 import AppContext from '../../context/AppContext';
@@ -13,7 +18,9 @@ import Notification, { NotificationProps, NotificationType } from '../Notificati
 
 // services
 import i18n from '../../services/i18n/i18n';
-import { defaultRoute, getRoutesByName, LoginRouteNames } from '../../services/routes/routes';
+import {
+  defaultRoute, getRoutesByName, LoginRouteNames, RouteNames,
+} from '../../services/routes/routes';
 
 // css
 import './LoginForm.css';
@@ -22,6 +29,7 @@ interface State {
   email: string;
   password: string;
   passwordRepeat: string;
+  forgotPassword: boolean,
   isLoading: boolean,
   error: Error | null,
   notification: NotificationProps | null,
@@ -43,6 +51,7 @@ class LoginForm extends React.Component<Props, State> {
       email: '',
       password: '',
       passwordRepeat: '',
+      forgotPassword: false,
       isLoading: false,
       error: null,
       notification: null,
@@ -54,11 +63,8 @@ class LoginForm extends React.Component<Props, State> {
     this.checkLogin();
   }
 
-  componentDidUpdate(prevProps: Props) {
-    const { location } = this.props;
-    if (location !== prevProps.location) {
-      this.checkLogin();
-    }
+  componentDidUpdate() {
+    this.checkLogin();
   }
 
   componentWillUnmount() {
@@ -125,6 +131,13 @@ class LoginForm extends React.Component<Props, State> {
     return `${host}${redirectPath}`;
   }
 
+  getForgotPasswordUrl = () => {
+    const { match } = this.props;
+    const [host] = window.location.href.split(match.url);
+    const [route] = getRoutesByName([RouteNames.forgotPassword]);
+    return `${host}${route.path}`;
+  }
+
   onSubmit = (e: any) => {
     // prevent form from submitting
     e.preventDefault();
@@ -135,7 +148,7 @@ class LoginForm extends React.Component<Props, State> {
       }, async () => {
         const screen = this.getScreen();
         try {
-          const { email, password } = this.state;
+          const { email, password, forgotPassword } = this.state;
           const { supabase } = this.context;
           let notification = null;
           const isSignUp = screen === LoginRouteNames.signUp;
@@ -152,7 +165,19 @@ class LoginForm extends React.Component<Props, State> {
               message: i18n.t('Please check your email to confirm your registration before logging in'),
               type: 'success',
             } as NotificationProps;
-          } else {
+          } else if (forgotPassword) {
+            const { error: forgotPasswordError } = await supabase.auth.api.resetPasswordForEmail(email, {
+              redirectTo: this.getForgotPasswordUrl(),
+            });
+            if (forgotPasswordError) {
+              throw forgotPasswordError;
+            }
+            notification = {
+              header: i18n.t('Password reset requested'),
+              message: i18n.t('Please check your email for a link to reset your password'),
+              type: 'warning',
+            } as NotificationProps;
+          } else { // log in
             const { error: signInError } = await supabase.auth.signIn({
               email,
               password,
@@ -168,15 +193,13 @@ class LoginForm extends React.Component<Props, State> {
             } as NotificationProps;
           }
           this.setMountedState({
-            isLoading: !isSignUp, // leave it loading until user is logged in
+            isLoading: !isSignUp && !forgotPassword, // leave it loading until user is logged in
             notification,
+            forgotPassword: false,
           }, () => {
             if (isSignUp) {
               // redirect to login screen after successful sign up
               this.changeScreen(LoginRouteNames.login);
-            } else {
-              // check login
-              this.checkLogin();
             }
           });
         } catch (error) {
@@ -192,22 +215,29 @@ class LoginForm extends React.Component<Props, State> {
   }
 
   isValidForm = () => {
-    const { email, password, passwordRepeat } = this.state;
+    const {
+      email, password, passwordRepeat, forgotPassword,
+    } = this.state;
     const screen = this.getScreen();
-    const MIN_PASSWORD_CHARS = 4;
-    return !!email && !!password && password.length >= MIN_PASSWORD_CHARS
-      && (screen !== LoginRouteNames.signUp || (!!passwordRepeat && password === passwordRepeat));
+    const isEmailValid = !!email;
+    const isPasswordValid = !!password && password.length >= MIN_PASSWORD_CHARS;
+    const isPasswordRepeatValid = !!passwordRepeat && password === passwordRepeat;
+    if (screen === LoginRouteNames.signUp) {
+      return isEmailValid && isPasswordValid && isPasswordRepeatValid;
+    }
+    return isEmailValid && (forgotPassword || isPasswordValid);
   }
 
   // render
 
   renderForm = () => {
     const {
-      email, password, passwordRepeat, isLoading, error, notification,
+      email, password, passwordRepeat, isLoading, error, notification, forgotPassword,
     } = this.state;
     const screen = this.getScreen();
     const isValidForm = this.isValidForm();
     const disabled = isLoading || !!error;
+    const isSignUp = screen === LoginRouteNames.signUp;
     return (
       <form onSubmit={this.onSubmit}>
         <fieldset className="login-form-fieldset" disabled={disabled}>
@@ -215,7 +245,7 @@ class LoginForm extends React.Component<Props, State> {
             <IonItem>
               <IonInput
                 value={email}
-                type="text"
+                type="email"
                 required
                 disabled={disabled}
                 placeholder={i18n.t('Email')}
@@ -226,35 +256,74 @@ class LoginForm extends React.Component<Props, State> {
                 }}
               />
             </IonItem>
-            <IonItem>
-              <IonInput
-                value={password}
-                type="password"
-                required
-                disabled={disabled}
-                placeholder={i18n.t('Password')}
-                onIonChange={(e) => {
-                  this.setMountedState({
-                    password: e.detail.value || '',
-                  });
-                }}
-              />
-            </IonItem>
-            {screen === LoginRouteNames.signUp && (
+            {!forgotPassword && (
               <IonItem>
                 <IonInput
-                  value={passwordRepeat}
+                  value={password}
                   type="password"
                   required
                   disabled={disabled}
-                  placeholder={i18n.t('Repeat password')}
+                  placeholder={i18n.t('Password')}
                   onIonChange={(e) => {
                     this.setMountedState({
-                      passwordRepeat: e.detail.value || '',
+                      password: e.detail.value || '',
                     });
                   }}
                 />
               </IonItem>
+            )}
+            {!!password && password.length < MIN_PASSWORD_CHARS && (
+              <Notification
+                type={NotificationType.danger}
+                className="forgotpass-spacer"
+                header={i18n.t('Passwords must have a minimum length of %MIN_PASSWORD_CHARS%')
+                  .replace('%MIN_PASSWORD_CHARS%', String(MIN_PASSWORD_CHARS))}
+                message=""
+                preventDismiss
+              />
+            )}
+            {!isSignUp && (
+              <IonButton
+                fill="clear"
+                size="small"
+                disabled={disabled}
+                onClick={() => this.setMountedState({ forgotPassword: !forgotPassword })}
+              >
+                {forgotPassword
+                  ? (
+                    <>
+                      <IonIcon slot="start" icon={chevronBackOutline} />
+                      {i18n.t('Back')}
+                    </>
+                  ) : i18n.t('Forgot password')}
+              </IonButton>
+            )}
+            {isSignUp && (
+              <>
+                <IonItem>
+                  <IonInput
+                    value={passwordRepeat}
+                    type="password"
+                    required
+                    disabled={disabled}
+                    placeholder={i18n.t('Repeat password')}
+                    onIonChange={(e) => {
+                      this.setMountedState({
+                        passwordRepeat: e.detail.value || '',
+                      });
+                    }}
+                  />
+                </IonItem>
+                {!!passwordRepeat && passwordRepeat !== password && (
+                  <Notification
+                    type={NotificationType.danger}
+                    className="forgotpass-spacer"
+                    header={i18n.t('Passwords do not match')}
+                    message=""
+                    preventDismiss
+                  />
+                )}
+              </>
             )}
           </IonList>
           <div className="login-footer">
