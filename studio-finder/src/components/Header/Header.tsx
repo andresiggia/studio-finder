@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  IonHeader, IonTitle, IonToolbar, IonButtons, IonButton, IonSpinner, IonToast,
+  IonButtons, IonButton, IonSpinner, IonToast,
 } from '@ionic/react';
 import {
   Link, RouteComponentProps, withRouter, matchPath,
@@ -18,18 +18,21 @@ import { UserType } from '../../services/api/user';
 // components
 import AppContext from '../../context/AppContext';
 
-// css
-import './Header.css';
+import HeaderBase from './HeaderBase';
 
 interface State {
   isLoading: boolean,
   error: Error | null,
 }
 
-class Header extends React.Component<RouteComponentProps, State> {
+interface Props extends RouteComponentProps {
+  disabled?: boolean,
+}
+
+class Header extends React.Component<Props, State> {
   mounted = false
 
-  constructor(props: RouteComponentProps) {
+  constructor(props: Props) {
     super(props);
 
     this.state = {
@@ -206,32 +209,25 @@ class Header extends React.Component<RouteComponentProps, State> {
   render() {
     const { error } = this.state;
     return (
-      <IonHeader>
-
-        <IonToolbar>
-          <IonTitle slot="start" className="header-title">
-            <Link to={defaultRoute?.path || ''}>
-              Studio
-              <strong>Finder</strong>
-            </Link>
-          </IonTitle>
-
-          <IonButtons>
-            {this.renderMainLinks()}
-            {this.renderStudioLogin()}
-          </IonButtons>
-
-          {this.renderRightMenu()}
-        </IonToolbar>
-
+      <HeaderBase
+        titleUrl={defaultRoute?.path || ''}
+        renderButtons={() => (
+          <>
+            <IonButtons>
+              {this.renderMainLinks()}
+              {this.renderStudioLogin()}
+            </IonButtons>
+            {this.renderRightMenu()}
+          </>
+        )}
+      >
         <IonToast
           isOpen={!!error}
           onDidDismiss={() => this.setMountedState({ error: null })}
           message={error?.message}
           position="bottom"
         />
-
-      </IonHeader>
+      </HeaderBase>
     );
   }
 }
