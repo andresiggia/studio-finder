@@ -21,9 +21,9 @@ class AccountBase extends React.Component<UserValidationProps> {
       <IonCol
         size="12"
         size-md={hasProfile ? '6' : '8'}
-        offset-md={hasProfile ? '0' : '3'}
+        offset-md={hasProfile ? '0' : '2'}
         size-lg={hasProfile ? '4' : '6'}
-        offset-lg={hasProfile ? '0' : '4'}
+        offset-lg={hasProfile ? '0' : '3'}
       >
         <ProfileForm unlockToEdit={hasProfile} userType={userType} />
       </IonCol>
