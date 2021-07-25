@@ -51,9 +51,7 @@ export const getUserProfile = async (context: AppContextValue) => {
   const { data, error } = await supabase
     .from(TableName.users)
     .select()
-    .match({
-      id,
-    });
+    .eq('id', id);
   if (error) {
     throw error;
   }

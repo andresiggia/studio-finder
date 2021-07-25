@@ -55,9 +55,7 @@ export const getStudios = async (context: AppContextValue) => {
   const { data, error } = await supabase
     .from(TableName.studioUsers)
     .select('studio:studios(*)')
-    .match({
-      user_id: userId,
-    });
+    .eq('user_id', userId);
   if (error) {
     throw error;
   }
@@ -73,9 +71,7 @@ export const getStudio = async (context: AppContextValue, studioId: number) => {
   const { data, error } = await supabase
     .from(TableName.studios)
     .select()
-    .match({
-      id: String(studioId),
-    });
+    .eq('id', studioId);
   if (error) {
     throw error;
   }
@@ -144,9 +140,7 @@ export const insertStudio = async (context: AppContextValue, studioProfile: Stud
     const { data: deletedRow, error: deleteError } = await supabase
       .from(TableName.studios)
       .delete()
-      .match({
-        id: studioId,
-      });
+      .eq('id', studioId);
     if (deleteError) {
       // eslint-disable-next-line no-console
       console.warn('error during studio creation rollback', deleteError);
