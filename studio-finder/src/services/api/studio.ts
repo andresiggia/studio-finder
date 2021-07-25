@@ -57,15 +57,15 @@ export const getStudios = async (context: AppContextValue, props?: {
   }
   const { data, error } = await supabase
     .from(TableName.studioUsers)
-    .select('*, studio:studios(*)')
+    .select(`${TableName.studios}(*)`)
     .eq('user_id', userId)
-    .range(start, limit);
+    .range(start, start + limit - 1);
   if (error) {
     throw error;
   }
   let studios: StudioProfile[] = [];
   if (data && Array.isArray(data) && data.length > 0) {
-    studios = data.map((studioUserData: any) => updateObjectKeysToCamelCase(studioUserData.studio));
+    studios = data.map((studioUserData: any) => updateObjectKeysToCamelCase(studioUserData[TableName.studios]));
   }
   return studios;
 };
