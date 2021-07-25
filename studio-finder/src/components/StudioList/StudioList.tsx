@@ -1,10 +1,10 @@
 import React from 'react';
 import {
-  IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonContent, IonIcon, IonItem, IonLabel, IonList, IonModal,
-  IonSpinner, IonTitle, IonToolbar,
+  IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonCol, IonContent,
+  IonIcon, IonItem, IonLabel, IonList, IonModal, IonRow, IonSpinner, IonTitle, IonToolbar,
 } from '@ionic/react';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { addOutline, closeOutline } from 'ionicons/icons';
+import { addOutline, closeOutline, createOutline } from 'ionicons/icons';
 
 // services
 import { getStudios, StudioProfile } from '../../services/api/studio';
@@ -19,11 +19,11 @@ import StudioForm from '../StudioForm/StudioForm';
 import './StudioList.css';
 
 interface State {
-  showModal: boolean,
-  selectedStudioId: number,
   isLoading: boolean,
   error: Error | null,
   items: StudioProfile[] | null,
+  showModal: boolean,
+  modalSelectedStudioId: number,
 }
 
 class StudioList extends React.Component<any, State> {
@@ -32,11 +32,11 @@ class StudioList extends React.Component<any, State> {
   constructor(props: any) {
     super(props);
     this.state = {
-      showModal: false,
-      selectedStudioId: 0,
       isLoading: false,
       error: null,
       items: null,
+      showModal: false,
+      modalSelectedStudioId: 0,
     };
   }
 
@@ -85,10 +85,10 @@ class StudioList extends React.Component<any, State> {
     });
   }
 
-  onModalOpen = (selectedStudioId = 0) => {
+  onModalOpen = (modalSelectedStudioId = 0) => {
     this.setMountedState({
       showModal: true,
-      selectedStudioId,
+      modalSelectedStudioId,
     });
   }
 
@@ -99,6 +99,28 @@ class StudioList extends React.Component<any, State> {
   }
 
   // render
+
+  renderList = (items: StudioProfile[]) => (
+    <IonRow>
+      <IonCol size="12" size-md="6" size-lg="4">
+        <IonList className="studio-list-items">
+          {items.map((item) => (
+            <IonItem key={item.id}>
+              <IonLabel>
+                {item.title}
+              </IonLabel>
+              <IonButton
+                slot="end"
+                onClick={() => this.onModalOpen(item.id)}
+              >
+                <IonIcon icon={createOutline} ariaLabel={i18n.t('Edit')} />
+              </IonButton>
+            </IonItem>
+          ))}
+        </IonList>
+      </IonCol>
+    </IonRow>
+  )
 
   renderContent = () => {
     const { isLoading, error, items } = this.state;
@@ -122,29 +144,19 @@ class StudioList extends React.Component<any, State> {
           items.length === 0
             ? (
               <p>{i18n.t('No items found.')}</p>
-            ) : (
-              <IonList className="studio-list-items">
-                {items.map((item) => (
-                  <IonItem key={item.id}>
-                    <IonLabel>
-                      {item.title}
-                    </IonLabel>
-                  </IonItem>
-                ))}
-              </IonList>
-            )
+            ) : this.renderList(items)
         )}
       </>
     );
   }
 
   renderModal = () => {
-    const { showModal, selectedStudioId } = this.state;
+    const { showModal, modalSelectedStudioId } = this.state;
     return (
       <IonModal isOpen={showModal}>
         <IonToolbar>
           <IonTitle>
-            {selectedStudioId
+            {modalSelectedStudioId
               ? i18n.t('Edit Studio Profile')
               : i18n.t('Create Studio Profile')}
           </IonTitle>
@@ -160,7 +172,7 @@ class StudioList extends React.Component<any, State> {
         <IonContent>
           {showModal && (
             <StudioForm
-              id={selectedStudioId}
+              id={modalSelectedStudioId}
               onCancel={() => this.onModalClose()}
               onSave={() => {
                 this.onModalClose();
