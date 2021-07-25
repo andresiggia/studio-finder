@@ -21,7 +21,7 @@ class Login extends React.Component {
           <LoginForm
             routeName={RouteNames.login}
             userType={UserType.musician}
-            title={i18n.t('Musician Log In / Sign Up')}
+            title={i18n.t('Log In / Sign Up')}
             defaultScreen={LoginRouteNames.login}
           />
         </IonContent>
