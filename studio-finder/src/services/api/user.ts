@@ -51,25 +51,21 @@ export const getUserProfile = async (context: AppContextValue) => {
   const { data, error } = await supabase
     .from(TableName.users)
     .select()
-    .eq('id', id);
+    .eq('id', id)
+    .single();
   if (error) {
     throw error;
   }
   let profile: any = null;
-  if (data && Array.isArray(data) && data.length > 0) {
-    const [profileData] = data;
-    if (profileData?.id === id) {
-      profile = updateObjectKeysToCamelCase(profileData);
-      if (profile) {
-        // convert date fields
-        dateFields.forEach((fieldName: string) => {
-          const value = profile[fieldName as keyof UserProfile];
-          profile[fieldName as keyof UserProfile] = value
-            ? new Date(value)
-            : null;
-        });
-      }
-    }
+  if (data && data.id === id) {
+    profile = updateObjectKeysToCamelCase(data);
+    // convert date fields
+    dateFields.forEach((fieldName: string) => {
+      const value = profile[fieldName as keyof UserProfile];
+      profile[fieldName as keyof UserProfile] = value
+        ? new Date(value)
+        : null;
+    });
   }
   return profile;
 };

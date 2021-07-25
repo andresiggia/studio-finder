@@ -75,25 +75,21 @@ export const getStudio = async (context: AppContextValue, studioId: number) => {
   const { data, error } = await supabase
     .from(TableName.studios)
     .select()
-    .eq('id', studioId);
+    .eq('id', studioId)
+    .single();
   if (error) {
     throw error;
   }
   let studio: any = null;
-  if (data && Array.isArray(data) && data.length > 0) {
-    const [studioData] = data;
-    if (studioData?.id === studioId) {
-      studio = updateObjectKeysToCamelCase(studioData);
-      if (studio) {
-        // convert date fields
-        dateFields.forEach((fieldName: string) => {
-          const value = studio[fieldName as keyof StudioProfile];
-          studio[fieldName as keyof StudioProfile] = value
-            ? new Date(value)
-            : null;
-        });
-      }
-    }
+  if (data && data.id === studioId) {
+    studio = updateObjectKeysToCamelCase(data);
+    // convert date fields
+    dateFields.forEach((fieldName: string) => {
+      const value = studio[fieldName as keyof StudioProfile];
+      studio[fieldName as keyof StudioProfile] = value
+        ? new Date(value)
+        : null;
+    });
   }
   return studio;
 };
