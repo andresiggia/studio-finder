@@ -46,7 +46,10 @@ export const defaultStudioProfile: StudioProfile = {
   createdAt: null,
 };
 
-export const getStudios = async (context: AppContextValue) => {
+export const getStudios = async (context: AppContextValue, props?: {
+  start?: number, limit: number
+}) => {
+  const { start = 0, limit = 100 } = props || {};
   const { supabase, state } = context;
   const userId = state.user?.id;
   if (!userId) {
@@ -54,8 +57,9 @@ export const getStudios = async (context: AppContextValue) => {
   }
   const { data, error } = await supabase
     .from(TableName.studioUsers)
-    .select('studio:studios(*)')
-    .eq('user_id', userId);
+    .select('*, studio:studios(*)')
+    .eq('user_id', userId)
+    .range(start, limit);
   if (error) {
     throw error;
   }
