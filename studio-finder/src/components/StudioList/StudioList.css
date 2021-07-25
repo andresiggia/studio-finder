@@ -10,3 +10,7 @@
 .studio-list-add-button {
   float: right;
 }
+
+.studio-list-items {
+  padding: 0;
+}

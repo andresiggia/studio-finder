@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonContent, IonIcon, IonModal,
+  IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonContent, IonIcon, IonItem, IonLabel, IonList, IonModal,
   IonSpinner, IonTitle, IonToolbar,
 } from '@ionic/react';
 // eslint-disable-next-line import/no-extraneous-dependencies
@@ -123,7 +123,15 @@ class StudioList extends React.Component<any, State> {
             ? (
               <p>{i18n.t('No items found.')}</p>
             ) : (
-              <p>{`Found ${items.length} records`}</p>
+              <IonList className="studio-list-items">
+                {items.map((item) => (
+                  <IonItem key={item.id}>
+                    <IonLabel>
+                      {item.title}
+                    </IonLabel>
+                  </IonItem>
+                ))}
+              </IonList>
             )
         )}
       </>
