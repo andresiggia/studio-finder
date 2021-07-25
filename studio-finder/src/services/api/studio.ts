@@ -54,7 +54,7 @@ export const getStudios = async (context: AppContextValue) => {
   }
   const { data, error } = await supabase
     .from(TableName.studioUsers)
-    .select('studio_id, user_id, studios(studio_id: id)')
+    .select('studio:studios(*)')
     .match({
       user_id: userId,
     });
@@ -63,7 +63,7 @@ export const getStudios = async (context: AppContextValue) => {
   }
   let studios: StudioProfile[] = [];
   if (data && Array.isArray(data) && data.length > 0) {
-    studios = data.map((studioData: any) => updateObjectKeysToCamelCase(studioData));
+    studios = data.map((studioUserData: any) => updateObjectKeysToCamelCase(studioUserData.studio));
   }
   return studios;
 };
