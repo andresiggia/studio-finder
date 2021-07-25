@@ -31,7 +31,7 @@ class AccountBase extends React.Component<UserValidationProps> {
   }
 
   renderStudioList = () => (
-    <IonCol size="12" size-md="6" size-lg="4">
+    <IonCol size="12" size-md="6" size-lg="8">
       <StudioList />
     </IonCol>
   )
