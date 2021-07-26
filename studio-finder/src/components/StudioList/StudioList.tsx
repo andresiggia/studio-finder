@@ -24,6 +24,7 @@ interface State {
   items: StudioProfile[] | null,
   showModal: boolean,
   modalSelectedStudioId: number,
+  selectedStudioId: number,
 }
 
 class StudioList extends React.Component<any, State> {
@@ -37,6 +38,7 @@ class StudioList extends React.Component<any, State> {
       items: null,
       showModal: false,
       modalSelectedStudioId: 0,
+      selectedStudioId: 0,
     };
   }
 
@@ -70,9 +72,15 @@ class StudioList extends React.Component<any, State> {
     }, async () => {
       try {
         const items = await getStudios(this.context);
+        let selectedStudioId = 0;
+        // pre-select first item
+        if (items && items.length > 0) {
+          selectedStudioId = items[0].id;
+        }
         this.setMountedState({
           isLoading: false,
           items,
+          selectedStudioId,
         });
       } catch (error) {
         // eslint-disable-next-line no-console
@@ -98,29 +106,51 @@ class StudioList extends React.Component<any, State> {
     });
   }
 
+  onItemToggle = (studioId: number) => {
+    const { selectedStudioId } = this.state;
+    this.setMountedState({
+      selectedStudioId: studioId === selectedStudioId
+        ? 0
+        : studioId,
+    });
+  }
+
   // render
 
-  renderList = (items: StudioProfile[]) => (
-    <IonRow>
-      <IonCol size="12" size-md="6" size-lg="4">
-        <IonList className="studio-list-items">
-          {items.map((item) => (
-            <IonItem key={item.id}>
-              <IonLabel>
-                {item.title}
-              </IonLabel>
-              <IonButton
-                slot="end"
-                onClick={() => this.onModalOpen(item.id)}
+  renderList = (items: StudioProfile[]) => {
+    const { selectedStudioId } = this.state;
+    return (
+      <IonRow>
+        <IonCol size="12" size-md="6" size-lg="4">
+          <IonList className="studio-list-items">
+            {items.map((item) => (
+              <IonItem
+                key={item.id}
+                detail
+                button
+                color={item.id === selectedStudioId
+                  ? 'primary'
+                  : ''}
+                onClick={() => this.onItemToggle(item.id)}
               >
-                <IonIcon icon={createOutline} ariaLabel={i18n.t('Edit')} />
-              </IonButton>
-            </IonItem>
-          ))}
-        </IonList>
-      </IonCol>
-    </IonRow>
-  )
+                <IonLabel>
+                  {item.title}
+                </IonLabel>
+              </IonItem>
+            ))}
+          </IonList>
+        </IonCol>
+        <IonCol size="12" size-md="6" size-lg="8">
+          {!!selectedStudioId && (
+            <IonButton fill="outline" onClick={() => this.onModalOpen(selectedStudioId)}>
+              <IonIcon icon={createOutline} ariaLabel={i18n.t('Edit')} slot="start" />
+              {i18n.t('Edit Profile')}
+            </IonButton>
+          )}
+        </IonCol>
+      </IonRow>
+    );
+  }
 
   renderContent = () => {
     const { isLoading, error, items } = this.state;
