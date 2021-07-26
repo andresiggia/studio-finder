@@ -243,6 +243,11 @@ class LoginForm extends React.Component<Props, State> {
       <form onSubmit={this.onSubmit}>
         <fieldset className="login-form-fieldset" disabled={disabled}>
           <IonList className="login-form-list">
+            {forgotPassword && (
+              <IonLabel>
+                {i18n.t('Forgot Password')}
+              </IonLabel>
+            )}
             <IonItem>
               <IonInput
                 value={email}
