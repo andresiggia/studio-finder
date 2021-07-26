@@ -337,7 +337,7 @@ class LoginForm extends React.Component<Props, State> {
                 header={notification?.header}
                 message={notification?.message}
                 preventDismiss={notification?.preventDismiss}
-                onDismiss={() => this.setMountedState({ notification: null })}
+                onDismiss={notification?.onDismiss || (() => this.setMountedState({ notification: null }))}
               />
             )}
           </div>
