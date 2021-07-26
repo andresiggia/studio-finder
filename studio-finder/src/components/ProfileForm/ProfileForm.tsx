@@ -1,11 +1,12 @@
 import React from 'react';
 import {
-  IonLabel, IonIcon, IonSegmentButton, IonSegment, IonSpinner, IonButton, IonGrid, IonRow, IonCol,
-  IonList, IonItem, IonInput, IonDatetime, IonCard, IonCardContent, IonCardHeader, IonCardTitle,
+  IonLabel, IonIcon, IonSegmentButton, IonSegment, IonSpinner, IonButton, IonGrid, IonRow, IonCol, IonList,
+  IonItem, IonInput, IonDatetime, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonModal, IonButtons,
+  IonContent, IonTitle, IonToolbar,
 } from '@ionic/react';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import {
-  musicalNotesOutline, storefrontOutline, createOutline, refreshOutline, saveOutline,
+  musicalNotesOutline, storefrontOutline, createOutline, refreshOutline, saveOutline, lockClosedOutline, closeOutline,
 } from 'ionicons/icons';
 
 // context
@@ -19,6 +20,7 @@ import {
 
 // components
 import Notification, { NotificationProps, NotificationType } from '../Notification/Notification';
+import ChangePasswordForm from '../ChangePasswordForm/ChangePasswordForm';
 
 // css
 import './ProfileForm.css';
@@ -33,6 +35,7 @@ interface State {
   isLoading: boolean,
   error: Error | null,
   notification: NotificationProps | null,
+  showPasswordModal: boolean,
   // fields
   userType: string,
   userProfile: UserProfile,
@@ -51,6 +54,7 @@ class ProfileForm extends React.Component<Props, State> {
       isLoading: false,
       error: null,
       notification: null,
+      showPasswordModal: false,
       userType: props.userType,
       userProfile: defaultUserProfile,
       userProfileOriginal: null,
@@ -168,6 +172,18 @@ class ProfileForm extends React.Component<Props, State> {
       ));
   }
 
+  onModalOpen = () => {
+    this.setMountedState({
+      showPasswordModal: true,
+    });
+  }
+
+  onModalClose = () => {
+    this.setMountedState({
+      showPasswordModal: false,
+    });
+  }
+
   // render
 
   renderLabel = (label: string, required = false) => (
@@ -233,17 +249,30 @@ class ProfileForm extends React.Component<Props, State> {
           <IonRow>
             {(unlockToEdit && !allowEdit)
               ? (
-                <IonCol size="12" size-md="6">
-                  <IonButton
-                    fill="outline"
-                    type="button"
-                    expand="block"
-                    onClick={() => this.setMountedState({ allowEdit: true })}
-                  >
-                    <IonIcon slot="start" icon={createOutline} />
-                    {i18n.t('Edit')}
-                  </IonButton>
-                </IonCol>
+                <>
+                  <IonCol size="12" size-md="6">
+                    <IonButton
+                      fill="outline"
+                      type="button"
+                      expand="block"
+                      onClick={() => this.setMountedState({ allowEdit: true })}
+                    >
+                      <IonIcon slot="start" icon={createOutline} />
+                      {i18n.t('Edit')}
+                    </IonButton>
+                  </IonCol>
+                  <IonCol size="12" size-md="6">
+                    <IonButton
+                      fill="outline"
+                      type="button"
+                      expand="block"
+                      onClick={() => this.onModalOpen()}
+                    >
+                      <IonIcon slot="start" icon={lockClosedOutline} />
+                      {i18n.t('Change Password')}
+                    </IonButton>
+                  </IonCol>
+                </>
               ) : (
                 <>
                   <IonCol size="12" size-md="6">
@@ -390,6 +419,35 @@ class ProfileForm extends React.Component<Props, State> {
     );
   }
 
+  renderModal = () => {
+    const { showPasswordModal } = this.state;
+    return (
+      <IonModal
+        isOpen={showPasswordModal}
+        onDidDismiss={() => this.onModalClose()}
+      >
+        <IonToolbar>
+          <IonTitle>
+            {i18n.t('Change Password')}
+          </IonTitle>
+          <IonButtons slot="end">
+            <IonButton
+              color="primary"
+              onClick={() => this.onModalClose()}
+            >
+              <IonIcon icon={closeOutline} ariaLabel={i18n.t('Close')} />
+            </IonButton>
+          </IonButtons>
+        </IonToolbar>
+        <IonContent>
+          {showPasswordModal && (
+            <ChangePasswordForm onCancel={() => this.onModalClose()} />
+          )}
+        </IonContent>
+      </IonModal>
+    );
+  }
+
   render() {
     const { unlockToEdit } = this.props;
     const { state } = this.context;
@@ -398,26 +456,29 @@ class ProfileForm extends React.Component<Props, State> {
     const disabled = isLoading || !!error || !showRequired;
     const isEditing = this.isEditing();
     return (
-      <form className="profile-form" onSubmit={this.onSubmit}>
-        <IonCard>
-          <IonCardHeader>
-            <IonCardTitle>
-              {isEditing
-                ? i18n.t('My Profile')
-                : i18n.t('Create Profile')}
-            </IonCardTitle>
-          </IonCardHeader>
-          <IonCardContent>
-            <fieldset className="profile-form-fieldset" disabled={disabled}>
-              {(!state.user.user_metadata?.type || !state.profile) && (
-                this.renderUserType(disabled)
-              )}
-              {this.renderFields(disabled, showRequired)}
-              {this.renderFooter(showRequired)}
-            </fieldset>
-          </IonCardContent>
-        </IonCard>
-      </form>
+      <>
+        <form className="profile-form" onSubmit={this.onSubmit}>
+          <IonCard>
+            <IonCardHeader>
+              <IonCardTitle>
+                {isEditing
+                  ? i18n.t('My Profile')
+                  : i18n.t('Create Profile')}
+              </IonCardTitle>
+            </IonCardHeader>
+            <IonCardContent>
+              <fieldset className="profile-form-fieldset" disabled={disabled}>
+                {(!state.user.user_metadata?.type || !state.profile) && (
+                  this.renderUserType(disabled)
+                )}
+                {this.renderFields(disabled, showRequired)}
+                {this.renderFooter(showRequired)}
+              </fieldset>
+            </IonCardContent>
+          </IonCard>
+        </form>
+        {this.renderModal()}
+      </>
     );
   }
 }
