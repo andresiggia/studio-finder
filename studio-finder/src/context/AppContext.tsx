@@ -137,7 +137,9 @@ export class AppContextProvider extends React.Component<Props, State> {
     try {
       const { user } = this.state;
       if (!user) {
-        return Promise.resolve({ data: null });
+        // eslint-disable-next-line no-console
+        console.warn('user not available, cannot load profile', user);
+        return false;
       }
       // eslint-disable-next-line no-console
       console.log('loading user profile...');
@@ -147,12 +149,12 @@ export class AppContextProvider extends React.Component<Props, State> {
       return new Promise((resolve) => {
         this.setMountedState({
           profile: profile || null,
-        }, () => resolve({ data: profile }));
+        }, () => resolve(profile));
       });
     } catch (error) {
       // eslint-disable-next-line no-console
       console.warn('error - loadUserProfile', error);
-      return Promise.resolve({ error });
+      return Promise.reject(error);
     }
   }
 
@@ -172,14 +174,14 @@ export class AppContextProvider extends React.Component<Props, State> {
 
   updateSession = async (session: supabase.Session | null) => {
     const { user: currentUser, profile } = this.state;
-    if (profile?.id !== session?.user?.id) {
-      console.log('will load user profile');
-      await this.loadUserProfile();
-    }
     if (session?.user !== currentUser) {
       this.setMountedState({
         user: session?.user || null,
         accessToken: session?.access_token || '',
+      }, async () => {
+        if (profile?.id !== session?.user?.id) {
+          await this.loadUserProfile();
+        }
       });
     }
   }
