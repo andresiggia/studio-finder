@@ -132,6 +132,7 @@ class StudioList extends React.Component<any, State> {
                   ? 'primary'
                   : ''}
                 onClick={() => this.onItemToggle(item.id)}
+                title={item.title}
               >
                 <IonLabel>
                   {item.title}
