@@ -184,8 +184,7 @@ class StudioForm extends React.Component<Props, State> {
     const { isLoading, error } = this.state;
     const isValidForm = this.isValidForm();
     const hasChanges = this.hasChanges();
-    const canCancel = typeof onCancel === 'function';
-    const showCancel = (canCancel && !hasChanges);
+    const hasCancelFn = typeof onCancel === 'function';
     return (
       <div className="studio-form-footer">
         <p className="studio-form-footer-note-required">
@@ -198,7 +197,7 @@ class StudioForm extends React.Component<Props, State> {
                 fill="outline"
                 type="button"
                 expand="block"
-                disabled={isLoading || !!error || (!canCancel && !hasChanges)}
+                disabled={isLoading || !!error || (!hasCancelFn && !hasChanges)}
                 onClick={() => {
                   if (hasChanges) {
                     this.onReset();
@@ -208,9 +207,9 @@ class StudioForm extends React.Component<Props, State> {
                 }}
               >
                 <IonIcon slot="start" icon={refreshOutline} />
-                {showCancel
-                  ? i18n.t('Cancel')
-                  : i18n.t('Reset')}
+                {(hasChanges || !hasCancelFn)
+                  ? i18n.t('Reset')
+                  : i18n.t('Cancel')}
               </IonButton>
             </IonCol>
             <IonCol size="12" size-md="6">
