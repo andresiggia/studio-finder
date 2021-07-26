@@ -29,6 +29,7 @@ interface AuthResponse {
 
 interface State {
   user: supabase.User | null,
+  accessToken: string,
   profile: UserProfile | null,
   userRoles: Role[] | null,
   studioRoles: Role[] | null,
@@ -56,7 +57,8 @@ export class AppContextProvider extends React.Component<Props, State> {
     super(props);
 
     this.state = {
-      user: this.supabase.auth.user(),
+      user: null,
+      accessToken: '',
       profile: null,
       userRoles: null,
       studioRoles: null,
@@ -72,7 +74,7 @@ export class AppContextProvider extends React.Component<Props, State> {
     this.authResponse = this.supabase.auth.onAuthStateChange((event, session) => {
       // eslint-disable-next-line no-console
       console.log('user updated', session);
-      this.updateUserState(session?.user);
+      this.updateSession(session);
     });
   }
 
@@ -168,17 +170,18 @@ export class AppContextProvider extends React.Component<Props, State> {
     }
   }
 
-  updateUserState = async (user?: supabase.User | null) => {
-    const { user: currentUser } = this.state;
-    if (user === currentUser) {
-      return Promise.resolve(true);
+  updateSession = async (session: supabase.Session | null) => {
+    const { user: currentUser, profile } = this.state;
+    if (profile?.id !== session?.user?.id) {
+      console.log('will load user profile');
+      await this.loadUserProfile();
     }
-    await this.loadUserProfile();
-    return new Promise((resolve) => {
+    if (session?.user !== currentUser) {
       this.setMountedState({
-        user: user || null,
-      }, () => resolve(true));
-    });
+        user: session?.user || null,
+        accessToken: session?.access_token || '',
+      });
+    }
   }
 
   getLoginPath = (options: {
