@@ -122,12 +122,12 @@ class StudioForm extends React.Component<Props, State> {
   onSubmit = (e: any) => {
     // prevent form from submitting
     e.preventDefault();
-    if (!this.isValidForm) {
+    if (!this.isValidForm()) {
       // eslint-disable-next-line no-console
       console.warn('Invalid form');
       return;
     }
-    if (!this.hasChanges) {
+    if (!this.hasChanges()) {
       // eslint-disable-next-line no-console
       console.warn('Form has no changes');
       return;
