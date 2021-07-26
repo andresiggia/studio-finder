@@ -12,6 +12,7 @@ import AppContext from '../../context/AppContext';
 
 // services
 import i18n from '../../services/i18n/i18n';
+import { deepEqual } from '../../services/helpers/misc';
 
 // constants
 import {
@@ -115,7 +116,7 @@ class StudioForm extends React.Component<Props, State> {
 
   hasChanges = () => {
     const { studioProfile, studioProfileOriginal } = this.state;
-    return studioProfile !== studioProfileOriginal;
+    return !deepEqual(studioProfile, studioProfileOriginal);
   }
 
   onSubmit = (e: any) => {
