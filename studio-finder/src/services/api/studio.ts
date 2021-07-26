@@ -24,7 +24,7 @@ export interface StudioProfile {
   createdAt: Date | null,
 }
 
-const dateFields = ['createdAt'];
+const dateFields = ['createdAt', 'modifiedAt'];
 
 export interface StudioUser {
   studioId: number,
