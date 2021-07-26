@@ -92,9 +92,7 @@ class ChangePasswordForm extends React.Component<Props, State> {
               if (typeof onCancel === 'function') {
                 onCancel();
               } else {
-                this.setMountedState({
-                  notification: null,
-                });
+                this.onReset();
               }
             },
           } as NotificationProps;
@@ -118,6 +116,7 @@ class ChangePasswordForm extends React.Component<Props, State> {
     this.setMountedState({
       password: '',
       passwordRepeat: '',
+      notification: null,
     });
   }
 
@@ -225,7 +224,7 @@ class ChangePasswordForm extends React.Component<Props, State> {
               header={notification?.header}
               message={notification?.message}
               preventDismiss={notification?.preventDismiss}
-              onDismiss={() => this.setMountedState({ notification: null })}
+              onDismiss={notification?.onDismiss || (() => this.setMountedState({ notification: null }))}
             />
           )}
         </fieldset>
