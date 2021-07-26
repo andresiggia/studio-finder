@@ -7,10 +7,17 @@
   margin: 1rem 0;
 }
 
-.studio-list-add-button {
+.studio-list-title-header-item {
   float: right;
+  margin-left: 1rem;
 }
 
 .studio-list-items {
   padding: 0;
+}
+
+.studio-list-item-container {
+  margin-top: 1rem;
+  padding: .5rem;
+  border: 1px solid var(--ion-color-light);
 }
