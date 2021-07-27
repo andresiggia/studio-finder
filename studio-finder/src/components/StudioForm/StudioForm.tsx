@@ -16,7 +16,7 @@ import { deepEqual } from '../../services/helpers/misc';
 
 // constants
 import {
-  defaultStudioProfile, getStudio, insertStudio, StudioProfile,
+  defaultStudioProfile, getStudio, upsertStudio, StudioProfile,
 } from '../../services/api/studio';
 
 // components
@@ -140,7 +140,7 @@ class StudioForm extends React.Component<Props, State> {
         const { studioProfile } = this.state;
         // eslint-disable-next-line no-console
         console.log('will insert new studio', studioProfile);
-        const data = await insertStudio(this.context, studioProfile);
+        const data = await upsertStudio(this.context, studioProfile);
         // eslint-disable-next-line no-console
         console.log('got new studio data', data);
         this.setMountedState({

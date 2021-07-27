@@ -22,6 +22,7 @@ export interface StudioProfile {
   region: string,
   country: string,
   createdAt: Date | null,
+  modifiedAt: Date | null,
 }
 
 const dateFields = ['createdAt', 'modifiedAt'];
@@ -44,6 +45,7 @@ export const defaultStudioProfile: StudioProfile = {
   region: '',
   country: '',
   createdAt: null,
+  modifiedAt: null,
 };
 
 export const getStudios = async (context: AppContextValue, props?: {
@@ -95,7 +97,7 @@ export const getStudio = async (context: AppContextValue, studioId: number) => {
   return studio;
 };
 
-export const insertStudio = async (context: AppContextValue, studioProfile: StudioProfile) => {
+export const upsertStudio = async (context: AppContextValue, studioProfile: StudioProfile) => {
   const { supabase, state } = context;
   const { studioRoles } = state;
   const defaultStudioRoleName = getDefaultStudioRoleName(context);
@@ -106,12 +108,19 @@ export const insertStudio = async (context: AppContextValue, studioProfile: Stud
   if (!userId) {
     throw StudioError.missingUserId;
   }
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { createdAt, id, ...profile } = studioProfile; // createdAt and id should be automatically created
+  const isEditing = !!studioProfile.id;
+  const profile: any = {
+    ...studioProfile,
+    modifiedAt: new Date(), // modifiedAt to be updated to current date/time
+  };
+  if (!isEditing) {
+    delete profile.createdAt; // createdAt should be created by back-end
+    delete profile.id; // id should be created by back-end
+  }
   const studioProfileData = updateObjectKeysToUnderscoreCase(profile);
   const { data, error } = await supabase
     .from(TableName.studios)
-    .insert([studioProfileData]);
+    .upsert([studioProfileData]);
   if (error) {
     throw error;
   }
@@ -121,37 +130,38 @@ export const insertStudio = async (context: AppContextValue, studioProfile: Stud
   const [newRow] = data;
   // eslint-disable-next-line no-console
   console.log('got new studio info', newRow, data);
-  const studioId = newRow.id;
-  // create studioUser foreign key
-  const studioUser: StudioUser = {
-    userId,
-    studioId,
-    studioRoleName: defaultStudioRoleName,
-  };
-  const studioUserData = updateObjectKeysToUnderscoreCase(studioUser);
-  // eslint-disable-next-line no-console
-  console.log('will add new studio user', studioUserData);
-  const { data: newJoinRow, error: joinError } = await supabase
-    .from(TableName.studioUsers)
-    .insert([studioUserData]);
-  if (joinError) {
+  if (!isEditing) { // create studioUser foreign key for new items
+    const studioId = newRow.id;
+    const studioUser: StudioUser = {
+      userId,
+      studioId,
+      studioRoleName: defaultStudioRoleName,
+    };
+    const studioUserData = updateObjectKeysToUnderscoreCase(studioUser);
     // eslint-disable-next-line no-console
-    console.warn('error during join creation', joinError);
-    // roll back studio creation
-    const { data: deletedRow, error: deleteError } = await supabase
-      .from(TableName.studios)
-      .delete()
-      .eq('id', studioId);
-    if (deleteError) {
+    console.log('will add new studio user', studioUserData);
+    const { data: newJoinRow, error: joinError } = await supabase
+      .from(TableName.studioUsers)
+      .insert([studioUserData]);
+    if (joinError) {
       // eslint-disable-next-line no-console
-      console.warn('error during studio creation rollback', deleteError);
-      throw deleteError;
+      console.warn('error during join creation', joinError);
+      // roll back studio creation
+      const { data: deletedRow, error: deleteError } = await supabase
+        .from(TableName.studios)
+        .delete()
+        .eq('id', studioId);
+      if (deleteError) {
+        // eslint-disable-next-line no-console
+        console.warn('error during studio creation rollback', deleteError);
+        throw deleteError;
+      }
+      // eslint-disable-next-line no-console
+      console.log('rolled back studio creation', deletedRow);
+      throw joinError;
     }
     // eslint-disable-next-line no-console
-    console.log('rolled back studio creation', deletedRow);
-    throw joinError;
+    console.log('added join', newJoinRow);
   }
-  // eslint-disable-next-line no-console
-  console.log('added join', newJoinRow);
   return data;
 };
