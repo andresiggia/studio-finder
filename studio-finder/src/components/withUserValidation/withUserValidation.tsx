@@ -5,7 +5,7 @@ import { matchPath, RouteComponentProps, withRouter } from 'react-router';
 import AppContext from '../../context/AppContext';
 
 // services
-import { getRoutesByName, RouteNames } from '../../services/routes/routes';
+import { getRoutesByName, RouteName } from '../../services/routes/routes';
 
 // constants
 import { UserType } from '../../services/api/user';
@@ -31,20 +31,20 @@ const withUserValidation = (userType = UserType.musician) => <TOriginalProps ext
     getParentRouteName = () => {
       switch (userType) {
         case UserType.studio:
-          return RouteNames.studioLogin;
+          return RouteName.studioLogin;
         case UserType.musician:
         default:
-          return RouteNames.login;
+          return RouteName.login;
       }
     }
 
     getCreateProfileRouteName = () => {
       switch (userType) {
         case UserType.studio:
-          return RouteNames.studioAccount;
+          return RouteName.studioAccount;
         case UserType.musician:
         default:
-          return RouteNames.account;
+          return RouteName.account;
       }
     }
 

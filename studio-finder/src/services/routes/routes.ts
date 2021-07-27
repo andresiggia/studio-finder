@@ -10,7 +10,7 @@ import ForgotPassword from '../../pages/ForgotPassword/ForgotPassword';
 // services
 import i18n from '../i18n/i18n';
 
-export enum RouteNames {
+export enum RouteName {
   home = 'home',
   about = 'about',
   login = 'login',
@@ -31,27 +31,27 @@ export interface Route {
   getLabel?: () => string;
 }
 
-export enum LoginRouteNames {
+export enum LoginRouteName {
   login = 'login',
   signUp = 'signUp',
 }
 
 const loginRoutes = [
   {
-    name: LoginRouteNames.login,
-    path: LoginRouteNames.login,
+    name: LoginRouteName.login,
+    path: LoginRouteName.login,
     getLabel: () => i18n.t('Log In'),
   },
   {
-    name: LoginRouteNames.signUp,
-    path: LoginRouteNames.signUp,
+    name: LoginRouteName.signUp,
+    path: LoginRouteName.signUp,
     getLabel: () => i18n.t('Sign Up'),
   },
 ];
 
 const routes: Route[] = [
   {
-    name: RouteNames.home,
+    name: RouteName.home,
     path: '/home',
     exact: true,
     strict: false,
@@ -60,7 +60,7 @@ const routes: Route[] = [
     getLabel: () => i18n.t('Home'),
   },
   {
-    name: RouteNames.about,
+    name: RouteName.about,
     path: '/about',
     exact: true,
     strict: false,
@@ -69,7 +69,7 @@ const routes: Route[] = [
     getLabel: () => i18n.t('About'),
   },
   {
-    name: RouteNames.forgotPassword,
+    name: RouteName.forgotPassword,
     path: '/forgot-password',
     exact: false,
     strict: false,
@@ -78,7 +78,7 @@ const routes: Route[] = [
     getLabel: () => i18n.t('Redefine password'),
   },
   {
-    name: RouteNames.studioLogin,
+    name: RouteName.studioLogin,
     path: '/studio-login',
     exact: false,
     strict: false,
@@ -88,7 +88,7 @@ const routes: Route[] = [
     routes: loginRoutes,
   },
   {
-    name: RouteNames.login,
+    name: RouteName.login,
     path: '/login',
     exact: false,
     strict: false,
@@ -98,7 +98,7 @@ const routes: Route[] = [
     routes: loginRoutes,
   },
   {
-    name: RouteNames.account,
+    name: RouteName.account,
     path: '/account',
     exact: false,
     strict: false,
@@ -107,7 +107,7 @@ const routes: Route[] = [
     getLabel: () => i18n.t('My Account'),
   },
   {
-    name: RouteNames.studioAccount,
+    name: RouteName.studioAccount,
     path: '/studio-account',
     exact: false,
     strict: false,

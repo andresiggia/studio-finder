@@ -14,7 +14,7 @@ import AppContext from '../../context/AppContext';
 import Header from '../../components/Header/Header';
 import Notification, { NotificationType } from '../../components/Notification/Notification';
 import ChangePasswordForm from '../../components/ChangePasswordForm/ChangePasswordForm';
-import { getRoutesByName, RouteNames } from '../../services/routes/routes';
+import { getRoutesByName, RouteName } from '../../services/routes/routes';
 
 // css
 // import './ForgotPassword.css';
@@ -38,7 +38,7 @@ class ForgotPassword extends React.Component<RouteComponentProps> {
 
   onCancel = () => {
     const { history } = this.props;
-    const [route] = getRoutesByName([RouteNames.account]);
+    const [route] = getRoutesByName([RouteName.account]);
     history.push(route.path);
   }
 

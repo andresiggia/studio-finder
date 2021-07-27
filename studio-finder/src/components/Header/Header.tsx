@@ -8,7 +8,7 @@ import {
 
 // services
 import {
-  defaultRoute, getRoutesByName, Route, RouteNames, LoginRouteNames,
+  defaultRoute, getRoutesByName, Route, RouteName, LoginRouteName,
 } from '../../services/routes/routes';
 import i18n from '../../services/i18n/i18n';
 
@@ -88,7 +88,7 @@ class Header extends React.Component<Props, State> {
   // render
 
   renderLoginButtons = () => (
-    getRoutesByName([RouteNames.login]).map((route) => (
+    getRoutesByName([RouteName.login]).map((route) => (
       <React.Fragment key={route.name}>
         {!!route.routes && (
           route.routes.map((subRoute) => {
@@ -103,7 +103,7 @@ class Header extends React.Component<Props, State> {
               path: getLoginPath({
                 screen: subRoute.path,
                 backUrl: location.pathname,
-                parentRoute: RouteNames.login,
+                parentRoute: RouteName.login,
               }),
               disabled: !!isActive,
             });
@@ -114,15 +114,15 @@ class Header extends React.Component<Props, State> {
   )
 
   renderMainLinks = () => (
-    getRoutesByName([RouteNames.home, RouteNames.about])
+    getRoutesByName([RouteName.home, RouteName.about])
       .map((route) => this.renderRoute(route))
   )
 
   renderAccountLink = () => {
     const { state } = this.context;
-    let routeName = RouteNames.account;
+    let routeName = RouteName.account;
     if (state.user.user_metadata?.type === UserType.studio) {
-      routeName = RouteNames.studioAccount;
+      routeName = RouteName.studioAccount;
     }
     return getRoutesByName([routeName]).map((route) => this.renderRoute(route));
   }
@@ -168,16 +168,16 @@ class Header extends React.Component<Props, State> {
       return null;
     }
     return (
-      getRoutesByName([RouteNames.studioLogin]).map((route) => {
+      getRoutesByName([RouteName.studioLogin]).map((route) => {
         if (!Array.isArray(route?.routes)) {
           return null;
         }
-        const [subRoute] = getRoutesByName([LoginRouteNames.login], route.routes);
+        const [subRoute] = getRoutesByName([LoginRouteName.login], route.routes);
         return this.renderRoute(route, {
           path: getLoginPath({
             screen: subRoute.path,
             backUrl: location.pathname,
-            parentRoute: RouteNames.studioLogin,
+            parentRoute: RouteName.studioLogin,
           }),
         });
       })

@@ -20,7 +20,7 @@ import PasswordFields from '../PasswordFields/PasswordFields';
 // services
 import i18n from '../../services/i18n/i18n';
 import {
-  defaultRoute, getRoutesByName, LoginRouteNames, RouteNames,
+  defaultRoute, getRoutesByName, LoginRouteName, RouteName,
 } from '../../services/routes/routes';
 
 // css
@@ -100,7 +100,7 @@ class LoginForm extends React.Component<Props, State> {
   }
 
   getScreen = () => {
-    const { location, defaultScreen = LoginRouteNames.login } = this.props;
+    const { location, defaultScreen = LoginRouteName.login } = this.props;
     return LoginForm.getSearchParam(location, 'screen') || defaultScreen;
   }
 
@@ -126,7 +126,7 @@ class LoginForm extends React.Component<Props, State> {
     const { routeName, match, userType } = this.props;
     const { getLoginPath, getDefaultLoggedInRoutePath } = this.context;
     const redirectPath = getLoginPath({
-      parentRoute: routeName, screen: LoginRouteNames.login, redirectTo: getDefaultLoggedInRoutePath(userType),
+      parentRoute: routeName, screen: LoginRouteName.login, redirectTo: getDefaultLoggedInRoutePath(userType),
     });
     const [host] = window.location.href.split(match.url);
     return `${host}${redirectPath}`;
@@ -135,7 +135,7 @@ class LoginForm extends React.Component<Props, State> {
   getForgotPasswordUrl = () => {
     const { match } = this.props;
     const [host] = window.location.href.split(match.url);
-    const [route] = getRoutesByName([RouteNames.forgotPassword]);
+    const [route] = getRoutesByName([RouteName.forgotPassword]);
     return `${host}${route.path}`;
   }
 
@@ -152,7 +152,7 @@ class LoginForm extends React.Component<Props, State> {
           const { email, password, forgotPassword } = this.state;
           const { supabase } = this.context;
           let notification = null;
-          const isSignUp = screen === LoginRouteNames.signUp;
+          const isSignUp = screen === LoginRouteName.signUp;
           if (isSignUp) {
             const { error: signUpError } = await supabase.auth.signUp({
               email,
@@ -200,7 +200,7 @@ class LoginForm extends React.Component<Props, State> {
           }, () => {
             if (isSignUp) {
               // redirect to login screen after successful sign up
-              this.changeScreen(LoginRouteNames.login);
+              this.changeScreen(LoginRouteName.login);
             }
           });
         } catch (error) {
@@ -223,7 +223,7 @@ class LoginForm extends React.Component<Props, State> {
     const isEmailValid = !!email;
     const isPasswordValid = !!password && password.length >= MIN_PASSWORD_CHARS;
     const isPasswordRepeatValid = !!passwordRepeat && password === passwordRepeat;
-    if (screen === LoginRouteNames.signUp) {
+    if (screen === LoginRouteName.signUp) {
       return isEmailValid && isPasswordValid && isPasswordRepeatValid;
     }
     return isEmailValid && (forgotPassword || isPasswordValid);
@@ -238,7 +238,7 @@ class LoginForm extends React.Component<Props, State> {
     const screen = this.getScreen();
     const isValidForm = this.isValidForm();
     const disabled = isLoading || !!error;
-    const isSignUp = screen === LoginRouteNames.signUp;
+    const isSignUp = screen === LoginRouteName.signUp;
     return (
       <form onSubmit={this.onSubmit}>
         <fieldset className="login-form-fieldset" disabled={disabled}>

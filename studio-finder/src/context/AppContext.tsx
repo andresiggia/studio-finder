@@ -7,7 +7,7 @@ import appKeys from '../constants/supabase-keys';
 
 // services
 import { i18nInit } from '../services/i18n/i18n';
-import { getRoutesByName, RouteNames, LoginRouteNames } from '../services/routes/routes';
+import { getRoutesByName, RouteName, LoginRouteName } from '../services/routes/routes';
 import { getRoles, Role } from '../services/api/roles';
 import {
   UserType, UserProfile, getUserProfile, setUserProfile,
@@ -190,7 +190,7 @@ export class AppContextProvider extends React.Component<Props, State> {
     parentRoute: string, backUrl?: string, redirectTo?: string, screen?: string,
   }) => {
     const {
-      parentRoute, backUrl = '', redirectTo = '', screen = LoginRouteNames.login,
+      parentRoute, backUrl = '', redirectTo = '', screen = LoginRouteName.login,
     } = options;
     const params = [
       ['backUrl', backUrl],
@@ -205,10 +205,10 @@ export class AppContextProvider extends React.Component<Props, State> {
   getDefaultLoggedInRouteName = (userType = UserType.musician) => {
     switch (userType) {
       case UserType.studio:
-        return RouteNames.studioAccount;
+        return RouteName.studioAccount;
       case UserType.musician:
       default:
-        return RouteNames.account;
+        return RouteName.account;
     }
   }
 

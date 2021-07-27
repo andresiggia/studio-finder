@@ -7,7 +7,7 @@ import LoginForm from '../../components/LoginForm/LoginForm';
 
 // services
 import i18n from '../../services/i18n/i18n';
-import { RouteNames, LoginRouteNames } from '../../services/routes/routes';
+import { RouteName, LoginRouteName } from '../../services/routes/routes';
 
 // constants
 import { UserType } from '../../services/api/user';
@@ -19,10 +19,10 @@ class StudioLogin extends React.Component {
         <IonContent fullscreen>
           <Header />
           <LoginForm
-            routeName={RouteNames.studioLogin}
+            routeName={RouteName.studioLogin}
             userType={UserType.studio}
             title={i18n.t('Studio Log In / Sign Up')}
-            defaultScreen={LoginRouteNames.login}
+            defaultScreen={LoginRouteName.login}
           />
         </IonContent>
       </IonPage>
