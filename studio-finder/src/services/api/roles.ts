@@ -1,5 +1,6 @@
 import { AppContextValue } from '../../context/AppContext';
 
+import { SettingKey } from './settings';
 import { TableName } from './tables';
 
 export enum RoleError {
@@ -40,7 +41,7 @@ export const defaultRole: Role = {
 
 export const getDefaultStudioRoleName = (context: AppContextValue) => {
   const { state } = context;
-  const setting = state.settings?.find((item) => item.key === 'defaultStudioRoleName');
+  const setting = state.settings?.find((item) => item.key === SettingKey.defaultStudioRoleName);
   if (!setting || !setting.value) {
     throw RoleError.noDefaultStudioRole;
   }
