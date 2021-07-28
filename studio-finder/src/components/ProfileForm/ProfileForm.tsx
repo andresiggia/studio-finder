@@ -424,7 +424,7 @@ class ProfileForm extends React.Component<Props, State> {
     return (
       <IonModal
         isOpen={showPasswordModal}
-        onDidDismiss={() => this.onModalClose()}
+        onWillDismiss={() => this.onModalClose()}
       >
         <IonToolbar>
           <IonTitle>
