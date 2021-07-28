@@ -61,7 +61,7 @@ export const getStudios = async (context: AppContextValue, props?: {
     .from(TableName.studioUsers)
     .select(`${TableName.studios}(*)`)
     .eq('user_id', userId)
-    .order('title', { foreignTable: 'studios', ascending: true }) // ordering by column in foreign table not working
+    // .order('title', { foreignTable: 'studios', ascending: true }) // ordering by column in foreign table not working
     .range(start, start + limit - 1);
   if (error) {
     throw error;
