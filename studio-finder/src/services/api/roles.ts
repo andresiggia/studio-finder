@@ -5,6 +5,7 @@ import { TableName } from './tables';
 
 export enum RoleError {
   noDefaultStudioRole = 'noDefaultStudioRole',
+  noDefaultSpaceRole = 'noDefaultSpaceRole',
 }
 
 export enum PermissionType {
@@ -44,6 +45,15 @@ export const getDefaultStudioRoleName = (context: AppContextValue) => {
   const setting = state.settings?.find((item) => item.key === SettingKey.defaultStudioRoleName);
   if (!setting || !setting.value) {
     throw RoleError.noDefaultStudioRole;
+  }
+  return setting.value;
+};
+
+export const getDefaultSpaceRoleName = (context: AppContextValue) => {
+  const { state } = context;
+  const setting = state.settings?.find((item) => item.key === SettingKey.defaultSpaceRoleName);
+  if (!setting || !setting.value) {
+    throw RoleError.noDefaultSpaceRole;
   }
   return setting.value;
 };

@@ -6,6 +6,7 @@ import { TableName } from './tables';
 
 export enum SettingKey {
   defaultStudioRoleName = 'defaultStudioRoleName',
+  defaultSpaceRoleName = 'defaultSpaceRoleName',
 }
 
 export interface Setting {
