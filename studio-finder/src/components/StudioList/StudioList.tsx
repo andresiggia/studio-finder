@@ -157,7 +157,7 @@ class StudioList extends React.Component<any, State> {
     const { spaces, selectedSpaceId } = this.state;
     return (
       <>
-        <IonTitle size="small">
+        <IonTitle size="small" className="studio-list-space-title">
           {i18n.t('Studio Spaces')}
         </IonTitle>
         <IonGrid>
@@ -167,7 +167,7 @@ class StudioList extends React.Component<any, State> {
                 ? (
                   <p>{i18n.t('No spaces found.')}</p>
                 ) : (
-                  <IonList className="studio-list-studios">
+                  <IonList className="studio-list-spaces">
                     {spaces.map((space) => (
                       <IonItem
                         key={space.id}
@@ -219,22 +219,20 @@ class StudioList extends React.Component<any, State> {
           ) : (
             <div className="studio-list-item-container">
               <IonToolbar>
-                <IonTitle>
-                  <IonSelect
-                    value={selectedStudioId}
-                    className="studio-list-title-header-item"
-                    placeholder={i18n.t('Select')}
-                    interfaceOptions={{
-                      header: i18n.t('Select a Studio'),
-                    }}
-                  >
-                    {studios.map((item) => (
-                      <IonSelectOption key={item.id} value={item.id}>
-                        {item.title}
-                      </IonSelectOption>
-                    ))}
-                  </IonSelect>
-                </IonTitle>
+                <IonSelect
+                  value={selectedStudioId}
+                  placeholder={i18n.t('Select')}
+                  className="studio-list-select"
+                  interfaceOptions={{
+                    header: i18n.t('Select a Studio'),
+                  }}
+                >
+                  {studios.map((item) => (
+                    <IonSelectOption key={item.id} value={item.id}>
+                      {item.title}
+                    </IonSelectOption>
+                  ))}
+                </IonSelect>
                 {!!selectedStudioId && (
                   <IonButtons slot="end">
                     <IonButton
