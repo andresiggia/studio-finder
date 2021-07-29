@@ -14,6 +14,7 @@ import { getSpaces } from '../../services/api/space';
 // components
 import Notification, { NotificationType } from '../Notification/Notification';
 import StudioForm from '../StudioForm/StudioForm';
+import SpaceForm from '../SpaceForm/SpaceForm';
 
 // context
 import AppContext from '../../context/AppContext';
@@ -290,15 +291,14 @@ class StudioList extends React.Component<any, State> {
         </IonToolbar>
         <IonContent>
           {showModalSpace && (
-            // <StudioForm
-            //   id={modalSelectedSpaceId}
-            //   onCancel={() => this.onModalSpaceClose()}
-            //   onSave={() => {
-            //     this.onModalSpaceClose();
-            //     this.loadItems();
-            //   }}
-            // />
-            <p>Under development</p>
+            <SpaceForm
+              id={modalSelectedSpaceId}
+              onCancel={() => this.onModalSpaceClose()}
+              onSave={() => {
+                this.onModalSpaceClose();
+                this.loadItems();
+              }}
+            />
           )}
         </IonContent>
       </IonModal>

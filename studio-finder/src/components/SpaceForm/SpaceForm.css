@@ -1,0 +1,53 @@
+.space-form {
+  padding: 0;
+}
+
+.space-form-fieldset {
+  padding: 0;
+  border: none;
+}
+
+.space-form-title {
+  margin-bottom: 1.5rem;
+}
+
+.space-form-type-label {
+  text-align: center;
+  display: block;
+  margin-bottom: 1rem;
+  font-size: .75rem;
+}
+
+.space-form-type-icon {
+  margin-bottom: .5rem;
+  font-size: 3rem;
+}
+
+.space-form-footer {
+  margin-top: 2rem;
+}
+
+.space-form-footer-note-required {
+  padding-left: 1rem;
+  padding-right: 1rem;
+  font-size: .75rem;
+  font-style: oblique;
+}
+
+.space-form-notification {
+  margin-left: 1rem;
+  margin-right: 1rem;
+}
+
+.space-form-spacer {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+.space-form-list {
+  padding: 1rem;
+}
+
+.space-form-loading {
+  text-align: center;
+}
