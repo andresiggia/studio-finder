@@ -31,9 +31,7 @@ interface State {
   user: supabase.User | null,
   accessToken: string,
   profile: UserProfile | null,
-  userRoles: Role[] | null,
-  studioRoles: Role[] | null,
-  spaceRoles: Role[] | null,
+  roles: Role[] | null,
   settings: Setting[] | null,
 }
 
@@ -60,9 +58,7 @@ export class AppContextProvider extends React.Component<Props, State> {
       user: null,
       accessToken: '',
       profile: null,
-      userRoles: null,
-      studioRoles: null,
-      spaceRoles: null,
+      roles: null,
       settings: null,
     };
 
@@ -99,14 +95,12 @@ export class AppContextProvider extends React.Component<Props, State> {
 
   loadRoles = async () => {
     try {
-      const { userRoles, studioRoles, spaceRoles } = await getRoles(this.getContext());
+      const roles = await getRoles(this.getContext());
       // eslint-disable-next-line no-console
-      console.log('got roles', { userRoles, studioRoles, spaceRoles });
+      console.log('got roles', roles);
       return new Promise((resolve) => {
         this.setMountedState({
-          userRoles,
-          studioRoles,
-          spaceRoles,
+          roles,
         }, () => resolve(true));
       });
     } catch (error) {

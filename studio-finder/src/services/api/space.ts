@@ -1,7 +1,7 @@
 import { AppContextValue } from '../../context/AppContext';
 
 import { updateObjectKeysToCamelCase, updateObjectKeysToUnderscoreCase } from './helpers';
-import { getDefaultSpaceRoleName, Role } from './roles';
+import { getDefaultSpaceRoleName, Role, RoleTable } from './roles';
 import { TableName } from './tables';
 
 export enum SpaceError {
@@ -87,9 +87,9 @@ export const getSpace = async (context: AppContextValue, spaceId: number) => {
 
 export const upsertSpace = async (context: AppContextValue, spaceProfile: SpaceProfile) => {
   const { supabase, state } = context;
-  const { spaceRoles } = state;
+  const { roles } = state;
   const defaultSpaceRoleName = getDefaultSpaceRoleName(context);
-  if (!spaceRoles || !spaceRoles.some((item: Role) => item.name === defaultSpaceRoleName)) {
+  if (!roles || !roles.some((item: Role) => item.tableName === RoleTable.spaceRoles && item.name === defaultSpaceRoleName)) {
     throw SpaceError.missingSpaceRoles;
   }
   const userId = state.user?.id;

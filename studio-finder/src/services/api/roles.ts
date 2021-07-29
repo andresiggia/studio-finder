@@ -1,7 +1,8 @@
 import { AppContextValue } from '../../context/AppContext';
 
+import { updateObjectKeysToCamelCase } from './helpers';
 import { SettingKey } from './settings';
-import { TableName } from './tables';
+import { ViewName } from './tables';
 
 export enum RoleError {
   noDefaultStudioRole = 'noDefaultStudioRole',
@@ -16,6 +17,12 @@ export enum PermissionType {
   delete = 'delete',
 }
 
+export enum RoleTable {
+  userRoles = 'user_roles',
+  studioRoles = 'studio_roles',
+  spaceRoles = 'space_roles',
+}
+
 export interface Permission {
   entity: string,
   name: PermissionType | null,
@@ -23,6 +30,7 @@ export interface Permission {
 }
 
 export interface Role {
+  tableName: RoleTable | null,
   name: string,
   title: string,
   permissions: Permission[] | null,
@@ -35,6 +43,7 @@ export const defaultPermission: Permission = {
 };
 
 export const defaultRole: Role = {
+  tableName: null,
   name: '',
   title: '',
   permissions: null,
@@ -61,14 +70,15 @@ export const getDefaultSpaceRoleName = (context: AppContextValue) => {
 export const getRoles = async (context: AppContextValue) => {
   const { supabase } = context;
   const { data, error } = await supabase
-    .from(TableName.studioRoles)
+    .from(ViewName.roles)
     .select();
   if (error) {
     throw error;
   }
   let roles: any[] = [];
   if (data && Array.isArray(data) && data.length > 0) {
-    roles = data.map((role: any) => {
+    roles = data.map((roleItem: any) => {
+      const role = updateObjectKeysToCamelCase(roleItem);
       const permissionsArr: Permission[] = [];
       Object.keys(role.permissions).forEach((entity) => {
         Object.values(PermissionType).forEach((type) => {
@@ -85,9 +95,5 @@ export const getRoles = async (context: AppContextValue) => {
       };
     });
   }
-  return {
-    studioRoles: roles,
-    userRoles: [],
-    spaceRoles: [],
-  };
+  return roles;
 };

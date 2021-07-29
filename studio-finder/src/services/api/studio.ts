@@ -1,7 +1,7 @@
 import { AppContextValue } from '../../context/AppContext';
 
 import { updateObjectKeysToCamelCase, updateObjectKeysToUnderscoreCase } from './helpers';
-import { getDefaultStudioRoleName, Role } from './roles';
+import { getDefaultStudioRoleName, Role, RoleTable } from './roles';
 import { TableName } from './tables';
 
 export enum StudioError {
@@ -99,9 +99,9 @@ export const getStudio = async (context: AppContextValue, studioId: number) => {
 
 export const upsertStudio = async (context: AppContextValue, studioProfile: StudioProfile) => {
   const { supabase, state } = context;
-  const { studioRoles } = state;
+  const { roles } = state;
   const defaultStudioRoleName = getDefaultStudioRoleName(context);
-  if (!studioRoles || !studioRoles.some((item: Role) => item.name === defaultStudioRoleName)) {
+  if (!roles || !roles.some((item: Role) => item.tableName === RoleTable.studioRoles && item.name === defaultStudioRoleName)) {
     throw StudioError.missingStudioRoles;
   }
   const userId = state.user?.id;
