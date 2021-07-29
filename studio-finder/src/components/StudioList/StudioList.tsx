@@ -266,7 +266,13 @@ class StudioList extends React.Component<any, State> {
   }
 
   renderModalSpace = () => {
-    const { showModalSpace, modalSelectedSpaceId } = this.state;
+    const {
+      showModalSpace, modalSelectedSpaceId, studios, selectedStudioId,
+    } = this.state;
+    const studioProfile = studios?.find((studio) => studio.id === selectedStudioId);
+    if (!studioProfile) {
+      return null;
+    }
     return (
       <IonModal
         isOpen={showModalSpace}
@@ -291,6 +297,7 @@ class StudioList extends React.Component<any, State> {
           {showModalSpace && (
             <SpaceForm
               id={modalSelectedSpaceId}
+              studioProfile={studioProfile}
               onCancel={() => this.onModalSpaceClose()}
               onSave={() => {
                 this.onModalSpaceClose();

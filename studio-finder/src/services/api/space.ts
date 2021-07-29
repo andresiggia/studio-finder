@@ -2,6 +2,7 @@ import { AppContextValue } from '../../context/AppContext';
 
 import { updateObjectKeysToCamelCase, updateObjectKeysToUnderscoreCase } from './helpers';
 import { getDefaultSpaceRoleName, Role, RoleTable } from './roles';
+import { StudioProfile } from './studio';
 import { TableName } from './tables';
 
 export enum SpaceError {
@@ -85,7 +86,11 @@ export const getSpace = async (context: AppContextValue, spaceId: number) => {
   return space;
 };
 
-export const upsertSpace = async (context: AppContextValue, spaceProfile: SpaceProfile) => {
+export const upsertSpace = async (context: AppContextValue, {
+  spaceProfile, studioProfile,
+}: {
+  spaceProfile: SpaceProfile, studioProfile: StudioProfile,
+}) => {
   const { supabase, state } = context;
   const { roles } = state;
   const defaultSpaceRoleName = getDefaultSpaceRoleName(context);
@@ -99,6 +104,7 @@ export const upsertSpace = async (context: AppContextValue, spaceProfile: SpaceP
   const isEditing = !!spaceProfile.id;
   const profile: any = {
     ...spaceProfile,
+    studioId: studioProfile.id,
     modifiedAt: new Date(), // modifiedAt to be updated to current date/time
   };
   if (!isEditing) {
@@ -118,5 +124,38 @@ export const upsertSpace = async (context: AppContextValue, spaceProfile: SpaceP
   const [newRow] = data;
   // eslint-disable-next-line no-console
   console.log('got new space info', newRow, data);
+  if (!isEditing) { // create spaceUser foreign key for new items
+    const spaceId = newRow.id;
+    const spaceUser: SpaceUser = {
+      userId,
+      spaceId,
+      spaceRoleName: defaultSpaceRoleName,
+    };
+    const spaceUserData = updateObjectKeysToUnderscoreCase(spaceUser);
+    // eslint-disable-next-line no-console
+    console.log('will add new space user', spaceUserData);
+    const { data: newJoinRow, error: joinError } = await supabase
+      .from(TableName.spaceUsers)
+      .insert([spaceUserData]);
+    if (joinError) {
+      // eslint-disable-next-line no-console
+      console.warn('error during join creation', joinError);
+      // roll back space creation
+      const { data: deletedRow, error: deleteError } = await supabase
+        .from(TableName.spaces)
+        .delete()
+        .eq('id', spaceId);
+      if (deleteError) {
+        // eslint-disable-next-line no-console
+        console.warn('error during space creation rollback', deleteError);
+        throw deleteError;
+      }
+      // eslint-disable-next-line no-console
+      console.log('rolled back space creation', deletedRow);
+      throw joinError;
+    }
+    // eslint-disable-next-line no-console
+    console.log('added join', newJoinRow);
+  }
   return data;
 };

@@ -18,6 +18,7 @@ import { deepEqual } from '../../services/helpers/misc';
 import {
   defaultSpaceProfile, getSpace, upsertSpace, SpaceProfile,
 } from '../../services/api/space';
+import { StudioProfile } from '../../services/api/studio';
 
 // components
 import Notification, { NotificationType } from '../Notification/Notification';
@@ -27,6 +28,7 @@ import './SpaceForm.css';
 
 interface Props {
   id: number,
+  studioProfile: StudioProfile,
   onCancel?: () => void,
   onSave: () => void,
 }
@@ -136,11 +138,11 @@ class SpaceForm extends React.Component<Props, State> {
       isLoading: true,
     }, async () => {
       try {
-        const { onSave } = this.props;
+        const { onSave, studioProfile } = this.props;
         const { spaceProfile } = this.state;
         // eslint-disable-next-line no-console
-        console.log('will insert new space', spaceProfile);
-        const data = await upsertSpace(this.context, spaceProfile);
+        console.log('will insert new space', spaceProfile, 'in studio', studioProfile);
+        const data = await upsertSpace(this.context, { spaceProfile, studioProfile });
         // eslint-disable-next-line no-console
         console.log('got new space data', data);
         this.setMountedState({
@@ -277,9 +279,18 @@ class SpaceForm extends React.Component<Props, State> {
   }
 
   renderFields = (disabled: boolean) => {
+    const { studioProfile } = this.props;
     const { spaceProfile } = this.state;
     return (
       <IonList className="space-form-list">
+        <IonItem>
+          {this.renderTextInput({
+            value: studioProfile.title,
+            fieldName: 'studio',
+            label: i18n.t('Studio'),
+            disabled: true,
+          })}
+        </IonItem>
         <IonItem>
           {this.renderTextInput({
             value: spaceProfile.title,
