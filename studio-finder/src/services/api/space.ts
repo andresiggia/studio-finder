@@ -9,6 +9,7 @@ export enum SpaceError {
   missingUserId = 'missingUserId',
   invalidResponse = 'invalidResponse',
   missingSpaceRoles = 'missingSpaceRoles',
+  editingSpaceOfWrongStudio = 'editingSpaceOfWrongStudio',
 }
 
 export interface SpaceProfile {
@@ -104,12 +105,15 @@ export const upsertSpace = async (context: AppContextValue, {
   const isEditing = !!spaceProfile.id;
   const profile: any = {
     ...spaceProfile,
-    studioId: studioProfile.id,
     modifiedAt: new Date(), // modifiedAt to be updated to current date/time
   };
-  if (!isEditing) {
+  if (!isEditing) { // inserting new row
+    profile.studioId = studioProfile.id; // injecting studio id provided
     delete profile.createdAt; // createdAt should be created by back-end
     delete profile.id; // id should be created by back-end
+  } else if (profile.studioId !== studioProfile.id) { // only when editing
+    // studio id must match studioProfile provided
+    throw new Error(SpaceError.editingSpaceOfWrongStudio);
   }
   const spaceProfileData = updateObjectKeysToUnderscoreCase(profile);
   const { data, error } = await supabase
