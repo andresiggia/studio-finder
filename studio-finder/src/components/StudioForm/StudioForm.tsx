@@ -184,7 +184,7 @@ class StudioForm extends React.Component<Props, State> {
     const { isLoading, error } = this.state;
     const isValidForm = this.isValidForm();
     const hasChanges = this.hasChanges();
-    const hasCancelFn = typeof onCancel === 'function';
+    const disabled = isLoading || !!error;
     return (
       <div className="studio-form-footer">
         <p className="studio-form-footer-note-required">
@@ -193,31 +193,36 @@ class StudioForm extends React.Component<Props, State> {
         <IonGrid>
           <IonRow>
             <IonCol size="12" size-md="6">
-              <IonButton
-                fill="outline"
-                type="button"
-                expand="block"
-                disabled={isLoading || !!error || (!hasCancelFn && !hasChanges)}
-                onClick={() => {
-                  if (hasChanges) {
-                    this.onReset();
-                  } else if (typeof onCancel === 'function') {
-                    onCancel();
-                  }
-                }}
-              >
-                <IonIcon slot="start" icon={refreshOutline} />
-                {(hasChanges || !hasCancelFn)
-                  ? i18n.t('Reset')
-                  : i18n.t('Cancel')}
-              </IonButton>
+              {(hasChanges || typeof onCancel !== 'function')
+                ? (
+                  <IonButton
+                    fill="outline"
+                    type="button"
+                    expand="block"
+                    disabled={disabled || !hasChanges}
+                    onClick={() => this.onReset()}
+                  >
+                    <IonIcon slot="start" icon={refreshOutline} />
+                    {i18n.t('Reset')}
+                  </IonButton>
+                ) : (
+                  <IonButton
+                    fill="outline"
+                    type="button"
+                    expand="block"
+                    disabled={disabled}
+                    onClick={() => onCancel()}
+                  >
+                    {i18n.t('Cancel')}
+                  </IonButton>
+                )}
             </IonCol>
             <IonCol size="12" size-md="6">
               <IonButton
                 color="primary"
                 type="submit"
                 expand="block"
-                disabled={isLoading || !!error || !isValidForm || !hasChanges}
+                disabled={disabled || !isValidForm || !hasChanges}
               >
                 <IonIcon slot="start" icon={saveOutline} />
                 {i18n.t('Save')}
