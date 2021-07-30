@@ -39,7 +39,7 @@ export const defaultSpaceProfile: SpaceProfile = {
 };
 
 export const getSpaces = async (context: AppContextValue, props?: {
-  studioId: number, start?: number, limit: number
+  start?: number, limit: number
 }) => {
   const { start = 0, limit = 100 } = props || {};
   const { supabase, state } = context;
