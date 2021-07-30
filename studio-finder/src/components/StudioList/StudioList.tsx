@@ -75,6 +75,8 @@ class StudioList extends React.Component<any, State> {
     }, async () => {
       try {
         const items = await getStudios(this.context);
+        // eslint-disable-next-line no-console
+        console.log('got studios', items);
         let selectedId = 0;
         // pre-select first item
         if (items?.length > 0) {

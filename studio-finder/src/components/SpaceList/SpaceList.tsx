@@ -54,6 +54,13 @@ class SpaceList extends React.Component<Props, State> {
     this.loadItems();
   }
 
+  componentDidUpdate(prevProps: Props) {
+    const { studioProfile } = this.props;
+    if (prevProps.studioProfile.id !== studioProfile.id) {
+      this.loadItems();
+    }
+  }
+
   componentWillUnmount() {
     this.setMountedState({
       showModal: false,
@@ -79,9 +86,13 @@ class SpaceList extends React.Component<Props, State> {
     }, async () => {
       try {
         const { studioProfile } = this.props;
+        // eslint-disable-next-line no-console
+        console.log('will load spaces for studio', studioProfile);
         const items = await getSpaces(this.context, {
           studioId: studioProfile.id,
         });
+        // eslint-disable-next-line no-console
+        console.log('got spaces', items);
         let selectedId = 0;
         // pre-select first item
         if (items?.length > 0) {
@@ -113,15 +124,6 @@ class SpaceList extends React.Component<Props, State> {
   onModalClose = () => {
     this.setMountedState({
       showModal: false,
-    });
-  }
-
-  onItemToggle = (spaceId: number) => {
-    const { selectedId } = this.state;
-    this.setMountedState({
-      selectedId: spaceId === selectedId
-        ? 0
-        : spaceId,
     });
   }
 
@@ -239,7 +241,7 @@ class SpaceList extends React.Component<Props, State> {
                         color={item.id === selectedId
                           ? 'primary'
                           : ''}
-                        onClick={() => this.onItemToggle(item.id)}
+                        onClick={() => this.setMountedState({ selectedId: item.id })}
                         title={item.title}
                       >
                         <IonLabel>
