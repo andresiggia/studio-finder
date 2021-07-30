@@ -3,6 +3,7 @@ import { AppContextValue } from '../../context/AppContext';
 import { updateObjectKeysToCamelCase, updateObjectKeysToUnderscoreCase } from './helpers';
 import { getDefaultStudioRoleName, Role, RoleTable } from './roles';
 import { TableName } from './tables';
+import { ViewName } from './views';
 
 export enum StudioError {
   missingUserId = 'missingUserId',
@@ -58,17 +59,22 @@ export const getStudios = async (context: AppContextValue, props?: {
     throw StudioError.missingUserId;
   }
   const { data, error } = await supabase
-    .from(TableName.studioUsers)
-    .select(`${TableName.studios}(*)`)
+    .from(ViewName.studiosWithUserId)
+    .select()
     .eq('user_id', userId)
-    // .order('title', { foreignTable: 'studios', ascending: true }) // ordering by column in foreign table not working
+    .order('title', { ascending: true })
     .range(start, start + limit - 1);
   if (error) {
     throw error;
   }
   let studios: StudioProfile[] = [];
   if (data && Array.isArray(data) && data.length > 0) {
-    studios = data.map((studioUserData: any) => updateObjectKeysToCamelCase(studioUserData[TableName.studios]));
+    studios = data.map((studioDataWithUserId: any) => {
+      // extract userId from studioDataWithUserId before saving
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { userId: _userId, ...studio } = updateObjectKeysToCamelCase(studioDataWithUserId);
+      return studio;
+    });
   }
   return studios;
 };
