@@ -153,6 +153,7 @@ CREATE TABLE "booking_items" (
 CREATE TABLE "booking_reviews" (
   "booking_id" int,
   "space_id" int,
+  "user_id" varchar,
   "title" varchar,
   "description" varchar,
   "stars" int,
@@ -243,6 +244,8 @@ ALTER TABLE "booking_items" ADD FOREIGN KEY ("service_type") REFERENCES "service
 ALTER TABLE "booking_reviews" ADD FOREIGN KEY ("booking_id") REFERENCES "bookings" ("id");
 
 ALTER TABLE "booking_reviews" ADD FOREIGN KEY ("space_id") REFERENCES "spaces" ("id");
+
+ALTER TABLE "booking_reviews" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");
 
 ALTER TABLE "booking_review_photos" ADD FOREIGN KEY ("booking_id") REFERENCES "bookings" ("id");
 
