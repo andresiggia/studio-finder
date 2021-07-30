@@ -9,3 +9,10 @@
 .app-loading {
   margin: 1rem 0;
 }
+
+/* ion fixes */
+
+/* prevent blocked button from hiding text */
+ion-button.button-block {
+  white-space: normal;
+}
