@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  IonLabel, IonIcon, IonSpinner, IonButton, IonGrid, IonRow, IonCol, IonList, IonInput, IonItem,
+  IonLabel, IonIcon, IonSpinner, IonButton, IonGrid, IonRow, IonCol, IonList, IonInput, IonItem, IonTextarea,
 } from '@ionic/react';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import {
@@ -278,6 +278,33 @@ class SpaceForm extends React.Component<Props, State> {
     );
   }
 
+  renderTextareaInput = ({
+    value, disabled = false, required = false, label, fieldName,
+  }: {
+    value: string, disabled?: boolean, required?: boolean, label: string, fieldName: string,
+  }) => {
+    const isRequired = required || this.requiredFields.includes(fieldName);
+    return (
+      <>
+        {this.renderLabel(label, isRequired)}
+        <IonTextarea
+          value={value}
+          required={isRequired}
+          disabled={disabled}
+          onIonChange={(e: any) => {
+            const { spaceProfile } = this.state;
+            this.setMountedState({
+              spaceProfile: {
+                ...spaceProfile,
+                [fieldName]: e.detail.value || '',
+              },
+            });
+          }}
+        />
+      </>
+    );
+  }
+
   renderFields = (disabled: boolean) => {
     const { studioProfile } = this.props;
     const { spaceProfile } = this.state;
@@ -296,6 +323,14 @@ class SpaceForm extends React.Component<Props, State> {
             value: spaceProfile.title,
             fieldName: 'title',
             label: i18n.t('Title'),
+            disabled,
+          })}
+        </IonItem>
+        <IonItem>
+          {this.renderTextareaInput({
+            value: spaceProfile.description,
+            fieldName: 'description',
+            label: i18n.t('Description'),
             disabled,
           })}
         </IonItem>
