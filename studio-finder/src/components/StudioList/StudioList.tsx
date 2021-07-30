@@ -7,9 +7,9 @@ import {
 import { addOutline, closeOutline, createOutline } from 'ionicons/icons';
 
 // services
-import { getStudios, StudioProfile } from '../../services/api/studio';
+import { getStudios, StudioProfile } from '../../services/api/studios';
 import i18n from '../../services/i18n/i18n';
-import { getSpaces } from '../../services/api/space';
+import { getSpaces } from '../../services/api/spaces';
 
 // components
 import Notification, { NotificationType } from '../Notification/Notification';

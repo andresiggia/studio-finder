@@ -8,7 +8,7 @@ import AppContext from '../../context/AppContext';
 import { getRoutesByName, RouteName } from '../../services/routes/routes';
 
 // constants
-import { UserType } from '../../services/api/user';
+import { UserType } from '../../services/api/users';
 
 export interface InjectedProps {
   userType: string;

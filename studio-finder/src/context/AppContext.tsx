@@ -11,7 +11,7 @@ import { getRoutesByName, RouteName, LoginRouteName } from '../services/routes/r
 import { getRoles, Role } from '../services/api/roles';
 import {
   UserType, UserProfile, getUserProfile, setUserProfile,
-} from '../services/api/user';
+} from '../services/api/users';
 import { getSettings, Setting } from '../services/api/settings';
 
 const AppContext = React.createContext({});

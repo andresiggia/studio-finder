@@ -17,7 +17,7 @@ import { deepEqual } from '../../services/helpers/misc';
 // constants
 import {
   defaultStudioProfile, getStudio, upsertStudio, StudioProfile,
-} from '../../services/api/studio';
+} from '../../services/api/studios';
 
 // components
 import Notification, { NotificationType } from '../Notification/Notification';

@@ -2,7 +2,7 @@ import { AppContextValue } from '../../context/AppContext';
 
 import { updateObjectKeysToCamelCase, updateObjectKeysToUnderscoreCase } from './helpers';
 import { getDefaultSpaceRoleName, Role, RoleTable } from './roles';
-import { StudioProfile } from './studio';
+import { StudioProfile } from './studios';
 import { TableName } from './tables';
 
 export enum SpaceError {

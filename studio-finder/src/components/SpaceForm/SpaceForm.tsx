@@ -17,8 +17,8 @@ import { deepEqual } from '../../services/helpers/misc';
 // constants
 import {
   defaultSpaceProfile, getSpace, upsertSpace, SpaceProfile,
-} from '../../services/api/space';
-import { StudioProfile } from '../../services/api/studio';
+} from '../../services/api/spaces';
+import { StudioProfile } from '../../services/api/studios';
 
 // components
 import Notification, { NotificationType } from '../Notification/Notification';

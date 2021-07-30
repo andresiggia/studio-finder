@@ -16,7 +16,7 @@ import AppContext from '../../context/AppContext';
 import i18n from '../../services/i18n/i18n';
 import {
   UserType, defaultUserProfile, UserProfile, updateUserType,
-} from '../../services/api/user';
+} from '../../services/api/users';
 
 // components
 import Notification, { NotificationProps, NotificationType } from '../Notification/Notification';

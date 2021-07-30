@@ -7,7 +7,7 @@ import {
 import AppContext from '../../context/AppContext';
 
 // constants
-import { UserType } from '../../services/api/user';
+import { UserType } from '../../services/api/users';
 
 // components
 import ProfileForm from '../ProfileForm/ProfileForm';

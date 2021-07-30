@@ -4,7 +4,7 @@ import {
 } from '@ionic/react';
 
 // constants
-import { UserType } from '../../services/api/user';
+import { UserType } from '../../services/api/users';
 
 // components
 import Header from '../../components/Header/Header';
