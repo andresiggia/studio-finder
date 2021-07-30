@@ -34,3 +34,13 @@
   padding: 1rem 0 0 .5rem;
   border-top: 1px solid var(--ion-color-light);
 }
+
+.studio-list-spaces-item-container {
+  padding: .5rem;
+  font-weight: bold;
+}
+
+.studio-list-spaces-item-title {
+  padding-left: 0;
+  font-size: 1rem;
+}

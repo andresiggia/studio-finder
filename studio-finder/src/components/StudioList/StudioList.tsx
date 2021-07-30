@@ -142,22 +142,59 @@ class StudioList extends React.Component<any, State> {
     });
   }
 
-  onItemToggle = (studioId: number) => {
-    const { selectedStudioId } = this.state;
+  onSpaceToggle = (spaceId: number) => {
+    const { selectedSpaceId } = this.state;
     this.setMountedState({
-      selectedStudioId: studioId === selectedStudioId
+      selectedSpaceId: spaceId === selectedSpaceId
         ? 0
-        : studioId,
+        : spaceId,
     });
   }
 
   // render
 
+  renderSelectedSpace = () => {
+    const { spaces, selectedSpaceId, selectedStudioId } = this.state;
+    const space = spaces?.find((item) => item.studioId === selectedStudioId && item.id === selectedSpaceId);
+    if (!space) {
+      return (
+        <Notification
+          type={NotificationType.danger}
+          className="studio-list-spacer"
+          header={i18n.t('Not found')}
+          message={i18n.t('Invalid selected Space')}
+          onDismiss={() => this.setMountedState({ selectedSpaceId: 0 })}
+        />
+      );
+    }
+    return (
+      <div className="studio-list-spaces-item-container">
+        <IonToolbar>
+          <IonTitle size="small" className="studio-list-spaces-item-title">
+            {space.title}
+          </IonTitle>
+          <IonButtons slot="end">
+            <IonButton
+              fill="outline"
+              color="primary"
+              title={i18n.t('Edit Space')}
+              onClick={() => this.onModalSpaceOpen(selectedSpaceId)}
+            >
+              <IonIcon icon={createOutline} />
+              {i18n.t('Space')}
+            </IonButton>
+          </IonButtons>
+        </IonToolbar>
+        <p>{space.description || `(${i18n.t('No description')})`}</p>
+      </div>
+    );
+  }
+
   renderSpaces = () => {
-    const { spaces, selectedSpaceId } = this.state;
+    const { spaces, selectedSpaceId, selectedStudioId } = this.state;
     return (
       <>
-        <IonTitle size="small" className="studio-list-space-title">
+        <IonTitle size="small" className="studio-list-spaces-title">
           {i18n.t('Studio Spaces')}
         </IonTitle>
         <IonGrid>
@@ -168,24 +205,32 @@ class StudioList extends React.Component<any, State> {
                   <p>{i18n.t('No spaces found.')}</p>
                 ) : (
                   <IonList className="studio-list-spaces">
-                    {spaces.map((space) => (
-                      <IonItem
-                        key={space.id}
-                        detail
-                        button
-                        color={space.id === selectedSpaceId
-                          ? 'primary'
-                          : ''}
-                        onClick={() => this.onItemToggle(space.id)}
-                        title={space.title}
-                      >
-                        <IonLabel>
-                          {space.title}
-                        </IonLabel>
-                      </IonItem>
-                    ))}
+                    {spaces
+                      // show only spaces related to selected studio
+                      .filter((space) => space.studioId === selectedStudioId)
+                      .map((space) => (
+                        <IonItem
+                          key={space.id}
+                          detail
+                          button
+                          color={space.id === selectedSpaceId
+                            ? 'primary'
+                            : ''}
+                          onClick={() => this.onSpaceToggle(space.id)}
+                          title={space.title}
+                        >
+                          <IonLabel>
+                            {space.title}
+                          </IonLabel>
+                        </IonItem>
+                      ))}
                   </IonList>
                 )}
+            </IonCol>
+            <IonCol size="12" size-md="6" size-lg="8">
+              {!!selectedSpaceId && (
+                this.renderSelectedSpace()
+              )}
             </IonCol>
           </IonRow>
         </IonGrid>
