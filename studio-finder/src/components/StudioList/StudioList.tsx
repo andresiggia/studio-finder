@@ -24,10 +24,10 @@ import SpaceList from '../SpaceList/SpaceList';
 interface State {
   isLoading: boolean,
   error: Error | null,
-  studios: StudioProfile[] | null,
-  selectedStudioId: number,
-  showModalStudio: boolean,
-  modalSelectedStudioId: number,
+  items: StudioProfile[] | null,
+  selectedId: number,
+  showModal: boolean,
+  modalSelectedId: number,
 }
 
 class StudioList extends React.Component<any, State> {
@@ -38,10 +38,10 @@ class StudioList extends React.Component<any, State> {
     this.state = {
       isLoading: false,
       error: null,
-      studios: null,
-      selectedStudioId: 0,
-      showModalStudio: false,
-      modalSelectedStudioId: 0,
+      items: null,
+      selectedId: 0,
+      showModal: false,
+      modalSelectedId: 0,
     };
   }
 
@@ -52,7 +52,7 @@ class StudioList extends React.Component<any, State> {
 
   componentWillUnmount() {
     this.setMountedState({
-      showModalStudio: false,
+      showModal: false,
     });
     this.mounted = false;
   }
@@ -74,16 +74,16 @@ class StudioList extends React.Component<any, State> {
       isLoading: true,
     }, async () => {
       try {
-        const studios = await getStudios(this.context);
-        let selectedStudioId = 0;
+        const items = await getStudios(this.context);
+        let selectedId = 0;
         // pre-select first item
-        if (studios?.length > 0) {
-          selectedStudioId = studios[0].id;
+        if (items?.length > 0) {
+          selectedId = items[0].id;
         }
         this.setMountedState({
           isLoading: false,
-          studios,
-          selectedStudioId,
+          items,
+          selectedId,
         });
       } catch (error) {
         // eslint-disable-next-line no-console
@@ -96,24 +96,24 @@ class StudioList extends React.Component<any, State> {
     });
   }
 
-  onModalOpen = (modalSelectedStudioId = 0) => {
+  onModalOpen = (modalSelectedId = 0) => {
     this.setMountedState({
-      showModalStudio: true,
-      modalSelectedStudioId,
+      showModal: true,
+      modalSelectedId,
     });
   }
 
   onModalClose = () => {
     this.setMountedState({
-      showModalStudio: false,
+      showModal: false,
     });
   }
 
   // render
 
   renderSpaces = () => {
-    const { studios, selectedStudioId } = this.state;
-    const studioProfile = studios?.find((item) => item.id === selectedStudioId);
+    const { items, selectedId } = this.state;
+    const studioProfile = items?.find((item) => item.id === selectedId);
     if (!studioProfile) {
       return (
         <Notification
@@ -121,7 +121,7 @@ class StudioList extends React.Component<any, State> {
           className="studio-list-spacer"
           header={i18n.t('Not found')}
           message={i18n.t('Invalid selected studio')}
-          onDismiss={() => this.setMountedState({ selectedStudioId: 0 })}
+          onDismiss={() => this.setMountedState({ selectedId: 0 })}
         />
       );
     }
@@ -132,7 +132,7 @@ class StudioList extends React.Component<any, State> {
 
   renderContent = () => {
     const {
-      isLoading, error, studios, selectedStudioId,
+      isLoading, error, items, selectedId,
     } = this.state;
     return (
       <>
@@ -150,40 +150,40 @@ class StudioList extends React.Component<any, State> {
             onDismiss={() => this.setMountedState({ error: null })}
           />
         )}
-        {!studios || studios.length === 0
+        {!items || items.length === 0
           ? (
             <p>{i18n.t('No studios found.')}</p>
           ) : (
             <>
               <IonToolbar>
                 <IonSelect
-                  value={selectedStudioId}
+                  value={selectedId}
                   placeholder={i18n.t('Select')}
                   className="studio-list-select"
                   interfaceOptions={{
                     header: i18n.t('Select a Studio'),
                   }}
                 >
-                  {studios.map((item) => (
+                  {items.map((item) => (
                     <IonSelectOption key={item.id} value={item.id}>
                       {item.title}
                     </IonSelectOption>
                   ))}
                 </IonSelect>
-                {!!selectedStudioId && (
+                {!!selectedId && (
                   <IonButtons className="studio-list-item-toolbar">
                     <IonButton
                       fill="outline"
                       color="primary"
                       title={i18n.t('Edit Studio')}
-                      onClick={() => this.onModalOpen(selectedStudioId)}
+                      onClick={() => this.onModalOpen(selectedId)}
                     >
                       <IonIcon icon={createOutline} />
                     </IonButton>
                   </IonButtons>
                 )}
               </IonToolbar>
-              {!!selectedStudioId && (
+              {!!selectedId && (
                 this.renderSpaces()
               )}
             </>
@@ -193,15 +193,15 @@ class StudioList extends React.Component<any, State> {
   }
 
   renderModalStudio = () => {
-    const { showModalStudio, modalSelectedStudioId } = this.state;
+    const { showModal, modalSelectedId } = this.state;
     return (
       <IonModal
-        isOpen={showModalStudio}
+        isOpen={showModal}
         onWillDismiss={() => this.onModalClose()}
       >
         <IonToolbar>
           <IonTitle>
-            {modalSelectedStudioId
+            {modalSelectedId
               ? i18n.t('Edit Studio')
               : i18n.t('Create Studio')}
           </IonTitle>
@@ -215,9 +215,9 @@ class StudioList extends React.Component<any, State> {
           </IonButtons>
         </IonToolbar>
         <IonContent>
-          {showModalStudio && (
+          {showModal && (
             <StudioForm
-              id={modalSelectedStudioId}
+              id={modalSelectedId}
               onCancel={() => this.onModalClose()}
               onSave={() => {
                 this.onModalClose();

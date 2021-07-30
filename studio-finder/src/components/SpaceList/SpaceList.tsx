@@ -24,10 +24,10 @@ import './SpaceList.css';
 interface State {
   isLoading: boolean,
   error: Error | null,
-  spaces: any[] | null,
-  selectedSpaceId: number,
-  showModalSpace: boolean,
-  modalSelectedSpaceId: number,
+  items: any[] | null,
+  selectedId: number,
+  showModal: boolean,
+  modalSelectedId: number,
 }
 
 interface Props {
@@ -42,10 +42,10 @@ class SpaceList extends React.Component<Props, State> {
     this.state = {
       isLoading: false,
       error: null,
-      spaces: null,
-      selectedSpaceId: 0,
-      showModalSpace: false,
-      modalSelectedSpaceId: 0,
+      items: null,
+      selectedId: 0,
+      showModal: false,
+      modalSelectedId: 0,
     };
   }
 
@@ -56,7 +56,7 @@ class SpaceList extends React.Component<Props, State> {
 
   componentWillUnmount() {
     this.setMountedState({
-      showModalStudio: false,
+      showModal: false,
     });
     this.mounted = false;
   }
@@ -79,18 +79,18 @@ class SpaceList extends React.Component<Props, State> {
     }, async () => {
       try {
         const { studioProfile } = this.props;
-        const spaces = await getSpaces(this.context, {
+        const items = await getSpaces(this.context, {
           studioId: studioProfile.id,
         });
-        let selectedSpaceId = 0;
+        let selectedId = 0;
         // pre-select first item
-        if (spaces?.length > 0) {
-          selectedSpaceId = spaces[0].id;
+        if (items?.length > 0) {
+          selectedId = items[0].id;
         }
         this.setMountedState({
           isLoading: false,
-          spaces,
-          selectedSpaceId,
+          items,
+          selectedId,
         });
       } catch (error) {
         // eslint-disable-next-line no-console
@@ -103,23 +103,23 @@ class SpaceList extends React.Component<Props, State> {
     });
   }
 
-  onModalOpen = (modalSelectedSpaceId = 0) => {
+  onModalOpen = (modalSelectedId = 0) => {
     this.setMountedState({
-      showModalSpace: true,
-      modalSelectedSpaceId,
+      showModal: true,
+      modalSelectedId,
     });
   }
 
   onModalClose = () => {
     this.setMountedState({
-      showModalSpace: false,
+      showModal: false,
     });
   }
 
   onItemToggle = (spaceId: number) => {
-    const { selectedSpaceId } = this.state;
+    const { selectedId } = this.state;
     this.setMountedState({
-      selectedSpaceId: spaceId === selectedSpaceId
+      selectedId: spaceId === selectedId
         ? 0
         : spaceId,
     });
@@ -128,16 +128,16 @@ class SpaceList extends React.Component<Props, State> {
   // render
 
   renderSelectedSpace = () => {
-    const { spaces, selectedSpaceId } = this.state;
-    const space = spaces?.find((item) => item.id === selectedSpaceId);
-    if (!space) {
+    const { items, selectedId } = this.state;
+    const spaceProfile = items?.find((item) => item.id === selectedId);
+    if (!spaceProfile) {
       return (
         <Notification
           type={NotificationType.danger}
           className="space-list-spacer"
           header={i18n.t('Not found')}
           message={i18n.t('Invalid selected Space')}
-          onDismiss={() => this.setMountedState({ selectedSpaceId: 0 })}
+          onDismiss={() => this.setMountedState({ selectedId: 0 })}
         />
       );
     }
@@ -145,35 +145,35 @@ class SpaceList extends React.Component<Props, State> {
       <div className="space-list-item-container">
         <IonToolbar>
           <IonTitle size="small" className="space-list-item-title">
-            {space.title}
+            {spaceProfile.title}
           </IonTitle>
           <IonButtons slot="end" className="space-list-item-toolbar">
             <IonButton
               fill="outline"
               color="primary"
               title={i18n.t('Edit Space')}
-              onClick={() => this.onModalOpen(selectedSpaceId)}
+              onClick={() => this.onModalOpen(selectedId)}
             >
               <IonIcon icon={createOutline} />
             </IonButton>
           </IonButtons>
         </IonToolbar>
-        <p>{space.description || `(${i18n.t('No description')})`}</p>
+        <p>{spaceProfile.description || `(${i18n.t('No description')})`}</p>
       </div>
     );
   }
 
   renderModalSpace = () => {
     const { studioProfile } = this.props;
-    const { showModalSpace, modalSelectedSpaceId } = this.state;
+    const { showModal, modalSelectedId } = this.state;
     return (
       <IonModal
-        isOpen={showModalSpace}
+        isOpen={showModal}
         onWillDismiss={() => this.onModalClose()}
       >
         <IonToolbar>
           <IonTitle>
-            {modalSelectedSpaceId
+            {modalSelectedId
               ? i18n.t('Edit Space')
               : i18n.t('Create Space')}
           </IonTitle>
@@ -187,9 +187,9 @@ class SpaceList extends React.Component<Props, State> {
           </IonButtons>
         </IonToolbar>
         <IonContent>
-          {showModalSpace && (
+          {showModal && (
             <SpaceForm
-              id={modalSelectedSpaceId}
+              id={modalSelectedId}
               studioProfile={studioProfile}
               onCancel={() => this.onModalClose()}
               onSave={() => {
@@ -205,7 +205,7 @@ class SpaceList extends React.Component<Props, State> {
 
   renderContent = () => {
     const {
-      isLoading, error, spaces, selectedSpaceId,
+      isLoading, error, items, selectedId,
     } = this.state;
     return (
       <>
@@ -226,24 +226,24 @@ class SpaceList extends React.Component<Props, State> {
         <IonGrid>
           <IonRow>
             <IonCol size="12" size-md="6" size-lg="4">
-              {!spaces || spaces.length === 0
+              {!items || items.length === 0
                 ? (
                   <p>{i18n.t('No spaces found.')}</p>
                 ) : (
                   <IonList className="space-list-items">
-                    {spaces.map((space) => (
+                    {items.map((item) => (
                       <IonItem
-                        key={space.id}
+                        key={item.id}
                         detail
                         button
-                        color={space.id === selectedSpaceId
+                        color={item.id === selectedId
                           ? 'primary'
                           : ''}
-                        onClick={() => this.onItemToggle(space.id)}
-                        title={space.title}
+                        onClick={() => this.onItemToggle(item.id)}
+                        title={item.title}
                       >
                         <IonLabel>
-                          {space.title}
+                          {item.title}
                         </IonLabel>
                       </IonItem>
                     ))}
@@ -251,7 +251,7 @@ class SpaceList extends React.Component<Props, State> {
                 )}
             </IonCol>
             <IonCol size="12" size-md="6" size-lg="8">
-              {!!selectedSpaceId && (
+              {!!selectedId && (
                 this.renderSelectedSpace()
               )}
             </IonCol>
