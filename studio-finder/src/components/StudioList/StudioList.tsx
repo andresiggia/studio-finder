@@ -163,6 +163,7 @@ class StudioList extends React.Component<any, State> {
                   interfaceOptions={{
                     header: i18n.t('Select a Studio'),
                   }}
+                  onIonChange={(e) => this.setMountedState({ selectedId: e.detail.value })}
                 >
                   {items.map((item) => (
                     <IonSelectOption key={item.id} value={item.id}>
