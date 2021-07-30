@@ -7,6 +7,7 @@ import { TableName } from './tables';
 
 export enum SpaceError {
   missingUserId = 'missingUserId',
+  missingStudioId = 'missingStudioId',
   invalidResponse = 'invalidResponse',
   missingSpaceRoles = 'missingSpaceRoles',
   editingSpaceOfWrongStudio = 'editingSpaceOfWrongStudio',
@@ -39,9 +40,12 @@ export const defaultSpaceProfile: SpaceProfile = {
 };
 
 export const getSpaces = async (context: AppContextValue, props?: {
-  start?: number, limit: number
+  studioId: number, start?: number, limit?: number
 }) => {
-  const { start = 0, limit = 100 } = props || {};
+  const { studioId, start = 0, limit = 100 } = props || {};
+  if (!studioId) {
+    throw SpaceError.missingStudioId;
+  }
   const { supabase, state } = context;
   const userId = state.user?.id;
   if (!userId) {
@@ -51,6 +55,7 @@ export const getSpaces = async (context: AppContextValue, props?: {
     .from(TableName.spaceUsers)
     .select(`${TableName.spaces}(*)`)
     .eq('user_id', userId)
+    .eq(`${TableName.spaces}.studio_id`, studioId)
     // .order('title', { foreignTable: 'spaces', ascending: true }) // ordering by column in foreign table not working
     .range(start, start + limit - 1);
   if (error) {
