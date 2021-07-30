@@ -1,3 +1,4 @@
 export enum ViewName {
-  roles = 'roles'
+  roles = 'roles',
+  spacesWithUserId = 'spaces_with_user_id',
 }

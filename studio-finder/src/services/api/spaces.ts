@@ -4,6 +4,7 @@ import { updateObjectKeysToCamelCase, updateObjectKeysToUnderscoreCase } from '.
 import { getDefaultSpaceRoleName, Role, RoleTable } from './roles';
 import { StudioProfile } from './studios';
 import { TableName } from './tables';
+import { ViewName } from './views';
 
 export enum SpaceError {
   missingUserId = 'missingUserId',
@@ -52,18 +53,23 @@ export const getSpaces = async (context: AppContextValue, props?: {
     throw SpaceError.missingUserId;
   }
   const { data, error } = await supabase
-    .from(TableName.spaceUsers)
-    .select(`${TableName.spaces}(*)`)
+    .from(ViewName.spacesWithUserId)
+    .select()
+    .eq('studio_id', studioId)
     .eq('user_id', userId)
-    .eq(`${TableName.spaces}.studio_id`, studioId)
-    // .order('title', { foreignTable: 'spaces', ascending: true }) // ordering by column in foreign table not working
+    .order('title', { ascending: true })
     .range(start, start + limit - 1);
   if (error) {
     throw error;
   }
   let spaces: SpaceProfile[] = [];
   if (data && Array.isArray(data) && data.length > 0) {
-    spaces = data.map((spaceUserData: any) => updateObjectKeysToCamelCase(spaceUserData[TableName.spaces]));
+    spaces = data.map((spaceDataWithUserId: any) => {
+      // extract userId from spaceDataWithUserId before saving
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { userId: _userId, ...space } = updateObjectKeysToCamelCase(spaceDataWithUserId);
+      return space;
+    });
   }
   return spaces;
 };
