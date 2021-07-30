@@ -2,7 +2,7 @@ import { AppContextValue } from '../../context/AppContext';
 
 import { updateObjectKeysToCamelCase } from './helpers';
 import { SettingKey } from './settings';
-import { ViewName } from './tables';
+import { ViewName } from './views';
 
 export enum RoleError {
   noDefaultStudioRole = 'noDefaultStudioRole',
