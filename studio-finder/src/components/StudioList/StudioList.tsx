@@ -13,13 +13,13 @@ import i18n from '../../services/i18n/i18n';
 // components
 import Notification, { NotificationType } from '../Notification/Notification';
 import StudioForm from '../StudioForm/StudioForm';
+import SpaceList from '../SpaceList/SpaceList';
 
 // context
 import AppContext from '../../context/AppContext';
 
 // css
 import './StudioList.css';
-import SpaceList from '../SpaceList/SpaceList';
 
 interface State {
   isLoading: boolean,
