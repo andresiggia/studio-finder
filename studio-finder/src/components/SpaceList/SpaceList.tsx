@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  IonButton, IonButtons, IonCol, IonContent, IonGrid, IonIcon, IonItem, IonLabel, IonList, IonModal, IonRow,
+  IonButton, IonButtons, IonContent, IonIcon, IonLabel, IonModal, IonSegment, IonSegmentButton,
   IonSpinner, IonTitle, IonToolbar,
 } from '@ionic/react';
 // eslint-disable-next-line import/no-extraneous-dependencies
@@ -147,9 +147,9 @@ class SpaceList extends React.Component<Props, State> {
     return (
       <div className="space-list-item-container">
         <IonToolbar>
-          <IonTitle size="small" className="space-list-item-title">
-            {spaceProfile.title}
-          </IonTitle>
+          <p slot="start">
+            {spaceProfile.description || `(${i18n.t('No description')})`}
+          </p>
           <IonButtons slot="end" className="space-list-item-toolbar">
             <IonButton
               fill="outline"
@@ -158,10 +158,10 @@ class SpaceList extends React.Component<Props, State> {
               onClick={() => this.onModalOpen(selectedId)}
             >
               <IonIcon icon={createOutline} />
+              {i18n.t('Edit Space')}
             </IonButton>
           </IonButtons>
         </IonToolbar>
-        <p>{spaceProfile.description || `(${i18n.t('No description')})`}</p>
         <BookingItemList
           spaceProfile={spaceProfile}
         />
@@ -209,6 +209,47 @@ class SpaceList extends React.Component<Props, State> {
     );
   }
 
+  renderSpaces = () => {
+    const { items, selectedId } = this.state;
+    const options = [
+      ...(items || []),
+      {
+        id: 0,
+        title: i18n.t('Space'),
+        hoverTitle: i18n.t('Add Space'),
+        icon: addOutline,
+      },
+    ];
+    return (
+      <IonSegment
+        value={String(selectedId)}
+        scrollable
+        onIonChange={(e) => {
+          const newValue = Number(e.detail.value);
+          if (!newValue) {
+            this.onModalOpen();
+          }
+          this.setMountedState({
+            selectedId: newValue || selectedId,
+          });
+        }}
+      >
+        {options.map((item) => (
+          <IonSegmentButton
+            key={item.id}
+            value={String(item.id)}
+            title={item.hoverTitle || item.title}
+          >
+            {!!item.icon && (
+              <IonIcon icon={item.icon} />
+            )}
+            <IonLabel>{item.title}</IonLabel>
+          </IonSegmentButton>
+        ))}
+      </IonSegment>
+    );
+  }
+
   renderContent = () => {
     const {
       isLoading, error, items, selectedId,
@@ -229,40 +270,28 @@ class SpaceList extends React.Component<Props, State> {
             onDismiss={() => this.setMountedState({ error: null })}
           />
         )}
-        <IonGrid>
-          <IonRow>
-            <IonCol size="12" size-md="6" size-lg="4">
-              {!items || items.length === 0
-                ? (
-                  <p>{i18n.t('No spaces found.')}</p>
-                ) : (
-                  <IonList className="space-list-items">
-                    {items.map((item) => (
-                      <IonItem
-                        key={item.id}
-                        detail
-                        button
-                        color={item.id === selectedId
-                          ? 'primary'
-                          : ''}
-                        onClick={() => this.setMountedState({ selectedId: item.id })}
-                        title={item.title}
-                      >
-                        <IonLabel>
-                          {item.title}
-                        </IonLabel>
-                      </IonItem>
-                    ))}
-                  </IonList>
-                )}
-            </IonCol>
-            <IonCol size="12" size-md="6" size-lg="8">
+        {!items || items.length === 0
+          ? (
+            <>
+              <p>{i18n.t('No spaces found.')}</p>
+              <IonButton
+                fill="outline"
+                color="primary"
+                title={i18n.t('Add Space')}
+                onClick={() => this.onModalOpen()}
+              >
+                <IonIcon icon={addOutline} />
+                {i18n.t('Space')}
+              </IonButton>
+            </>
+          ) : (
+            <>
+              {this.renderSpaces()}
               {!!selectedId && (
                 this.renderSelectedSpace()
               )}
-            </IonCol>
-          </IonRow>
-        </IonGrid>
+            </>
+          )}
       </>
     );
   }
@@ -270,7 +299,7 @@ class SpaceList extends React.Component<Props, State> {
   render() {
     return (
       <>
-        <IonToolbar>
+        {/* <IonToolbar>
           <IonTitle size="small" className="space-list-title">
             {i18n.t('Studio Spaces')}
           </IonTitle>
@@ -285,7 +314,7 @@ class SpaceList extends React.Component<Props, State> {
               {i18n.t('Space')}
             </IonButton>
           </IonButtons>
-        </IonToolbar>
+        </IonToolbar> */}
         {this.renderContent()}
         {this.renderModalSpace()}
       </>
