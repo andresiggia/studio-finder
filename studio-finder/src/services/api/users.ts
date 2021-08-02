@@ -1,6 +1,6 @@
 import { AppContextValue } from '../../context/AppContext';
 
-import { updateObjectKeysToCamelCase, updateObjectKeysToUnderscoreCase } from './helpers';
+import { convertDateFields, updateObjectKeysToCamelCase, updateObjectKeysToUnderscoreCase } from './helpers';
 import { TableName } from './tables';
 
 export enum UserError {
@@ -58,14 +58,7 @@ export const getUserProfile = async (context: AppContextValue) => {
   }
   let profile: any = null;
   if (data && data.id === id) {
-    profile = updateObjectKeysToCamelCase(data);
-    // convert date fields
-    dateFields.forEach((fieldName: string) => {
-      const value = profile[fieldName as keyof UserProfile];
-      profile[fieldName as keyof UserProfile] = value
-        ? new Date(value)
-        : null;
-    });
+    profile = convertDateFields(updateObjectKeysToCamelCase(data), dateFields);
   }
   return profile;
 };

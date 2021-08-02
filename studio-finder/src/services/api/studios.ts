@@ -1,6 +1,6 @@
 import { AppContextValue } from '../../context/AppContext';
 
-import { updateObjectKeysToCamelCase, updateObjectKeysToUnderscoreCase } from './helpers';
+import { convertDateFields, updateObjectKeysToCamelCase, updateObjectKeysToUnderscoreCase } from './helpers';
 import { getDefaultStudioRoleName, Role, RoleTable } from './roles';
 import { TableName } from './tables';
 import { ViewName } from './views';
@@ -73,7 +73,7 @@ export const getStudios = async (context: AppContextValue, props?: {
       // extract userId from studioDataWithUserId before saving
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { userId: _userId, ...studio } = updateObjectKeysToCamelCase(studioDataWithUserId);
-      return studio;
+      return convertDateFields(studio, dateFields);
     });
   }
   return studios;
@@ -91,14 +91,7 @@ export const getStudio = async (context: AppContextValue, studioId: number) => {
   }
   let studio: any = null;
   if (data && data.id === studioId) {
-    studio = updateObjectKeysToCamelCase(data);
-    // convert date fields
-    dateFields.forEach((fieldName: string) => {
-      const value = studio[fieldName as keyof StudioProfile];
-      studio[fieldName as keyof StudioProfile] = value
-        ? new Date(value)
-        : null;
-    });
+    studio = convertDateFields(updateObjectKeysToCamelCase(data), dateFields);
   }
   return studio;
 };
