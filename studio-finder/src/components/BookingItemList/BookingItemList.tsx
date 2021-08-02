@@ -7,35 +7,34 @@ import {
 import { addOutline, closeOutline, createOutline } from 'ionicons/icons';
 
 // services
-import { StudioProfile } from '../../services/api/studios';
+import { SpaceProfile } from '../../services/api/spaces';
 import i18n from '../../services/i18n/i18n';
-import { getSpaces } from '../../services/api/spaces';
+import { getBookingItems } from '../../services/api/bookings';
 
 // components
 import Notification, { NotificationType } from '../Notification/Notification';
-import SpaceForm from '../SpaceForm/SpaceForm';
-import BookingItemList from '../BookingItemList/BookingItemList';
+// import BookingItemForm from '../BookingItemForm/BookingItemForm';
 
 // context
 import AppContext from '../../context/AppContext';
 
 // css
-import './SpaceList.css';
+import './BookingItemList.css';
 
 interface State {
   isLoading: boolean,
   error: Error | null,
   items: any[] | null,
-  selectedId: number,
+  // selectedId: number,
   showModal: boolean,
   modalSelectedId: number,
 }
 
 interface Props {
-  studioProfile: StudioProfile,
+  spaceProfile: SpaceProfile,
 }
 
-class SpaceList extends React.Component<Props, State> {
+class BookingItemList extends React.Component<Props, State> {
   mounted = false
 
   constructor(props: Props) {
@@ -44,7 +43,7 @@ class SpaceList extends React.Component<Props, State> {
       isLoading: false,
       error: null,
       items: null,
-      selectedId: 0,
+      // selectedId: 0,
       showModal: false,
       modalSelectedId: 0,
     };
@@ -56,8 +55,8 @@ class SpaceList extends React.Component<Props, State> {
   }
 
   componentDidUpdate(prevProps: Props) {
-    const { studioProfile } = this.props;
-    if (prevProps.studioProfile.id !== studioProfile.id) {
+    const { spaceProfile } = this.props;
+    if (prevProps.spaceProfile.id !== spaceProfile.id) {
       this.loadItems();
     }
   }
@@ -86,23 +85,17 @@ class SpaceList extends React.Component<Props, State> {
       isLoading: true,
     }, async () => {
       try {
-        const { studioProfile } = this.props;
+        const { spaceProfile } = this.props;
         // eslint-disable-next-line no-console
-        console.log('will load spaces for studio', studioProfile);
-        const items = await getSpaces(this.context, {
-          studioId: studioProfile.id,
+        console.log('will load bookings for space', spaceProfile);
+        const items = await getBookingItems(this.context, {
+          spaceId: spaceProfile.id,
         });
         // eslint-disable-next-line no-console
-        console.log('got spaces', items);
-        let selectedId = 0;
-        // pre-select first item
-        if (items?.length > 0) {
-          selectedId = items[0].id;
-        }
+        console.log('got booking items', items);
         this.setMountedState({
           isLoading: false,
           items,
-          selectedId,
         });
       } catch (error) {
         // eslint-disable-next-line no-console
@@ -130,47 +123,44 @@ class SpaceList extends React.Component<Props, State> {
 
   // render
 
-  renderSelectedSpace = () => {
-    const { items, selectedId } = this.state;
-    const spaceProfile = items?.find((item) => item.id === selectedId);
-    if (!spaceProfile) {
-      return (
-        <Notification
-          type={NotificationType.danger}
-          className="space-list-spacer"
-          header={i18n.t('Not found')}
-          message={i18n.t('Invalid selected Space')}
-          onDismiss={() => this.setMountedState({ selectedId: 0 })}
-        />
-      );
-    }
-    return (
-      <div className="space-list-item-container">
-        <IonToolbar>
-          <IonTitle size="small" className="space-list-item-title">
-            {spaceProfile.title}
-          </IonTitle>
-          <IonButtons slot="end" className="space-list-item-toolbar">
-            <IonButton
-              fill="outline"
-              color="primary"
-              title={i18n.t('Edit Space')}
-              onClick={() => this.onModalOpen(selectedId)}
-            >
-              <IonIcon icon={createOutline} />
-            </IonButton>
-          </IonButtons>
-        </IonToolbar>
-        <p>{spaceProfile.description || `(${i18n.t('No description')})`}</p>
-        <BookingItemList
-          spaceProfile={spaceProfile}
-        />
-      </div>
-    );
-  }
+  // renderSelectedBookingItem = () => {
+  //   const { items, selectedId } = this.state;
+  //   const bookingItemProfile = items?.find((item) => item.id === selectedId);
+  //   if (!bookingItemProfile) {
+  //     return (
+  //       <Notification
+  //         type={NotificationType.danger}
+  //         className="booking-item-list-bookingItemr"
+  //         header={i18n.t('Not found')}
+  //         message={i18n.t('Invalid selected BookingItem')}
+  //         onDismiss={() => this.setMountedState({ selectedId: 0 })}
+  //       />
+  //     );
+  //   }
+  //   return (
+  //     <div className="booking-item-list-item-container">
+  //       <IonToolbar>
+  //         <IonTitle size="small" className="booking-item-list-item-title">
+  //           {bookingItemProfile.title}
+  //         </IonTitle>
+  //         <IonButtons slot="end" className="booking-item-list-item-toolbar">
+  //           <IonButton
+  //             fill="outline"
+  //             color="primary"
+  //             title={i18n.t('Edit BookingItem')}
+  //             onClick={() => this.onModalOpen(selectedId)}
+  //           >
+  //             <IonIcon icon={createOutline} />
+  //           </IonButton>
+  //         </IonButtons>
+  //       </IonToolbar>
+  //       <p>{bookingItemProfile.description || `(${i18n.t('No description')})`}</p>
+  //     </div>
+  //   );
+  // }
 
-  renderModalSpace = () => {
-    const { studioProfile } = this.props;
+  renderModalBookingItem = () => {
+    // const { spaceProfile } = this.props;
     const { showModal, modalSelectedId } = this.state;
     return (
       <IonModal
@@ -180,8 +170,8 @@ class SpaceList extends React.Component<Props, State> {
         <IonToolbar>
           <IonTitle>
             {modalSelectedId
-              ? i18n.t('Edit Space')
-              : i18n.t('Create Space')}
+              ? i18n.t('Edit BookingItem')
+              : i18n.t('Create BookingItem')}
           </IonTitle>
           <IonButtons slot="end">
             <IonButton
@@ -194,15 +184,16 @@ class SpaceList extends React.Component<Props, State> {
         </IonToolbar>
         <IonContent>
           {showModal && (
-            <SpaceForm
-              id={modalSelectedId}
-              studioProfile={studioProfile}
-              onCancel={() => this.onModalClose()}
-              onSave={() => {
-                this.onModalClose();
-                this.loadItems();
-              }}
-            />
+            <p>Under development</p>
+            // <BookingItemForm
+            //   id={modalSelectedId}
+            //   spaceProfile={spaceProfile}
+            //   onCancel={() => this.onModalClose()}
+            //   onSave={() => {
+            //     this.onModalClose();
+            //     this.loadItems();
+            //   }}
+            // />
           )}
         </IonContent>
       </IonModal>
@@ -211,19 +202,19 @@ class SpaceList extends React.Component<Props, State> {
 
   renderContent = () => {
     const {
-      isLoading, error, items, selectedId,
+      isLoading, error, items, // selectedId,
     } = this.state;
     return (
       <>
         {isLoading && (
-          <div className="space-list-loading space-list-spacer">
+          <div className="booking-item-list-loading booking-item-list-bookingItemr">
             <IonSpinner name="bubbles" />
           </div>
         )}
         {!!error && (
           <Notification
             type={NotificationType.danger}
-            className="space-list-spacer"
+            className="booking-item-list-bookingItemr"
             header={i18n.t('Error')}
             message={error?.message || i18n.t('An error occurred, please try again later')}
             onDismiss={() => this.setMountedState({ error: null })}
@@ -234,17 +225,18 @@ class SpaceList extends React.Component<Props, State> {
             <IonCol size="12" size-md="6" size-lg="4">
               {!items || items.length === 0
                 ? (
-                  <p>{i18n.t('No spaces found.')}</p>
+                  <p>{i18n.t('No bookings found.')}</p>
                 ) : (
-                  <IonList className="space-list-items">
-                    {items.map((item) => (
+                  <IonList className="booking-item-list-items">
+                    {items.map((item, i) => (
                       <IonItem
-                        key={item.id}
+                        // eslint-disable-next-line react/no-array-index-key
+                        key={i}
                         detail
                         button
-                        color={item.id === selectedId
-                          ? 'primary'
-                          : ''}
+                        // color={item.id === selectedId
+                        //   ? 'primary'
+                        //   : ''}
                         onClick={() => this.setMountedState({ selectedId: item.id })}
                         title={item.title}
                       >
@@ -257,9 +249,9 @@ class SpaceList extends React.Component<Props, State> {
                 )}
             </IonCol>
             <IonCol size="12" size-md="6" size-lg="8">
-              {!!selectedId && (
-                this.renderSelectedSpace()
-              )}
+              {/* {!!selectedId && (
+                this.renderSelectedBookingItem()
+              )} */}
             </IonCol>
           </IonRow>
         </IonGrid>
@@ -271,28 +263,28 @@ class SpaceList extends React.Component<Props, State> {
     return (
       <>
         <IonToolbar>
-          <IonTitle size="small" className="space-list-title">
-            {i18n.t('Studio Spaces')}
+          <IonTitle size="small" className="booking-item-list-title">
+            {i18n.t('Bookings')}
           </IonTitle>
-          <IonButtons slot="end">
+          {/* <IonButtons slot="end">
             <IonButton
               fill="outline"
               color="primary"
-              title={i18n.t('Add Space')}
+              title={i18n.t('Add BookingItem')}
               onClick={() => this.onModalOpen()}
             >
               <IonIcon icon={addOutline} />
-              {i18n.t('Space')}
+              {i18n.t('BookingItem')}
             </IonButton>
-          </IonButtons>
+          </IonButtons> */}
         </IonToolbar>
         {this.renderContent()}
-        {this.renderModalSpace()}
+        {this.renderModalBookingItem()}
       </>
     );
   }
 }
 
-SpaceList.contextType = AppContext;
+BookingItemList.contextType = AppContext;
 
-export default SpaceList;
+export default BookingItemList;

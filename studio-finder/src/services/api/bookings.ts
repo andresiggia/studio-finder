@@ -113,8 +113,6 @@ export const getBookings = async (context: AppContextValue, props?: {
   if (error) {
     throw error;
   }
-  // eslint-disable-next-line no-console
-  console.log('got bookings', data);
   let bookings: Booking[] = [];
   if (data && Array.isArray(data) && data.length > 0) {
     bookings = data.map((item: any) => convertDateFields(updateObjectKeysToCamelCase(item), bookingDateFields));
@@ -135,13 +133,11 @@ export const getBookingItems = async (context: AppContextValue, props?: {
   const { data, error } = await supabase
     .from(TableName.bookingItems)
     .select()
-    .eq('spaceId', spaceId)
+    .eq('space_id', spaceId)
     .range(start, start + limit - 1);
   if (error) {
     throw error;
   }
-  // eslint-disable-next-line no-console
-  console.log('got booking items', data);
   let bookingItems: BookingItem[] = [];
   if (data && Array.isArray(data) && data.length > 0) {
     bookingItems = data.map((item: any) => convertDateFields(updateObjectKeysToCamelCase(item), bookingItemDateFields));

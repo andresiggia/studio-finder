@@ -5,9 +5,9 @@ export enum TableName {
   spaces = 'spaces',
   spaceUsers = 'space_users',
   bookings = 'bookings',
-  bookingItems = 'booking-items',
-  bookingReviews = 'booking-reviews',
-  bookingPayments = 'booking-payments',
+  bookingItems = 'booking_items',
+  bookingReviews = 'booking_reviews',
+  bookingPayments = 'booking_payments',
   // settings
   settings = 'settings',
 }
