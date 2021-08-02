@@ -1,0 +1,206 @@
+import { AppContextValue } from '../../context/AppContext';
+
+import { convertDateFields, updateObjectKeysToCamelCase, updateObjectKeysToUnderscoreCase } from './helpers';
+import { StudioProfile } from './studios';
+import { TableName } from './tables';
+
+export enum BookingError {
+  missingUserId = 'missingUserId',
+  missingStudioId = 'missingStudioId',
+  missingSpaceId = 'missingSpaceId',
+  invalidResponse = 'invalidResponse',
+  missingBookingRoles = 'missingBookingRoles',
+  editingBookingOfWrongStudio = 'editingBookingOfWrongStudio',
+}
+
+export interface BookingPayment {
+  id: number,
+  bookingId: number,
+  userId: number,
+  vendor: string,
+  metadata: any,
+  value: number,
+  isPaid: boolean,
+  createdAt: Date | null,
+}
+export const defaultBookingPayment: BookingPayment = {
+  id: 0,
+  bookingId: 0,
+  userId: 0,
+  vendor: '',
+  metadata: null,
+  value: 0,
+  isPaid: false,
+  createdAt: null,
+};
+// const bookingPaymentDateFields = ['createdAt'];
+
+export interface BookingReview {
+  bookingId: number,
+  spaceId: number,
+  userId: number,
+  title: string,
+  description: string,
+  stars: number,
+  createdAt: Date | null,
+}
+export const defaultBookingReview: BookingReview = {
+  bookingId: 0,
+  spaceId: 0,
+  userId: 0,
+  title: '',
+  description: '',
+  stars: 0,
+  createdAt: null,
+};
+// const bookingReviewDateFields = ['createdAt'];
+
+export interface BookingItem {
+  bookingId: number,
+  spaceId: number,
+  serviceType: string,
+  serviceTitle: string,
+  servicePrice: number,
+  quantity: number,
+  startAt: Date | null,
+  endAt: Date | null,
+}
+export const defaultBookingItem: BookingItem = {
+  bookingId: 0,
+  spaceId: 0,
+  serviceType: '',
+  serviceTitle: '',
+  servicePrice: 0,
+  quantity: 0,
+  startAt: null,
+  endAt: null,
+};
+const bookingItemDateFields = ['startAt', 'endAt'];
+
+export interface Booking {
+  id: number,
+  studioId: number,
+  userId: string,
+  actId: number | null,
+  createdAt: Date | null,
+  modifiedAt: Date | null,
+}
+export const defaultBooking: Booking = {
+  id: 0,
+  studioId: 0,
+  userId: '',
+  actId: null,
+  createdAt: null,
+  modifiedAt: null,
+};
+const bookingDateFields = ['createdAt', 'modifiedAt'];
+
+export const getBookings = async (context: AppContextValue, props?: {
+  studioId: number, start?: number, limit?: number
+}) => {
+  const {
+    studioId, start = 0, limit = 100,
+  } = props || {};
+  if (!studioId) {
+    throw BookingError.missingStudioId;
+  }
+  const { supabase } = context;
+  const { data, error } = await supabase
+    .from(TableName.bookings)
+    .select()
+    .eq('studio_id', studioId)
+    .range(start, start + limit - 1);
+  if (error) {
+    throw error;
+  }
+  // eslint-disable-next-line no-console
+  console.log('got bookings', data);
+  let bookings: Booking[] = [];
+  if (data && Array.isArray(data) && data.length > 0) {
+    bookings = data.map((item: any) => convertDateFields(updateObjectKeysToCamelCase(item), bookingDateFields));
+  }
+  return bookings;
+};
+
+export const getBookingItems = async (context: AppContextValue, props?: {
+  spaceId: number, start?: number, limit?: number
+}) => {
+  const {
+    spaceId, start = 0, limit = 100,
+  } = props || {};
+  if (!spaceId) {
+    throw BookingError.missingSpaceId;
+  }
+  const { supabase } = context;
+  const { data, error } = await supabase
+    .from(TableName.bookingItems)
+    .select()
+    .eq('spaceId', spaceId)
+    .range(start, start + limit - 1);
+  if (error) {
+    throw error;
+  }
+  // eslint-disable-next-line no-console
+  console.log('got booking items', data);
+  let bookingItems: BookingItem[] = [];
+  if (data && Array.isArray(data) && data.length > 0) {
+    bookingItems = data.map((item: any) => convertDateFields(updateObjectKeysToCamelCase(item), bookingItemDateFields));
+  }
+  return bookingItems;
+};
+
+export const getBooking = async (context: AppContextValue, bookingId: number) => {
+  const { supabase } = context;
+  const { data, error } = await supabase
+    .from(TableName.bookings)
+    .select()
+    .eq('id', bookingId)
+    .single();
+  if (error) {
+    throw error;
+  }
+  let booking: any = null;
+  if (data && data.id === bookingId) {
+    booking = convertDateFields(updateObjectKeysToCamelCase(data), bookingDateFields);
+  }
+  return booking;
+};
+
+export const upsertBooking = async (context: AppContextValue, {
+  bookingProfile, studioProfile,
+}: {
+  bookingProfile: Booking, studioProfile: StudioProfile,
+}) => {
+  const { supabase, state } = context;
+  const userId = state.user?.id;
+  if (!userId) {
+    throw BookingError.missingUserId;
+  }
+  const isEditing = !!bookingProfile.id;
+  const profile: any = {
+    ...bookingProfile,
+    modifiedAt: new Date(), // modifiedAt to be updated to current date/time
+  };
+  if (!isEditing) { // inserting new row
+    profile.studioId = studioProfile.id; // injecting studio id provided
+    delete profile.createdAt; // createdAt should be created by back-end
+    delete profile.id; // id should be created by back-end
+  } else if (profile.studioId !== studioProfile.id) { // only when editing
+    // studio id must match studioProfile provided
+    throw new Error(BookingError.editingBookingOfWrongStudio);
+  }
+  const bookingProfileData = updateObjectKeysToUnderscoreCase(profile);
+  const { data, error } = await supabase
+    .from(TableName.bookings)
+    .upsert([bookingProfileData]);
+  if (error) {
+    throw error;
+  }
+  if (!data) {
+    throw BookingError.invalidResponse;
+  }
+  const [newRow] = data;
+  // eslint-disable-next-line no-console
+  console.log('got new booking info', newRow, data);
+  return data;
+};
