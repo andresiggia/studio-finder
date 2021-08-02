@@ -30,3 +30,14 @@ export const updateObjectKeysToUnderscoreCase = (originalObj: any) => {
   }
   return obj;
 };
+
+export const convertDateFields = (original: any, dateFields: string[]) => {
+  const converted = { ...original };
+  dateFields.forEach((fieldName: string) => {
+    const value = original[fieldName];
+    converted[fieldName] = value
+      ? new Date(value)
+      : null;
+  });
+  return converted;
+};
