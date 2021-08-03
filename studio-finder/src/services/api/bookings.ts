@@ -1,6 +1,7 @@
 import { AppContextValue } from '../../context/AppContext';
 
 import { convertDateFields, updateObjectKeysToCamelCase, updateObjectKeysToUnderscoreCase } from './helpers';
+import { SpaceProfile } from './spaces';
 import { StudioProfile } from './studios';
 import { TableName } from './tables';
 import { ViewName } from './views';
@@ -12,6 +13,7 @@ export enum BookingError {
   invalidResponse = 'invalidResponse',
   missingBookingRoles = 'missingBookingRoles',
   editingBookingOfWrongStudio = 'editingBookingOfWrongStudio',
+  editingBookingOfWrongSpace = 'editingBookingOfWrongSpace',
 }
 
 export interface BookingPayment {
@@ -188,6 +190,46 @@ export const upsertBooking = async (context: AppContextValue, {
   } else if (bookingObj.studioId !== studioProfile.id) { // only when editing
     // studio id must match studioProfile provided
     throw new Error(BookingError.editingBookingOfWrongStudio);
+  }
+  const bookingData = updateObjectKeysToUnderscoreCase(bookingObj);
+  const { data, error } = await supabase
+    .from(TableName.bookings)
+    .upsert([bookingData]);
+  if (error) {
+    throw error;
+  }
+  if (!data) {
+    throw BookingError.invalidResponse;
+  }
+  const [newRow] = data;
+  // eslint-disable-next-line no-console
+  console.log('got new booking info', newRow, data);
+  return data;
+};
+
+export const upsertBookingItem = async (context: AppContextValue, {
+  booking, spaceProfile,
+}: {
+  booking: Booking, spaceProfile: SpaceProfile,
+}) => {
+  const { supabase, state } = context;
+  const userId = state.user?.id;
+  if (!userId) {
+    throw BookingError.missingUserId;
+  }
+  const isEditing = !!booking.id;
+  const bookingObj: any = {
+    ...booking,
+    modifiedAt: new Date(), // modifiedAt to be updated to current date/time
+  };
+  if (!isEditing) { // inserting new row
+    bookingObj.studioId = spaceProfile.id; // injecting space id provided
+    bookingObj.userId = userId; // injecting user id provided
+    delete bookingObj.createdAt; // createdAt should be created by back-end
+    delete bookingObj.id; // id should be created by back-end
+  } else if (bookingObj.spaceId !== spaceProfile.id) { // only when editing
+    // studio id must match spaceProfile provided
+    throw new Error(BookingError.editingBookingOfWrongSpace);
   }
   const bookingData = updateObjectKeysToUnderscoreCase(bookingObj);
   const { data, error } = await supabase
