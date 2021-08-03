@@ -235,6 +235,7 @@ class StudioList extends React.Component<any, State> {
   }
 
   render() {
+    const { items } = this.state;
     return (
       <>
         <IonCard>
@@ -242,8 +243,10 @@ class StudioList extends React.Component<any, State> {
             <IonCardTitle>
               <IonButton
                 type="button"
-                fill="solid"
                 color="primary"
+                fill={(!items || items.length === 0)
+                  ? 'solid'
+                  : 'outline'}
                 className="studio-list-title-header-item"
                 title={i18n.t('Add Studio')}
                 onClick={() => this.onModalOpen()}
