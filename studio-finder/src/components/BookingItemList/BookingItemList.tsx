@@ -3,7 +3,9 @@ import {
   IonButton, IonButtons, IonContent, IonIcon, IonModal, IonSpinner, IonTitle, IonToolbar,
 } from '@ionic/react';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { addOutline, closeOutline } from 'ionicons/icons';
+import {
+  addOutline, chevronBackOutline, chevronForwardOutline, closeOutline,
+} from 'ionicons/icons';
 
 // services
 import { SpaceProfile } from '../../services/api/spaces';
@@ -27,6 +29,7 @@ interface State {
   items: BookingItem[] | null,
   showModal: boolean,
   modalSelectedId: number,
+  weekOffset: number,
 }
 
 interface Props {
@@ -44,6 +47,7 @@ class BookingItemList extends React.Component<Props, State> {
       items: null,
       showModal: false,
       modalSelectedId: 0,
+      weekOffset: 0,
     };
   }
 
@@ -161,12 +165,12 @@ class BookingItemList extends React.Component<Props, State> {
   }
 
   renderCalendar = () => {
-    const { items, modalSelectedId } = this.state;
+    const { items, modalSelectedId, weekOffset } = this.state;
     const weekdays = Array.from(Array(7)).map((_item, index) => index);
     const now = new Date();
     const currentWeekday = now.getDay();
     const weekStartsAt = new Date(now.getTime());
-    weekStartsAt.setDate(weekStartsAt.getDate() - currentWeekday);
+    weekStartsAt.setDate(weekStartsAt.getDate() - currentWeekday + (weekOffset * 7));
     const halfTimes = Array.from(Array(24 * 2)).map((_item, index) => index / 2);
     return (
       <div className="booking-item-calendar-container">
@@ -266,13 +270,36 @@ class BookingItemList extends React.Component<Props, State> {
   }
 
   render() {
+    const { weekOffset } = this.state;
     return (
       <>
         <IonToolbar>
           <IonTitle size="small" className="booking-item-list-title">
-            {i18n.t('Booking Calendar')}
+            {i18n.t('Booking Weekly Calendar')}
           </IonTitle>
           <IonButtons slot="end">
+            <IonButton
+              color="primary"
+              fill="clear"
+              onClick={() => this.setMountedState({ weekOffset: weekOffset - 1 })}
+            >
+              <IonIcon icon={chevronBackOutline} ariaLabel={i18n.t('Previous Week')} />
+            </IonButton>
+            <IonButton
+              color="primary"
+              fill="solid"
+              disabled={weekOffset === 0}
+              onClick={() => this.setMountedState({ weekOffset: 0 })}
+            >
+              {i18n.t('This Week')}
+            </IonButton>
+            <IonButton
+              color="primary"
+              fill="clear"
+              onClick={() => this.setMountedState({ weekOffset: weekOffset + 1 })}
+            >
+              <IonIcon icon={chevronForwardOutline} ariaLabel={i18n.t('Next Week')} />
+            </IonButton>
             <IonButton
               color="primary"
               fill="clear"
