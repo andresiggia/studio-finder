@@ -145,7 +145,7 @@ class SpaceList extends React.Component<Props, State> {
       );
     }
     return (
-      <div className="space-list-item-container">
+      <>
         <IonToolbar>
           <p slot="start">
             {spaceProfile.description || `(${i18n.t('No description')})`}
@@ -165,7 +165,7 @@ class SpaceList extends React.Component<Props, State> {
         <BookingItemList
           spaceProfile={spaceProfile}
         />
-      </div>
+      </>
     );
   }
 
