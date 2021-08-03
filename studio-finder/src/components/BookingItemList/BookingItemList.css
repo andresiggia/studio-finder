@@ -51,6 +51,11 @@
   border-bottom: 1px solid var(--ion-color-light);
 }
 
+/* every other table body row */
+.booking-item-calendar > tbody > tr:nth-child(even) > td {
+  border-bottom: 1px solid var(--ion-color-light-shade);
+}
+
 /* all table cells */
 .booking-item-calendar tr > td {
   width: 7rem;
