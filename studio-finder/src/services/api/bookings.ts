@@ -56,6 +56,7 @@ export const defaultBookingReview: BookingReview = {
 // const bookingReviewDateFields = ['createdAt'];
 
 export interface BookingItem {
+  id: number,
   bookingId: number,
   spaceId: number,
   serviceType: string,
@@ -66,6 +67,7 @@ export interface BookingItem {
   endAt: Date | null,
 }
 export const defaultBookingItem: BookingItem = {
+  id: 0,
   bookingId: 0,
   spaceId: 0,
   serviceType: '',

@@ -212,7 +212,7 @@ class BookingItemList extends React.Component<Props, State> {
                     return (
                       <td key={weekday}>
                         {relevantItems.map((item) => (
-                          <p key={item.bookingId}>
+                          <p key={item.id}>
                             {item.serviceTitle}
                           </p>
                         ))}

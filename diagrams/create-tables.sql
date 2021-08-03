@@ -139,6 +139,7 @@ CREATE TABLE "booking_payments" (
 );
 
 CREATE TABLE "booking_items" (
+  "id" SERIAL PRIMARY KEY,
   "booking_id" int,
   "space_id" int,
   "service_type" varchar,
@@ -146,8 +147,7 @@ CREATE TABLE "booking_items" (
   "service_price" money,
   "start_at" timestamp,
   "end_at" timestamp,
-  "quantity" int,
-  PRIMARY KEY ("booking_id", "space_id")
+  "quantity" int
 );
 
 CREATE TABLE "booking_reviews" (
