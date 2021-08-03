@@ -169,7 +169,7 @@ class SpaceList extends React.Component<Props, State> {
     );
   }
 
-  renderModalSpace = () => {
+  renderModal = () => {
     const { studioProfile } = this.props;
     const { showModal, modalSelectedId } = this.state;
     return (
@@ -306,7 +306,7 @@ class SpaceList extends React.Component<Props, State> {
     return (
       <>
         {this.renderContent()}
-        {this.renderModalSpace()}
+        {this.renderModal()}
       </>
     );
   }
