@@ -1,9 +1,9 @@
 import React from 'react';
 import {
-  IonSpinner, IonTitle, IonToolbar,
+  IonButton, IonButtons, IonContent, IonIcon, IonModal, IonSpinner, IonTitle, IonToolbar,
 } from '@ionic/react';
 // eslint-disable-next-line import/no-extraneous-dependencies
-// import { closeOutline } from 'ionicons/icons';
+import { addOutline, closeOutline } from 'ionicons/icons';
 
 // services
 import { SpaceProfile } from '../../services/api/spaces';
@@ -25,6 +25,8 @@ interface State {
   isLoading: boolean,
   error: Error | null,
   items: BookingItem[] | null,
+  showModal: boolean,
+  modalSelectedId: number,
 }
 
 interface Props {
@@ -40,6 +42,8 @@ class BookingItemList extends React.Component<Props, State> {
       isLoading: false,
       error: null,
       items: null,
+      showModal: false,
+      modalSelectedId: 0,
     };
   }
 
@@ -99,7 +103,61 @@ class BookingItemList extends React.Component<Props, State> {
     });
   }
 
+  onModalOpen = (modalSelectedId = 0) => {
+    this.setMountedState({
+      showModal: true,
+      modalSelectedId,
+    });
+  }
+
+  onModalClose = () => {
+    this.setMountedState({
+      showModal: false,
+    });
+  }
+
   // render
+
+  renderModal = () => {
+    // const { spaceProfile } = this.props;
+    const { showModal, modalSelectedId } = this.state;
+    return (
+      <IonModal
+        isOpen={showModal}
+        onWillDismiss={() => this.onModalClose()}
+      >
+        <IonToolbar>
+          <IonTitle>
+            {modalSelectedId
+              ? i18n.t('Edit Booking')
+              : i18n.t('Create Booking')}
+          </IonTitle>
+          <IonButtons slot="end">
+            <IonButton
+              color="primary"
+              onClick={() => this.onModalClose()}
+            >
+              <IonIcon icon={closeOutline} ariaLabel={i18n.t('Close')} />
+            </IonButton>
+          </IonButtons>
+        </IonToolbar>
+        <IonContent>
+          {showModal && (
+            <p>Under development</p>
+            // <BookingForm
+            //   id={modalSelectedId}
+            //   spaceProfile={spaceProfile}
+            //   onCancel={() => this.onModalClose()}
+            //   onSave={() => {
+            //     this.onModalClose();
+            //     this.loadItems();
+            //   }}
+            // />
+          )}
+        </IonContent>
+      </IonModal>
+    );
+  }
 
   renderCalendar = () => {
     const { items } = this.state;
@@ -203,8 +261,19 @@ class BookingItemList extends React.Component<Props, State> {
           <IonTitle size="small" className="booking-item-list-title">
             {i18n.t('Booking Calendar')}
           </IonTitle>
+          <IonButtons slot="end">
+            <IonButton
+              color="primary"
+              fill="outline"
+              onClick={() => this.onModalOpen()}
+            >
+              <IonIcon icon={addOutline} ariaLabel={i18n.t('Add Booking')} />
+              {i18n.t('Booking')}
+            </IonButton>
+          </IonButtons>
         </IonToolbar>
         {this.renderContent()}
+        {this.renderModal()}
       </>
     );
   }
