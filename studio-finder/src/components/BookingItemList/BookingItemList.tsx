@@ -172,14 +172,14 @@ class BookingItemList extends React.Component<Props, State> {
         <table className="booking-item-calendar">
           <thead>
             <tr>
-              <td className="booking-item-calendar-first-col">
+              <td>
                 {i18n.t('Time')}
               </td>
               {weekdays.map((weekday) => {
                 const date = new Date(weekStartsAt.getTime());
                 date.setDate(date.getDate() + weekday);
                 return (
-                  <td key={weekday} className="booking-item-calendar-col">
+                  <td key={weekday}>
                     {date.toLocaleDateString()}
                   </td>
                 );
@@ -193,7 +193,7 @@ class BookingItemList extends React.Component<Props, State> {
               const minutes = (Number(timeArr[1] || 0) / 10) * 60;
               return (
                 <tr key={time}>
-                  <td className="booking-item-calendar-first-col">
+                  <td>
                     <p>{`${pad(hours, 2)}:${pad(minutes, 2)}`}</p>
                   </td>
                   {weekdays.map((weekday) => {
@@ -210,7 +210,7 @@ class BookingItemList extends React.Component<Props, State> {
                       return startAtTimestamp >= currentTimestamp && endAtTimestamp <= currentTimestamp;
                     });
                     return (
-                      <td key={weekday} className="booking-item-calendar-col">
+                      <td key={weekday}>
                         {relevantItems.map((item) => (
                           <p key={item.bookingId}>
                             {item.serviceTitle}
