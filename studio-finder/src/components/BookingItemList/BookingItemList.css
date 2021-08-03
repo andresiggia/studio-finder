@@ -38,6 +38,8 @@
 /* table */
 .booking-item-calendar {
   width: calc((7rem * 7) + 5rem);
+  table-layout: fixed;
+  border-collapse: collapse;
 }
 
 /* all table cells */
@@ -47,11 +49,24 @@
   text-align: center;
 }
 
+/* table header row */
+.booking-item-calendar > thead tr {
+  display: block;
+}
+
 /* table header cells */
 .booking-item-calendar > thead > tr > td {
   font-weight: bold;
   padding: .25rem;
   border-bottom: 2px solid var(--ion-color-light-shade);
+}
+
+/* table body */
+.booking-item-calendar > tbody {
+  display: block;
+  width: 100%;
+  overflow: auto;
+  height: 200px;
 }
 
 /* table body cells */
