@@ -154,43 +154,21 @@ class StudioList extends React.Component<any, State> {
         )}
         {!items || items.length === 0
           ? (
-            <p>{i18n.t('No studios found.')}</p>
-          ) : (
             <>
-              <IonToolbar>
-                <IonSelect
-                  value={selectedId}
-                  placeholder={i18n.t('Select')}
-                  className="studio-list-select"
-                  interfaceOptions={{
-                    header: i18n.t('Select a Studio'),
-                  }}
-                  onIonChange={(e) => this.setMountedState({ selectedId: e.detail.value })}
-                >
-                  {items.map((item) => (
-                    <IonSelectOption key={item.id} value={item.id}>
-                      {item.title}
-                    </IonSelectOption>
-                  ))}
-                </IonSelect>
-                {!!selectedId && (
-                  <IonButtons className="studio-list-item-toolbar">
-                    <IonButton
-                      fill="outline"
-                      color="primary"
-                      title={i18n.t('Edit Studio')}
-                      onClick={() => this.onModalOpen(selectedId)}
-                    >
-                      <IonIcon icon={createOutline} />
-                      {i18n.t('Edit Studio')}
-                    </IonButton>
-                  </IonButtons>
-                )}
-              </IonToolbar>
-              {!!selectedId && (
-                this.renderSpaces()
-              )}
+              <p>{i18n.t('No studios found.')}</p>
+              <IonButton
+                type="button"
+                color="primary"
+                fill="solid"
+                title={i18n.t('Add Studio')}
+                onClick={() => this.onModalOpen()}
+              >
+                <IonIcon icon={addOutline} />
+                {i18n.t('Studio')}
+              </IonButton>
             </>
+          ) : !!selectedId && (
+            this.renderSpaces()
           )}
       </>
     );
@@ -235,27 +213,61 @@ class StudioList extends React.Component<any, State> {
   }
 
   render() {
-    const { items } = this.state;
+    const {
+      items, selectedId, isLoading, error,
+    } = this.state;
     return (
       <>
         <IonCard>
-          <IonCardHeader>
+          <IonCardHeader className="studio-list-header">
             <IonCardTitle>
-              <IonButton
-                type="button"
-                color="primary"
-                fill={(!items || items.length === 0)
-                  ? 'solid'
-                  : 'outline'}
-                className="studio-list-title-header-item"
-                title={i18n.t('Add Studio')}
-                onClick={() => this.onModalOpen()}
-              >
-                <IonIcon icon={addOutline} />
-                {i18n.t('Studio')}
-              </IonButton>
               {i18n.t('My Studios')}
             </IonCardTitle>
+            <div className="studio-list-header-toolbar">
+              {(!!items && items.length > 0) && (
+                <>
+                  <IonSelect
+                    slot="end"
+                    value={selectedId}
+                    placeholder={i18n.t('Select Studio')}
+                    title={i18n.t('Select Studio')}
+                    className="studio-list-header-toolbar-select"
+                    interfaceOptions={{
+                      header: i18n.t('Select Studio'),
+                    }}
+                    disabled={isLoading || !!error}
+                    onIonChange={(e) => this.setMountedState({ selectedId: e.detail.value })}
+                  >
+                    {items.map((item) => (
+                      <IonSelectOption key={item.id} value={item.id}>
+                        {item.title}
+                      </IonSelectOption>
+                    ))}
+                  </IonSelect>
+                  <IonButtons className="studio-list-header-toolbar-buttons">
+                    {!!selectedId && (
+                      <IonButton
+                        fill="outline"
+                        color="primary"
+                        title={i18n.t('Edit Studio')}
+                        onClick={() => this.onModalOpen(selectedId)}
+                      >
+                        <IonIcon icon={createOutline} ariaLabel={i18n.t('Edit Studio')} />
+                      </IonButton>
+                    )}
+                    <IonButton
+                      type="button"
+                      color="primary"
+                      fill="outline"
+                      title={i18n.t('Add Studio')}
+                      onClick={() => this.onModalOpen()}
+                    >
+                      <IonIcon icon={addOutline} ariaLabel={i18n.t('Add Studio')} />
+                    </IonButton>
+                  </IonButtons>
+                </>
+              )}
+            </div>
           </IonCardHeader>
           <IonCardContent>
             {this.renderContent()}

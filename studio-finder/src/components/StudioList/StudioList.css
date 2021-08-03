@@ -7,18 +7,23 @@
   margin-top: 1rem;
 }
 
-.studio-list-title-header-item {
-  float: right;
+.studio-list-header {
+  display: flex;
+  justify-content: space-between;
+}
+
+.studio-list-header-toolbar {
+  margin: 0 0 0 1rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.studio-list-header-toolbar-select {
+  font-size: 1rem;
+  padding: .425rem 0 .5rem;
   margin-left: 1rem;
 }
 
-.studio-list-select {
-  font-size: 1.125rem;
-  float: left;
-  padding: 0 0 .5rem;
-}
-
-.studio-list-item-toolbar {
-  float: left;
+.studio-list-header-toolbar-buttons {
   margin-left: .5rem;
 }
