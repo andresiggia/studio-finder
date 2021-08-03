@@ -30,3 +30,42 @@
 .booking-item-list-item-toolbar {
   margin-left: .5rem;
 }
+
+.booking-item-calendar-container {
+  overflow: auto;
+}
+
+/* table */
+.booking-item-calendar {
+  width: calc((7rem * 7) + 5rem);
+}
+
+/* table header cells */
+.booking-item-calendar > thead > tr > td {
+  font-weight: bold;
+  border-bottom: 2px solid var(--ion-color-light-shade);
+}
+
+/* table body cells */
+.booking-item-calendar > tbody > tr > td {
+  border-bottom: 1px solid var(--ion-color-light);
+}
+
+/* all table cells */
+.booking-item-calendar tr > td {
+  width: 7rem;
+  padding: .25rem;
+  text-align: center;
+}
+
+/* all table cells - text */
+.booking-item-calendar tr > td,
+.booking-item-calendar tr > td p {
+  font-size: .75rem;
+  line-height: 1.25;
+}
+
+/* table first cell in a row */
+.booking-item-calendar tr > td:first-child {
+  width: 5rem;
+}
