@@ -1,0 +1,53 @@
+.booking-form {
+  padding: 0;
+}
+
+.booking-form-fieldset {
+  padding: 0;
+  border: none;
+}
+
+.booking-form-title {
+  margin-bottom: 1.5rem;
+}
+
+.booking-form-type-label {
+  text-align: center;
+  display: block;
+  margin-bottom: 1rem;
+  font-size: .75rem;
+}
+
+.booking-form-type-icon {
+  margin-bottom: .5rem;
+  font-size: 3rem;
+}
+
+.booking-form-footer {
+  margin-top: 2rem;
+}
+
+.booking-form-footer-note-required {
+  padding-left: 1rem;
+  padding-right: 1rem;
+  font-size: .75rem;
+  font-style: oblique;
+}
+
+.booking-form-notification {
+  margin-left: 1rem;
+  margin-right: 1rem;
+}
+
+.booking-form-spacer {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+.booking-form-list {
+  padding: 1rem;
+}
+
+.booking-form-loading {
+  text-align: center;
+}

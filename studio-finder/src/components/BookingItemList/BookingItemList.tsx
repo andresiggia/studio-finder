@@ -12,10 +12,11 @@ import { SpaceProfile } from '../../services/api/spaces';
 import i18n from '../../services/i18n/i18n';
 import { BookingItem, getBookingItems } from '../../services/api/bookings';
 import { pad } from '../../services/helpers/misc';
+import { StudioProfile } from '../../services/api/studios';
 
 // components
 import Notification, { NotificationType } from '../Notification/Notification';
-// import BookingItemForm from '../BookingItemForm/BookingItemForm';
+import BookingForm from '../BookingForm/BookingForm';
 
 // context
 import AppContext from '../../context/AppContext';
@@ -34,6 +35,7 @@ interface State {
 
 interface Props {
   spaceProfile: SpaceProfile,
+  studioProfile: StudioProfile,
 }
 
 class BookingItemList extends React.Component<Props, State> {
@@ -57,8 +59,9 @@ class BookingItemList extends React.Component<Props, State> {
   }
 
   componentDidUpdate(prevProps: Props) {
-    const { spaceProfile } = this.props;
-    if (prevProps.spaceProfile.id !== spaceProfile.id) {
+    const { spaceProfile, studioProfile } = this.props;
+    if (prevProps.spaceProfile.id !== spaceProfile.id
+      || prevProps.studioProfile.id !== studioProfile.id) {
       this.loadItems();
     }
   }
@@ -124,7 +127,7 @@ class BookingItemList extends React.Component<Props, State> {
   // render
 
   renderModal = () => {
-    // const { spaceProfile } = this.props;
+    const { spaceProfile, studioProfile } = this.props;
     const { showModal, modalSelectedId } = this.state;
     return (
       <IonModal
@@ -148,16 +151,16 @@ class BookingItemList extends React.Component<Props, State> {
         </IonToolbar>
         <IonContent>
           {showModal && (
-            <p>Under development</p>
-            // <BookingForm
-            //   id={modalSelectedId}
-            //   spaceProfile={spaceProfile}
-            //   onCancel={() => this.onModalClose()}
-            //   onSave={() => {
-            //     this.onModalClose();
-            //     this.loadItems();
-            //   }}
-            // />
+            <BookingForm
+              id={modalSelectedId}
+              spaceProfile={spaceProfile}
+              studioProfile={studioProfile}
+              onCancel={() => this.onModalClose()}
+              onSave={() => {
+                this.onModalClose();
+                this.loadItems();
+              }}
+            />
           )}
         </IonContent>
       </IonModal>
@@ -225,8 +228,8 @@ class BookingItemList extends React.Component<Props, State> {
                             color="primary"
                             size="small"
                             expand="block"
-                            title={item.serviceTitle}
-                            onClick={() => this.onModalOpen(item.id)}
+                            title={i18n.t('View booking')}
+                            onClick={() => this.onModalOpen(item.bookingId)}
                           >
                             {item.serviceTitle}
                           </IonButton>

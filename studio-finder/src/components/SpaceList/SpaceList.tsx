@@ -131,6 +131,7 @@ class SpaceList extends React.Component<Props, State> {
   // render
 
   renderSelectedSpace = () => {
+    const { studioProfile } = this.props;
     const { items, selectedId } = this.state;
     const spaceProfile = items?.find((item) => item.id === selectedId);
     if (!spaceProfile) {
@@ -164,6 +165,7 @@ class SpaceList extends React.Component<Props, State> {
         </IonToolbar>
         <BookingItemList
           spaceProfile={spaceProfile}
+          studioProfile={studioProfile}
         />
       </>
     );
