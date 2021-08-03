@@ -247,7 +247,7 @@ class StudioList extends React.Component<any, State> {
                   <IonButtons className="studio-list-header-toolbar-buttons">
                     {!!selectedId && (
                       <IonButton
-                        fill="outline"
+                        fill="clear"
                         color="primary"
                         title={i18n.t('Edit Studio')}
                         onClick={() => this.onModalOpen(selectedId)}
@@ -258,7 +258,7 @@ class StudioList extends React.Component<any, State> {
                     <IonButton
                       type="button"
                       color="primary"
-                      fill="outline"
+                      fill="clear"
                       title={i18n.t('Add Studio')}
                       onClick={() => this.onModalOpen()}
                     >

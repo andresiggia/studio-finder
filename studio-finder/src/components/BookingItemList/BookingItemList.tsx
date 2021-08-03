@@ -264,7 +264,7 @@ class BookingItemList extends React.Component<Props, State> {
           <IonButtons slot="end">
             <IonButton
               color="primary"
-              fill="outline"
+              fill="clear"
               onClick={() => this.onModalOpen()}
             >
               <IonIcon icon={addOutline} ariaLabel={i18n.t('Add Booking')} />

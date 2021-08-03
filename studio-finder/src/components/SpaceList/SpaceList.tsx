@@ -152,7 +152,7 @@ class SpaceList extends React.Component<Props, State> {
           </p>
           <IonButtons slot="end" className="space-list-item-toolbar">
             <IonButton
-              fill="outline"
+              fill="clear"
               color="primary"
               title={i18n.t('Edit Space')}
               onClick={() => this.onModalOpen(selectedId)}
