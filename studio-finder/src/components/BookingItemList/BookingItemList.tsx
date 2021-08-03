@@ -199,7 +199,7 @@ class BookingItemList extends React.Component<Props, State> {
                   {weekdays.map((weekday) => {
                     const date = new Date(weekStartsAt.getTime());
                     date.setDate(date.getDate() + weekday);
-                    date.setHours(hours, minutes);
+                    date.setHours(hours, minutes, 0, 0);
                     const relevantItems = (items || []).filter((item) => {
                       if (!item.startAt || !item.endAt) {
                         return false;
@@ -207,7 +207,7 @@ class BookingItemList extends React.Component<Props, State> {
                       const currentTimestamp = date.getTime();
                       const startAtTimestamp = item.startAt.getTime();
                       const endAtTimestamp = item.endAt.getTime();
-                      return startAtTimestamp >= currentTimestamp && endAtTimestamp <= currentTimestamp;
+                      return startAtTimestamp <= currentTimestamp && endAtTimestamp > currentTimestamp;
                     });
                     return (
                       <td key={weekday}>
