@@ -38,3 +38,9 @@ export const deepEqual = (item1: any, item2: any): boolean => {
     return deepEqual(val1, val2);
   });
 };
+
+export const pad = (num: number, size: number) => {
+  let s = `${num}`;
+  while (s.length < size) s = `0${s}`;
+  return s;
+};
