@@ -254,44 +254,50 @@ class SpaceList extends React.Component<Props, State> {
     const {
       isLoading, error, items, selectedId,
     } = this.state;
+
+    if (isLoading) {
+      return (
+        <div className="space-list-loading space-list-spacer">
+          <IonSpinner name="bubbles" />
+        </div>
+      );
+    }
+
+    if (error) {
+      return (
+        <Notification
+          type={NotificationType.danger}
+          className="space-list-spacer"
+          header={i18n.t('Error')}
+          message={error?.message || i18n.t('An error occurred, please try again later')}
+          onDismiss={() => this.setMountedState({ error: null })}
+        />
+      );
+    }
+
+    if (!items || items.length === 0) {
+      return (
+        <>
+          <p>{i18n.t('No spaces found.')}</p>
+          <IonButton
+            fill="solid"
+            color="primary"
+            title={i18n.t('Add Space')}
+            onClick={() => this.onModalOpen()}
+          >
+            <IonIcon icon={addOutline} />
+            {i18n.t('Space')}
+          </IonButton>
+        </>
+      );
+    }
+
     return (
       <>
-        {isLoading && (
-          <div className="space-list-loading space-list-spacer">
-            <IonSpinner name="bubbles" />
-          </div>
+        {this.renderSpaces()}
+        {!!selectedId && (
+          this.renderSelectedSpace()
         )}
-        {!!error && (
-          <Notification
-            type={NotificationType.danger}
-            className="space-list-spacer"
-            header={i18n.t('Error')}
-            message={error?.message || i18n.t('An error occurred, please try again later')}
-            onDismiss={() => this.setMountedState({ error: null })}
-          />
-        )}
-        {!items || items.length === 0
-          ? (
-            <>
-              <p>{i18n.t('No spaces found.')}</p>
-              <IonButton
-                fill="outline"
-                color="primary"
-                title={i18n.t('Add Space')}
-                onClick={() => this.onModalOpen()}
-              >
-                <IonIcon icon={addOutline} />
-                {i18n.t('Space')}
-              </IonButton>
-            </>
-          ) : (
-            <>
-              {this.renderSpaces()}
-              {!!selectedId && (
-                this.renderSelectedSpace()
-              )}
-            </>
-          )}
       </>
     );
   }
@@ -299,22 +305,6 @@ class SpaceList extends React.Component<Props, State> {
   render() {
     return (
       <>
-        {/* <IonToolbar>
-          <IonTitle size="small" className="space-list-title">
-            {i18n.t('Studio Spaces')}
-          </IonTitle>
-          <IonButtons slot="end">
-            <IonButton
-              fill="outline"
-              color="primary"
-              title={i18n.t('Add Space')}
-              onClick={() => this.onModalOpen()}
-            >
-              <IonIcon icon={addOutline} />
-              {i18n.t('Space')}
-            </IonButton>
-          </IonButtons>
-        </IonToolbar> */}
         {this.renderContent()}
         {this.renderModalSpace()}
       </>
