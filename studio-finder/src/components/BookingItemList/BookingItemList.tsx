@@ -113,6 +113,7 @@ class BookingItemList extends React.Component<Props, State> {
   onModalClose = () => {
     this.setMountedState({
       showModal: false,
+      modalSelectedId: 0,
     });
   }
 
@@ -160,7 +161,7 @@ class BookingItemList extends React.Component<Props, State> {
   }
 
   renderCalendar = () => {
-    const { items } = this.state;
+    const { items, modalSelectedId } = this.state;
     const weekdays = Array.from(Array(7)).map((_item, index) => index);
     const now = new Date();
     const currentWeekday = now.getDay();
@@ -212,9 +213,19 @@ class BookingItemList extends React.Component<Props, State> {
                     return (
                       <td key={weekday}>
                         {relevantItems.map((item) => (
-                          <p key={item.id}>
+                          <IonButton
+                            key={item.id}
+                            fill={modalSelectedId === item.id
+                              ? 'solid'
+                              : 'clear'}
+                            color="primary"
+                            size="small"
+                            expand="block"
+                            title={item.serviceTitle}
+                            onClick={() => this.onModalOpen(item.id)}
+                          >
                             {item.serviceTitle}
-                          </p>
+                          </IonButton>
                         ))}
                       </td>
                     );

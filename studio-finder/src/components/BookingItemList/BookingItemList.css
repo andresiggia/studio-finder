@@ -40,9 +40,17 @@
   width: calc((7rem * 7) + 5rem);
 }
 
+/* all table cells */
+.booking-item-calendar tr > td {
+  width: 7rem;
+  padding: 0;
+  text-align: center;
+}
+
 /* table header cells */
 .booking-item-calendar > thead > tr > td {
   font-weight: bold;
+  padding: .25rem;
   border-bottom: 2px solid var(--ion-color-light-shade);
 }
 
@@ -51,16 +59,14 @@
   border-bottom: 1px solid var(--ion-color-light);
 }
 
+/* table body - first cell */
+.booking-item-calendar > tbody > tr > td:first-child {
+  padding: .25rem;
+}
+
 /* every other table body row */
 .booking-item-calendar > tbody > tr:nth-child(even) > td {
   border-bottom: 1px solid var(--ion-color-light-shade);
-}
-
-/* all table cells */
-.booking-item-calendar tr > td {
-  width: 7rem;
-  padding: .25rem;
-  text-align: center;
 }
 
 /* all table cells - text */
