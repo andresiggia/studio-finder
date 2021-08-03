@@ -3,6 +3,7 @@ import { AppContextValue } from '../../context/AppContext';
 import { convertDateFields, updateObjectKeysToCamelCase, updateObjectKeysToUnderscoreCase } from './helpers';
 import { StudioProfile } from './studios';
 import { TableName } from './tables';
+import { ViewName } from './views';
 
 export enum BookingError {
   missingUserId = 'missingUserId',
@@ -133,7 +134,7 @@ export const getBookingItems = async (context: AppContextValue, props?: {
   }
   const { supabase } = context;
   const { data, error } = await supabase
-    .from(TableName.bookingItems)
+    .from(ViewName.bookingItemsWithBooking)
     .select()
     .eq('space_id', spaceId)
     .range(start, start + limit - 1);

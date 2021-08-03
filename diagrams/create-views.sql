@@ -22,3 +22,10 @@ CREATE VIEW studios_with_user_id AS (
   FROM studio_users, studios
   WHERE studio_users.studio_id = studios.id
 );
+
+DROP VIEW IF EXISTS booking_items_with_booking;
+CREATE VIEW booking_items_with_booking AS (
+  SELECT booking_items.*, bookings.studio_id, bookings.user_id, bookings.act_id
+  FROM booking_items, bookings
+  WHERE booking_items.booking_id = bookings.id
+);
