@@ -166,32 +166,33 @@ export const getBooking = async (context: AppContextValue, bookingId: number) =>
 };
 
 export const upsertBooking = async (context: AppContextValue, {
-  bookingProfile, studioProfile,
+  booking, studioProfile,
 }: {
-  bookingProfile: Booking, studioProfile: StudioProfile,
+  booking: Booking, studioProfile: StudioProfile,
 }) => {
   const { supabase, state } = context;
   const userId = state.user?.id;
   if (!userId) {
     throw BookingError.missingUserId;
   }
-  const isEditing = !!bookingProfile.id;
-  const profile: any = {
-    ...bookingProfile,
+  const isEditing = !!booking.id;
+  const bookingObj: any = {
+    ...booking,
     modifiedAt: new Date(), // modifiedAt to be updated to current date/time
   };
   if (!isEditing) { // inserting new row
-    profile.studioId = studioProfile.id; // injecting studio id provided
-    delete profile.createdAt; // createdAt should be created by back-end
-    delete profile.id; // id should be created by back-end
-  } else if (profile.studioId !== studioProfile.id) { // only when editing
+    bookingObj.studioId = studioProfile.id; // injecting studio id provided
+    bookingObj.userId = userId; // injecting user id provided
+    delete bookingObj.createdAt; // createdAt should be created by back-end
+    delete bookingObj.id; // id should be created by back-end
+  } else if (bookingObj.studioId !== studioProfile.id) { // only when editing
     // studio id must match studioProfile provided
     throw new Error(BookingError.editingBookingOfWrongStudio);
   }
-  const bookingProfileData = updateObjectKeysToUnderscoreCase(profile);
+  const bookingData = updateObjectKeysToUnderscoreCase(bookingObj);
   const { data, error } = await supabase
     .from(TableName.bookings)
-    .upsert([bookingProfileData]);
+    .upsert([bookingData]);
   if (error) {
     throw error;
   }
