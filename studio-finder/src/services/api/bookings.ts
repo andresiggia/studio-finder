@@ -4,7 +4,6 @@ import { convertDateFields, updateObjectKeysToCamelCase, updateObjectKeysToUnder
 import { SpaceProfile } from './spaces';
 import { StudioProfile } from './studios';
 import { TableName } from './tables';
-import { UserProfile } from './users';
 import { ViewName } from './views';
 
 export enum BookingError {
