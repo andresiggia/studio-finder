@@ -17,7 +17,7 @@ import { deepEqual } from '../../services/helpers/misc';
 
 // constants
 import {
-  defaultBooking, getBooking, upsertBooking, Booking,
+  defaultBooking, getBooking, upsertBooking, Booking, BookingItem, getBookingItems,
 } from '../../services/api/bookings';
 import { StudioProfile } from '../../services/api/studios';
 import { SpaceProfile } from '../../services/api/spaces';
@@ -42,6 +42,8 @@ interface State {
   // fields
   booking: Booking,
   bookingOriginal: Booking | null,
+  bookingItems: BookingItem[] | null,
+  bookingItemsOriginal: BookingItem[] | null,
 }
 
 class BookingForm extends React.Component<Props, State> {
@@ -56,6 +58,8 @@ class BookingForm extends React.Component<Props, State> {
       error: null,
       booking: defaultBooking,
       bookingOriginal: null,
+      bookingItems: [],
+      bookingItemsOriginal: null,
     };
   }
 
@@ -93,16 +97,22 @@ class BookingForm extends React.Component<Props, State> {
     }, async () => {
       try {
         let booking = defaultBooking; // new booking
+        let bookingItems: BookingItem[] = [];
         const { id } = this.props;
         if (id) {
           // eslint-disable-next-line no-console
           console.log('loading booking data...', id);
-          booking = await getBooking(this.context, id);
+          [booking, bookingItems] = await Promise.all([
+            getBooking(this.context, id),
+            getBookingItems(this.context, { bookingId: id }),
+          ]);
         }
         this.setMountedState({
           isLoading: false,
           booking,
           bookingOriginal: booking,
+          bookingItems,
+          bookingItemsOriginal: bookingItems,
         });
       } catch (error) {
         // eslint-disable-next-line no-console
@@ -113,15 +123,19 @@ class BookingForm extends React.Component<Props, State> {
   }
 
   onReset = () => {
-    const { bookingOriginal } = this.state;
+    const { bookingOriginal, bookingItemsOriginal } = this.state;
     this.setMountedState({
       booking: bookingOriginal,
+      bookingItems: bookingItemsOriginal,
     });
   }
 
   hasChanges = () => {
-    const { booking, bookingOriginal } = this.state;
-    return !deepEqual(booking, bookingOriginal);
+    const {
+      booking, bookingOriginal, bookingItems, bookingItemsOriginal,
+    } = this.state;
+    return !deepEqual(booking, bookingOriginal)
+      && !deepEqual(bookingItems, bookingItemsOriginal);
   }
 
   onSubmit = (e: any) => {
@@ -343,7 +357,7 @@ class BookingForm extends React.Component<Props, State> {
 
   renderFields = (disabled: boolean) => {
     const { studioProfile, spaceProfile } = this.props;
-    // const { booking } = this.state;
+    const { bookingItems } = this.state;
     return (
       <IonList className="booking-form-list">
         <IonItem>
@@ -359,6 +373,14 @@ class BookingForm extends React.Component<Props, State> {
             value: spaceProfile.title,
             fieldName: 'studio',
             label: i18n.t('Studio'),
+            disabled: true,
+          })}
+        </IonItem>
+        <IonItem>
+          {this.renderTextInput({
+            value: String(bookingItems?.length || 0),
+            fieldName: 'bookingItems',
+            label: i18n.t('Items'),
             disabled: true,
           })}
         </IonItem>
