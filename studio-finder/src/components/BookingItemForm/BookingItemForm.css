@@ -1,0 +1,53 @@
+.booking-item-form {
+  padding: 0;
+}
+
+.booking-item-form-fieldset {
+  padding: 0;
+  border: none;
+}
+
+.booking-item-form-title {
+  margin-bottom: 1.5rem;
+}
+
+.booking-item-form-type-label {
+  text-align: center;
+  display: block;
+  margin-bottom: 1rem;
+  font-size: .75rem;
+}
+
+.booking-item-form-type-icon {
+  margin-bottom: .5rem;
+  font-size: 3rem;
+}
+
+.booking-item-form-footer {
+  margin-top: 2rem;
+}
+
+.booking-item-form-footer-note-required {
+  padding-left: 1rem;
+  padding-right: 1rem;
+  font-size: .75rem;
+  font-style: oblique;
+}
+
+.booking-item-form-notification {
+  margin-left: 1rem;
+  margin-right: 1rem;
+}
+
+.booking-item-form-spacer {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+.booking-item-form-list {
+  padding: 1rem;
+}
+
+.booking-item-form-loading {
+  text-align: center;
+}

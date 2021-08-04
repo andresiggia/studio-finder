@@ -14,7 +14,7 @@ import {
 } from '../../services/api/bookings';
 
 // components
-// import BookingItemForm from '../BookingItemForm/BookingItemForm';
+import BookingItemForm from '../BookingItemForm/BookingItemForm';
 
 // context
 import AppContext from '../../context/AppContext';
@@ -117,10 +117,40 @@ class BookingItemList extends React.Component<Props, State> {
 
   // render
 
-  renderSelectedItem = () => (
-    <p>Under development</p>
-    // <BookingItemForm />
-  )
+  renderSelectedItem = () => {
+    const { spaceProfile, studioProfile, disabled } = this.props;
+    const { items, selectedIndex } = this.state;
+    if (!items) {
+      return null;
+    }
+    return (
+      <BookingItemForm
+        index={selectedIndex}
+        item={items[selectedIndex]}
+        spaceProfile={spaceProfile}
+        studioProfile={studioProfile}
+        disabled={disabled}
+        onDelete={() => {
+          const updatedItems = items.slice();
+          updatedItems.splice(selectedIndex, 1);
+          this.setMountedState({
+            items: updatedItems,
+          });
+        }}
+        onChange={(item: BookingItemWithBooking) => {
+          const updatedItems = items.map((oItem, i) => {
+            if (selectedIndex === i) {
+              return item;
+            }
+            return oItem;
+          });
+          this.setMountedState({
+            items: updatedItems,
+          });
+        }}
+      />
+    );
+  }
 
   renderItems = () => {
     const { items, selectedIndex } = this.state;
