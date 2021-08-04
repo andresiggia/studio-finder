@@ -131,15 +131,17 @@ class BookingItemForm extends React.Component<Props> {
             {`${i18n.t('Item')} #${index + 1}`}
           </IonTitle>
           <IonButtons slot="end">
-            <IonButton
-              size="small"
-              color="primary"
-              fill="clear"
-              title={i18n.t('Delete Item')}
-              onClick={() => onDelete()}
-            >
-              <IonIcon icon={trashOutline} />
-            </IonButton>
+            {!disabled && (
+              <IonButton
+                size="small"
+                color="primary"
+                fill="clear"
+                title={i18n.t('Delete Item')}
+                onClick={() => onDelete()}
+              >
+                <IonIcon icon={trashOutline} />
+              </IonButton>
+            )}
           </IonButtons>
         </IonToolbar>
         <IonList className="booking-item-form-list">
