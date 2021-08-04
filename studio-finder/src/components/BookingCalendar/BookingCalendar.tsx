@@ -22,7 +22,7 @@ import BookingForm from '../BookingForm/BookingForm';
 import AppContext from '../../context/AppContext';
 
 // css
-import './BookingItemList.css';
+import './BookingCalendar.css';
 
 interface State {
   isLoading: boolean,
@@ -38,7 +38,7 @@ interface Props {
   studioProfile: StudioProfile,
 }
 
-class BookingItemList extends React.Component<Props, State> {
+class BookingCalendar extends React.Component<Props, State> {
   mounted = false
 
   constructor(props: Props) {
@@ -320,6 +320,6 @@ class BookingItemList extends React.Component<Props, State> {
   }
 }
 
-BookingItemList.contextType = AppContext;
+BookingCalendar.contextType = AppContext;
 
-export default BookingItemList;
+export default BookingCalendar;

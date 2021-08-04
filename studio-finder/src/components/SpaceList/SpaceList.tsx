@@ -14,7 +14,7 @@ import { getSpaces } from '../../services/api/spaces';
 // components
 import Notification, { NotificationType } from '../Notification/Notification';
 import SpaceForm from '../SpaceForm/SpaceForm';
-import BookingItemList from '../BookingItemList/BookingItemList';
+import BookingCalendar from '../BookingCalendar/BookingCalendar';
 
 // context
 import AppContext from '../../context/AppContext';
@@ -163,7 +163,7 @@ class SpaceList extends React.Component<Props, State> {
             </IonButton>
           </IonButtons>
         </IonToolbar>
-        <BookingItemList
+        <BookingCalendar
           spaceProfile={spaceProfile}
           studioProfile={studioProfile}
         />
