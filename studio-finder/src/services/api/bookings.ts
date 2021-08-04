@@ -283,3 +283,18 @@ export const upsertBookingItem = async (context: AppContextValue, {
   console.log('got new booking info', newRow, data);
   return data;
 };
+
+export const deleteBookingItem = async (context: AppContextValue, id: number) => {
+  const { supabase } = context;
+  const { data, error } = await supabase
+    .from(TableName.bookings)
+    .delete()
+    .match({ id });
+  if (error) {
+    throw error;
+  }
+  if (!data) {
+    throw BookingError.invalidResponse;
+  }
+  return data;
+};
