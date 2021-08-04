@@ -110,25 +110,41 @@ export const defaultBooking: Booking = {
 };
 const bookingDateFields = ['createdAt', 'modifiedAt'];
 
+export interface BookingWithUser extends Booking {
+  studioTitle: string,
+  userName: string,
+  userSurname: string,
+  actTitle: string,
+}
+export const defaultBookingWithUser: BookingWithUser = {
+  ...defaultBooking,
+  studioTitle: '',
+  userName: '',
+  userSurname: '',
+  actTitle: '',
+};
+
 export const getBookings = async (context: AppContextValue, props?: {
-  studioId: number, start?: number, limit?: number
+  studioId: number, start?: number, limit?: number, includeUser?: boolean,
 }) => {
   const {
-    studioId, start = 0, limit = 100,
+    studioId, start = 0, limit = 100, includeUser,
   } = props || {};
   if (!studioId) {
     throw BookingError.missingStudioId;
   }
   const { supabase } = context;
   const { data, error } = await supabase
-    .from(TableName.bookings)
+    .from(includeUser
+      ? ViewName.bookingsWithUser
+      : TableName.bookings)
     .select()
     .eq('studio_id', studioId)
     .range(start, start + limit - 1);
   if (error) {
     throw error;
   }
-  let bookings: Booking[] = [];
+  let bookings: (Booking | BookingWithUser)[] = [];
   if (data && Array.isArray(data) && data.length > 0) {
     bookings = data.map((item: any) => convertDateFields(updateObjectKeysToCamelCase(item), bookingDateFields));
   }
@@ -166,17 +182,22 @@ export const getBookingItems = async (context: AppContextValue, props: {
   return bookingItems;
 };
 
-export const getBooking = async (context: AppContextValue, bookingId: number) => {
+export const getBooking = async (context: AppContextValue, props: {
+  bookingId: number, includeUser?: boolean,
+}) => {
+  const { bookingId, includeUser } = props;
   const { supabase } = context;
   const { data, error } = await supabase
-    .from(TableName.bookings)
+    .from(includeUser
+      ? ViewName.bookingsWithUser
+      : TableName.bookings)
     .select()
     .eq('id', bookingId)
     .single();
   if (error) {
     throw error;
   }
-  let booking: any = null;
+  let booking: Booking | BookingWithUser | null = null;
   if (data && data.id === bookingId) {
     booking = convertDateFields(updateObjectKeysToCamelCase(data), bookingDateFields);
   }
