@@ -18,13 +18,14 @@ import { deepEqual } from '../../services/helpers/misc';
 // constants
 import {
   defaultBookingWithUser, getBooking, upsertBooking, Booking, BookingWithUser,
-  BookingItem, getBookingItems, upsertBookingItem, deleteBookingItem,
+  BookingItemWithBooking, getBookingItems, upsertBookingItem, deleteBookingItem,
 } from '../../services/api/bookings';
 import { StudioProfile } from '../../services/api/studios';
 import { SpaceProfile } from '../../services/api/spaces';
 
 // components
 import Notification, { NotificationType } from '../Notification/Notification';
+import BookingItemList from '../BookingItemList/BookingItemList';
 
 // css
 import './BookingForm.css';
@@ -43,8 +44,8 @@ interface State {
   // fields
   booking: BookingWithUser | null,
   bookingOriginal: BookingWithUser | null,
-  bookingItems: BookingItem[] | null,
-  bookingItemsOriginal: BookingItem[] | null,
+  bookingItems: BookingItemWithBooking[] | null,
+  bookingItemsOriginal: BookingItemWithBooking[] | null,
 }
 
 class BookingForm extends React.Component<Props, State> {
@@ -112,7 +113,7 @@ class BookingForm extends React.Component<Props, State> {
     }, async () => {
       try {
         let booking: any = null; // new booking
-        let bookingItems: BookingItem[] = [];
+        let bookingItems: any[] = [];
         const { id } = this.props;
         if (id) {
           // eslint-disable-next-line no-console
@@ -122,7 +123,7 @@ class BookingForm extends React.Component<Props, State> {
               bookingId: id,
               includeUser: true,
             }),
-            getBookingItems(this.context, { bookingId: id }),
+            getBookingItems(this.context, { bookingId: id, includeBookingAndUser: true }),
           ]);
         }
         this.setMountedState({
@@ -153,7 +154,7 @@ class BookingForm extends React.Component<Props, State> {
     return !deepEqual(booking, bookingOriginal);
   }
 
-  hasChangesToBookingItem = (item: BookingItem, index: number) => {
+  hasChangesToBookingItem = (item: BookingItemWithBooking, index: number) => {
     const { bookingItemsOriginal } = this.state;
     const itemOriginal = item.id
       ? bookingItemsOriginal?.find((oItem) => oItem.id === item.id)
@@ -218,10 +219,15 @@ class BookingForm extends React.Component<Props, State> {
         // eslint-disable-next-line no-console
         console.log('deleted items', deleted);
         // handle new/updated items
-        const upserted = await Promise.all((bookingItems || []).map((bookingItem, i) => {
-          if (!this.hasChangesToBookingItem(bookingItem, i)) {
+        const upserted = await Promise.all((bookingItems || []).map((bookingItemWithBooking, i) => {
+          if (!this.hasChangesToBookingItem(bookingItemWithBooking, i)) {
             return Promise.resolve(null);
           }
+          // extract items to transform BookingWithUser into Booking type
+          const {
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            studioId, userId, actId, studioTitle, userName, userSurname, actTitle, ...bookingItem
+          } = bookingItemWithBooking;
           // eslint-disable-next-line no-console
           console.log('will insert/update booking item #', i, bookingItem, 'in space', spaceProfile.id);
           return upsertBookingItem(this.context, {
@@ -424,6 +430,7 @@ class BookingForm extends React.Component<Props, State> {
   }
 
   renderFields = (disabled: boolean) => {
+    const { spaceProfile, studioProfile } = this.props;
     const { booking, bookingItems } = this.state;
     if (!booking || !bookingItems) {
       return null;
@@ -438,30 +445,33 @@ class BookingForm extends React.Component<Props, State> {
             disabled: true,
           })}
         </IonItem>
-        <IonItem>
-          {this.renderTextInput({
-            value: String(bookingItems.length || 0),
-            fieldName: 'bookingItems',
-            label: i18n.t('Items'),
-            disabled: true,
-          })}
-        </IonItem>
-        {/* <IonItem>
-          {this.renderTextInput({
-            value: booking.title,
-            fieldName: 'title',
-            label: i18n.t('Title'),
-            disabled,
-          })}
-        </IonItem>
-        <IonItem>
-          {this.renderTextareaInput({
-            value: booking.description,
-            fieldName: 'description',
-            label: i18n.t('Description'),
-            disabled,
-          })}
-        </IonItem> */}
+        {booking.userId && (
+          <IonItem>
+            {this.renderTextInput({
+              value: `${booking.userName} ${booking.userSurname}`.trim() || booking.userId,
+              fieldName: 'user',
+              label: i18n.t('User'),
+              disabled: true,
+            })}
+          </IonItem>
+        )}
+        {booking.actId && (
+          <IonItem>
+            {this.renderTextInput({
+              value: booking.actTitle || String(booking.actId),
+              fieldName: 'act',
+              label: i18n.t('Act'),
+              disabled: true,
+            })}
+          </IonItem>
+        )}
+        <BookingItemList
+          items={bookingItems}
+          disabled={disabled}
+          spaceProfile={spaceProfile}
+          studioProfile={studioProfile}
+          booking={booking}
+        />
       </IonList>
     );
   }
