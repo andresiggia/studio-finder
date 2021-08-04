@@ -17,7 +17,8 @@ import { deepEqual } from '../../services/helpers/misc';
 
 // constants
 import {
-  defaultBooking, getBooking, upsertBooking, Booking, BookingItem, getBookingItems,
+  defaultBookingWithUser, getBooking, upsertBooking, Booking, BookingWithUser,
+  BookingItem, getBookingItems, upsertBookingItem, deleteBookingItem,
 } from '../../services/api/bookings';
 import { StudioProfile } from '../../services/api/studios';
 import { SpaceProfile } from '../../services/api/spaces';
@@ -30,8 +31,8 @@ import './BookingForm.css';
 
 interface Props {
   id: number,
-  spaceProfile: SpaceProfile,
   studioProfile: StudioProfile,
+  spaceProfile: SpaceProfile,
   onCancel?: () => void,
   onSave: () => void,
 }
@@ -40,8 +41,8 @@ interface State {
   isLoading: boolean,
   error: Error | null,
   // fields
-  booking: Booking,
-  bookingOriginal: Booking | null,
+  booking: BookingWithUser | null,
+  bookingOriginal: BookingWithUser | null,
   bookingItems: BookingItem[] | null,
   bookingItemsOriginal: BookingItem[] | null,
 }
@@ -56,7 +57,7 @@ class BookingForm extends React.Component<Props, State> {
     this.state = {
       isLoading: false,
       error: null,
-      booking: defaultBooking,
+      booking: null,
       bookingOriginal: null,
       bookingItems: [],
       bookingItemsOriginal: null,
@@ -91,25 +92,42 @@ class BookingForm extends React.Component<Props, State> {
     }
   }
 
+  getDefaultBookingWithUser = (props: Props = this.props): BookingWithUser => {
+    const { studioProfile } = props;
+    const { state } = this.context;
+    return {
+      ...defaultBookingWithUser,
+      studioId: studioProfile.id,
+      studioTitle: studioProfile.title,
+      userId: state.user.id,
+      userName: state.profile.name,
+      userSurname: state.profile.surname,
+      actTitle: '',
+    };
+  }
+
   loadData = () => {
     this.setMountedState({
       isLoading: true,
     }, async () => {
       try {
-        let booking = defaultBooking; // new booking
+        let booking: any = null; // new booking
         let bookingItems: BookingItem[] = [];
         const { id } = this.props;
         if (id) {
           // eslint-disable-next-line no-console
           console.log('loading booking data...', id);
           [booking, bookingItems] = await Promise.all([
-            getBooking(this.context, id),
+            getBooking(this.context, {
+              bookingId: id,
+              includeUser: true,
+            }),
             getBookingItems(this.context, { bookingId: id }),
           ]);
         }
         this.setMountedState({
           isLoading: false,
-          booking,
+          booking: booking || this.getDefaultBookingWithUser(),
           bookingOriginal: booking,
           bookingItems,
           bookingItemsOriginal: bookingItems,
@@ -130,13 +148,26 @@ class BookingForm extends React.Component<Props, State> {
     });
   }
 
-  hasChanges = () => {
-    const {
-      booking, bookingOriginal, bookingItems, bookingItemsOriginal,
-    } = this.state;
-    return !deepEqual(booking, bookingOriginal)
-      && !deepEqual(bookingItems, bookingItemsOriginal);
+  hasChangesToBooking = () => {
+    const { booking, bookingOriginal } = this.state;
+    return !deepEqual(booking, bookingOriginal);
   }
+
+  hasChangesToBookingItem = (item: BookingItem, index: number) => {
+    const { bookingItemsOriginal } = this.state;
+    const itemOriginal = item.id
+      ? bookingItemsOriginal?.find((oItem) => oItem.id === item.id)
+      : (bookingItemsOriginal || [])[index];
+    return !deepEqual(item, itemOriginal);
+  }
+
+  hasChangesToBookingItems = () => {
+    const { bookingItems, bookingItemsOriginal } = this.state;
+    return bookingItems?.length !== bookingItemsOriginal?.length
+      || (bookingItems || []).some(this.hasChangesToBookingItem);
+  }
+
+  hasChanges = () => this.hasChangesToBooking() || this.hasChangesToBookingItems()
 
   onSubmit = (e: any) => {
     // prevent form from submitting
@@ -155,13 +186,50 @@ class BookingForm extends React.Component<Props, State> {
       isLoading: true,
     }, async () => {
       try {
-        const { onSave, studioProfile } = this.props;
-        const { booking } = this.state;
+        const { onSave, studioProfile, spaceProfile } = this.props;
+        const { booking: bookingWithUser, bookingItems, bookingItemsOriginal } = this.state;
+        if (this.hasChangesToBooking()) {
+          if (!bookingWithUser) {
+            throw new Error(i18n.t('Invalid booking'));
+          }
+          // extract items to transform BookingWithUser into Booking type
+          const {
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            studioTitle, userName, userSurname, actTitle, ...booking
+          } = bookingWithUser;
+          // eslint-disable-next-line no-console
+          console.log('will insert/update booking', booking, 'in studio', studioProfile.id);
+          const data = await upsertBooking(this.context, {
+            booking, studioId: studioProfile.id,
+          });
+          // eslint-disable-next-line no-console
+          console.log('got new booking data', data);
+        }
+        // handle removed items
+        const deleted = await Promise.all((bookingItemsOriginal || []).map((bookingItem) => {
+          const existingItem = bookingItems?.find((item) => item.id === bookingItem.id);
+          if (existingItem) {
+            // still there
+            return Promise.resolve(null);
+          }
+          // deleted
+          return deleteBookingItem(this.context, bookingItem.id);
+        }));
         // eslint-disable-next-line no-console
-        console.log('will insert new booking', booking, 'in studio', studioProfile);
-        const data = await upsertBooking(this.context, { booking, studioProfile });
+        console.log('deleted items', deleted);
+        // handle new/updated items
+        const upserted = await Promise.all((bookingItems || []).map((bookingItem, i) => {
+          if (!this.hasChangesToBookingItem(bookingItem, i)) {
+            return Promise.resolve(null);
+          }
+          // eslint-disable-next-line no-console
+          console.log('will insert/update booking item #', i, bookingItem, 'in space', spaceProfile.id);
+          return upsertBookingItem(this.context, {
+            bookingItem, spaceId: spaceProfile.id,
+          });
+        }));
         // eslint-disable-next-line no-console
-        console.log('got new booking data', data);
+        console.log('inserted/updated items', upserted);
         this.setMountedState({
           isLoading: false,
         }, () => onSave());
@@ -183,7 +251,7 @@ class BookingForm extends React.Component<Props, State> {
 
   isValidForm = () => {
     const { booking } = this.state;
-    return Object.keys(booking).every((key: string) => (
+    return !!booking && Object.keys(booking).every((key: string) => (
       !this.requiredFields.includes(key) || !!booking[key as keyof Booking]
     ));
   }
@@ -356,13 +424,15 @@ class BookingForm extends React.Component<Props, State> {
   }
 
   renderFields = (disabled: boolean) => {
-    const { studioProfile, spaceProfile } = this.props;
-    const { bookingItems } = this.state;
+    const { booking, bookingItems } = this.state;
+    if (!booking || !bookingItems) {
+      return null;
+    }
     return (
       <IonList className="booking-form-list">
         <IonItem>
           {this.renderTextInput({
-            value: studioProfile.title,
+            value: booking.studioTitle,
             fieldName: 'studio',
             label: i18n.t('Studio'),
             disabled: true,
@@ -370,15 +440,7 @@ class BookingForm extends React.Component<Props, State> {
         </IonItem>
         <IonItem>
           {this.renderTextInput({
-            value: spaceProfile.title,
-            fieldName: 'space',
-            label: i18n.t('Space'),
-            disabled: true,
-          })}
-        </IonItem>
-        <IonItem>
-          {this.renderTextInput({
-            value: String(bookingItems?.length || 0),
+            value: String(bookingItems.length || 0),
             fieldName: 'bookingItems',
             label: i18n.t('Items'),
             disabled: true,
