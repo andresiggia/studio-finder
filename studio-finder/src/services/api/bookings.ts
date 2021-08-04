@@ -144,10 +144,10 @@ export const getBookings = async (context: AppContextValue, props?: {
 };
 
 export const getBookingItems = async (context: AppContextValue, props: {
-  spaceId?: number, bookingId?: number, start?: number, limit?: number,
+  spaceId?: number, bookingId?: number, start?: number, limit?: number, includeBookingAndUser?: boolean
 }) => {
   const {
-    spaceId, bookingId, start = 0, limit = 100,
+    spaceId, bookingId, start = 0, limit = 100, includeBookingAndUser,
   } = props;
   if (!spaceId && !bookingId) { // at least one param is required
     throw BookingError.missingSpaceId;
@@ -158,14 +158,16 @@ export const getBookingItems = async (context: AppContextValue, props: {
     : 'booking_id';
   const filterValue = spaceId || bookingId;
   const { data, error } = await supabase
-    .from(ViewName.bookingItemsWithBooking)
+    .from(includeBookingAndUser
+      ? ViewName.bookingItemsWithBooking
+      : TableName.bookingItems)
     .select()
     .eq(filterName, filterValue)
     .range(start, start + limit - 1);
   if (error) {
     throw error;
   }
-  let bookingItems: BookingItemWithBooking[] = [];
+  let bookingItems: (BookingItemWithBooking | BookingItem)[] = [];
   if (data && Array.isArray(data) && data.length > 0) {
     bookingItems = data.map((item: any) => convertDateFields(updateObjectKeysToCamelCase(item), bookingItemDateFields));
   }

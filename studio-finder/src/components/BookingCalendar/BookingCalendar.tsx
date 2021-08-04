@@ -92,6 +92,7 @@ class BookingCalendar extends React.Component<Props, State> {
         console.log('will load bookings for space', spaceProfile);
         const items = await getBookingItems(this.context, {
           spaceId: spaceProfile.id,
+          includeBookingAndUser: true,
         });
         // eslint-disable-next-line no-console
         console.log('got booking items', items);
@@ -229,6 +230,7 @@ class BookingCalendar extends React.Component<Props, State> {
                             size="small"
                             expand="block"
                             title={i18n.t('View booking')}
+                            // important: select booking id, not booking item id
                             onClick={() => this.onModalOpen(item.bookingId)}
                           >
                             {`${item.actTitle || `${item.userName} ${item.userSurname}`} (${item.serviceTitle})`}
