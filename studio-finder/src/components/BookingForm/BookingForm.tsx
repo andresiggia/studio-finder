@@ -47,7 +47,7 @@ interface State {
 class BookingForm extends React.Component<Props, State> {
   mounted = false
 
-  requiredFields = ['title']
+  requiredFields = ['studioId']
 
   constructor(props: Props) {
     super(props);
