@@ -371,8 +371,8 @@ class BookingForm extends React.Component<Props, State> {
         <IonItem>
           {this.renderTextInput({
             value: spaceProfile.title,
-            fieldName: 'studio',
-            label: i18n.t('Studio'),
+            fieldName: 'space',
+            label: i18n.t('Space'),
             disabled: true,
           })}
         </IonItem>
