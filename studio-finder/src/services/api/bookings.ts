@@ -205,9 +205,9 @@ export const getBooking = async (context: AppContextValue, props: {
 };
 
 export const upsertBooking = async (context: AppContextValue, {
-  booking, studioProfile,
+  booking, studioId,
 }: {
-  booking: Booking, studioProfile: StudioProfile,
+  booking: Booking, studioId: number,
 }) => {
   const { supabase, state } = context;
   const userId = state.user?.id;
@@ -220,11 +220,11 @@ export const upsertBooking = async (context: AppContextValue, {
     modifiedAt: new Date(), // modifiedAt to be updated to current date/time
   };
   if (!isEditing) { // inserting new row
-    bookingObj.studioId = studioProfile.id; // injecting studio id provided
+    bookingObj.studioId = studioId; // injecting studio id provided
     bookingObj.userId = userId; // injecting user id provided
     delete bookingObj.createdAt; // createdAt should be created by back-end
     delete bookingObj.id; // id should be created by back-end
-  } else if (bookingObj.studioId !== studioProfile.id) { // only when editing
+  } else if (bookingObj.studioId !== studioId) { // only when editing
     // studio id must match studioProfile provided
     throw new Error(BookingError.editingBookingOfWrongStudio);
   }
@@ -245,26 +245,26 @@ export const upsertBooking = async (context: AppContextValue, {
 };
 
 export const upsertBookingItem = async (context: AppContextValue, {
-  booking, spaceProfile,
+  bookingItem, spaceId,
 }: {
-  booking: Booking, spaceProfile: SpaceProfile,
+    bookingItem: BookingItem, spaceId: number,
 }) => {
   const { supabase, state } = context;
   const userId = state.user?.id;
   if (!userId) {
     throw BookingError.missingUserId;
   }
-  const isEditing = !!booking.id;
+  const isEditing = !!bookingItem.id;
   const bookingObj: any = {
-    ...booking,
+    ...bookingItem,
     modifiedAt: new Date(), // modifiedAt to be updated to current date/time
   };
   if (!isEditing) { // inserting new row
-    bookingObj.studioId = spaceProfile.id; // injecting space id provided
+    bookingObj.spaceId = spaceId; // injecting space id provided
     bookingObj.userId = userId; // injecting user id provided
     delete bookingObj.createdAt; // createdAt should be created by back-end
     delete bookingObj.id; // id should be created by back-end
-  } else if (bookingObj.spaceId !== spaceProfile.id) { // only when editing
+  } else if (bookingObj.spaceId !== spaceId) { // only when editing
     // studio id must match spaceProfile provided
     throw new Error(BookingError.editingBookingOfWrongSpace);
   }
