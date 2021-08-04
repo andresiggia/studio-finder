@@ -1,6 +1,7 @@
 import React from 'react';
 import {
-  IonLabel, IonIcon, IonSpinner, IonButton, IonGrid, IonRow, IonCol, IonList, IonInput, IonItem, IonTextarea,
+  IonLabel, IonIcon, IonSpinner, IonButton, IonGrid, IonRow, IonCol, IonList, IonInput, IonItem,
+  IonTextarea, IonSelectOption, IonSelect,
 } from '@ionic/react';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import {
@@ -303,6 +304,39 @@ class BookingForm extends React.Component<Props, State> {
             });
           }}
         />
+      </>
+    );
+  }
+
+  renderSelectInput = ({
+    value, disabled = false, required = false, label, fieldName, options,
+  }: {
+    value: string, disabled?: boolean, required?: boolean, label: string, fieldName: string, options: { value: any, label: string }[],
+  }) => {
+    const isRequired = required || this.requiredFields.includes(fieldName);
+    return (
+      <>
+        {this.renderLabel(label, isRequired)}
+        <IonSelect
+          value={value}
+          // required={isRequired}
+          disabled={disabled}
+          onIonChange={(e: any) => {
+            const { booking } = this.state;
+            this.setMountedState({
+              booking: {
+                ...booking,
+                [fieldName]: e.detail.value || '',
+              },
+            });
+          }}
+        >
+          {options.map((item) => (
+            <IonSelectOption key={item.value} value={item.value}>
+              {item.label}
+            </IonSelectOption>
+          ))}
+        </IonSelect>
       </>
     );
   }
