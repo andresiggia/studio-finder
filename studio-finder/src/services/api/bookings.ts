@@ -4,6 +4,7 @@ import { convertDateFields, updateObjectKeysToCamelCase, updateObjectKeysToUnder
 import { SpaceProfile } from './spaces';
 import { StudioProfile } from './studios';
 import { TableName } from './tables';
+import { UserProfile } from './users';
 import { ViewName } from './views';
 
 export enum BookingError {
@@ -82,6 +83,24 @@ export const defaultBookingItem: BookingItem = {
 };
 const bookingItemDateFields = ['startAt', 'endAt'];
 
+export interface BookingItemWithBooking extends BookingItem {
+  studioId: number,
+  userId: number,
+  actId: number,
+  userName: string,
+  userSurname: string,
+  actTitle: string,
+}
+export const defaultBookingItemWithBooking: BookingItemWithBooking = {
+  ...defaultBookingItem,
+  studioId: 0,
+  userId: 0,
+  actId: 0,
+  userName: '',
+  userSurname: '',
+  actTitle: '',
+};
+
 export interface Booking {
   id: number,
   studioId: number,
@@ -143,7 +162,7 @@ export const getBookingItems = async (context: AppContextValue, props?: {
   if (error) {
     throw error;
   }
-  let bookingItems: BookingItem[] = [];
+  let bookingItems: BookingItemWithBooking[] = [];
   if (data && Array.isArray(data) && data.length > 0) {
     bookingItems = data.map((item: any) => convertDateFields(updateObjectKeysToCamelCase(item), bookingItemDateFields));
   }

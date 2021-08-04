@@ -10,7 +10,7 @@ import {
 // services
 import { SpaceProfile } from '../../services/api/spaces';
 import i18n from '../../services/i18n/i18n';
-import { BookingItem, getBookingItems } from '../../services/api/bookings';
+import { BookingItemWithBooking, getBookingItems } from '../../services/api/bookings';
 import { pad } from '../../services/helpers/misc';
 import { StudioProfile } from '../../services/api/studios';
 
@@ -27,7 +27,7 @@ import './BookingCalendar.css';
 interface State {
   isLoading: boolean,
   error: Error | null,
-  items: BookingItem[] | null,
+  items: BookingItemWithBooking[] | null,
   showModal: boolean,
   modalSelectedId: number,
   weekOffset: number,
@@ -231,7 +231,7 @@ class BookingCalendar extends React.Component<Props, State> {
                             title={i18n.t('View booking')}
                             onClick={() => this.onModalOpen(item.bookingId)}
                           >
-                            {item.serviceTitle}
+                            {`${item.actTitle || `${item.userName} ${item.userSurname}`} (${item.serviceTitle})`}
                           </IonButton>
                         ))}
                       </td>
