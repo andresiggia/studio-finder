@@ -23,11 +23,24 @@ CREATE VIEW studios_with_user_id AS (
   WHERE studio_users.studio_id = studios.id
 );
 
-DROP VIEW IF EXISTS booking_items_with_booking;
-CREATE VIEW booking_items_with_booking AS (
-  SELECT booking_items.*, bookings.studio_id, bookings.user_id, bookings.act_id, users.name as "user_name", users.surname as "user_surname", acts.title as "act_title"
-  FROM booking_items
-  LEFT JOIN bookings ON booking_items.booking_id = bookings.id
+DROP VIEW IF EXISTS bookings_with_user;
+CREATE VIEW bookings_with_user AS (
+  SELECT bookings.*,
+    studios.title as "studio_title",
+    users.name as "user_name", users.surname as "user_surname",
+    acts.title as "act_title"
+  FROM bookings
+  LEFT JOIN studios ON bookings.studio_id = studios.id
   LEFT JOIN users ON bookings.user_id = users.id
   LEFT JOIN acts ON bookings.act_id = acts.id
+);
+
+DROP VIEW IF EXISTS booking_items_with_booking;
+CREATE VIEW booking_items_with_booking AS (
+  SELECT booking_items.*,
+    bookings_with_user.user_id, bookings_with_user.user_name, bookings_with_user.user_surname,
+    bookings_with_user.studio_id, bookings_with_user.studio_title,
+    bookings_with_user.act_id, bookings_with_user.act_title
+  FROM booking_items
+  LEFT JOIN bookings_with_user ON bookings_with_user.id = booking_items.booking_id
 );

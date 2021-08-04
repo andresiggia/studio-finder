@@ -86,19 +86,11 @@ export interface BookingItemWithBooking extends BookingItem {
   studioId: number,
   userId: number,
   actId: number,
+  studioTitle: string,
   userName: string,
   userSurname: string,
   actTitle: string,
 }
-export const defaultBookingItemWithBooking: BookingItemWithBooking = {
-  ...defaultBookingItem,
-  studioId: 0,
-  userId: 0,
-  actId: 0,
-  userName: '',
-  userSurname: '',
-  actTitle: '',
-};
 
 export interface Booking {
   id: number,
