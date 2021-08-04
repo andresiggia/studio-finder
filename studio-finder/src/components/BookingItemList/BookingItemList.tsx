@@ -23,7 +23,7 @@ import AppContext from '../../context/AppContext';
 import './BookingItemList.css';
 
 interface State {
-  items: BookingItemWithBooking[] | null,
+  items: BookingItemWithBooking[],
   selectedIndex: number,
 }
 
@@ -41,7 +41,7 @@ class BookingItemList extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
-      items: null,
+      items: [],
       selectedIndex: -1,
     };
   }
@@ -81,7 +81,7 @@ class BookingItemList extends React.Component<Props, State> {
     const { items } = this.props;
     // pre-select first item
     let selectedIndex = -1;
-    if (items?.length > 0) {
+    if (items.length > 0) {
       selectedIndex = 0;
     }
     this.setMountedState({
