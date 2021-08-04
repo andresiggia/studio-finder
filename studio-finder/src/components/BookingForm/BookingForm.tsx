@@ -5,7 +5,7 @@ import {
 } from '@ionic/react';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import {
-  refreshOutline, saveOutline,
+  refreshOutline, saveOutline, createOutline,
 } from 'ionicons/icons';
 
 // context
@@ -18,7 +18,7 @@ import { deepEqual } from '../../services/helpers/misc';
 // constants
 import {
   defaultBookingWithUser, getBooking, upsertBooking, Booking, BookingWithUser,
-  BookingItemWithBooking, getBookingItems, upsertBookingItem, deleteBookingItem,
+  BookingItemWithBooking, getBookingItems, upsertBookingItem, deleteBookingItem, defaultBookingItem,
 } from '../../services/api/bookings';
 import { StudioProfile } from '../../services/api/studios';
 import { SpaceProfile } from '../../services/api/spaces';
@@ -39,6 +39,7 @@ interface Props {
 }
 
 interface State {
+  allowEdit: boolean,
   isLoading: boolean,
   error: Error | null,
   // fields
@@ -56,6 +57,7 @@ class BookingForm extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
+      allowEdit: false,
       isLoading: false,
       error: null,
       booking: null,
@@ -114,8 +116,9 @@ class BookingForm extends React.Component<Props, State> {
       try {
         let booking: any = null; // new booking
         let bookingItems: any[] = [];
-        const { id } = this.props;
-        if (id) {
+        const isEditing = this.isEditing();
+        if (isEditing) {
+          const { id } = this.props;
           // eslint-disable-next-line no-console
           console.log('loading booking data...', id);
           [booking, bookingItems] = await Promise.all([
@@ -126,12 +129,14 @@ class BookingForm extends React.Component<Props, State> {
             getBookingItems(this.context, { bookingId: id, includeBookingAndUser: true }),
           ]);
         }
+        const defaultBooking = this.getDefaultBookingWithUser();
         this.setMountedState({
           isLoading: false,
-          booking: booking || this.getDefaultBookingWithUser(),
-          bookingOriginal: booking,
+          allowEdit: !isEditing, // if creating new, skip allowEdit
+          booking: booking || defaultBooking,
+          bookingOriginal: booking || defaultBooking,
           bookingItems,
-          bookingItemsOriginal: bookingItems,
+          bookingItemsOriginal: bookingItems.slice(),
         });
       } catch (error) {
         // eslint-disable-next-line no-console
@@ -262,6 +267,52 @@ class BookingForm extends React.Component<Props, State> {
     ));
   }
 
+  onItemAdd = () => {
+    const { studioProfile, spaceProfile } = this.props;
+    const { booking, bookingItems } = this.state;
+    const { state } = this.context;
+    const updatedItems = (bookingItems || []).slice();
+    updatedItems.push({
+      ...defaultBookingItem,
+      studioId: studioProfile.id,
+      studioTitle: studioProfile.title,
+      userId: state.user.id,
+      userName: state.user.name,
+      userSurname: state.user.surname,
+      actId: 0,
+      actTitle: '',
+      spaceTitle: spaceProfile.title,
+      // booking items
+      bookingId: booking?.id || 0,
+      spaceId: spaceProfile.id,
+    });
+    this.setMountedState({
+      bookingItems: updatedItems,
+    });
+  }
+
+  onItemDelete = (index: number) => {
+    const { bookingItems } = this.state;
+    const updatedItems = (bookingItems || []).slice();
+    updatedItems.splice(index, 1);
+    this.setMountedState({
+      bookingItems: updatedItems,
+    });
+  }
+
+  onItemChange = (item: BookingItemWithBooking, index: number) => {
+    const { bookingItems } = this.state;
+    const updatedItems = (bookingItems || []).map((oItem, i) => {
+      if (index === i) {
+        return item;
+      }
+      return oItem;
+    });
+    this.setMountedState({
+      bookingItems: updatedItems,
+    });
+  }
+
   // render
 
   renderLabel = (label: string, required = false) => (
@@ -274,53 +325,87 @@ class BookingForm extends React.Component<Props, State> {
 
   renderFooter = () => {
     const { onCancel } = this.props;
-    const { isLoading, error } = this.state;
+    const { isLoading, error, allowEdit } = this.state;
     const isValidForm = this.isValidForm();
     const hasChanges = this.hasChanges();
     const disabled = isLoading || !!error;
     return (
       <div className="booking-form-footer">
-        <p className="booking-form-footer-note-required">
-          {`* ${i18n.t('Required')}`}
-        </p>
+        {allowEdit && (
+          <p className="booking-form-footer-note-required">
+            {`* ${i18n.t('Required')}`}
+          </p>
+        )}
         <IonGrid>
           <IonRow>
-            <IonCol size="12" size-md="6">
-              {(hasChanges || typeof onCancel !== 'function')
-                ? (
-                  <IonButton
-                    fill="outline"
-                    type="button"
-                    expand="block"
-                    disabled={disabled || !hasChanges}
-                    onClick={() => this.onReset()}
-                  >
-                    <IonIcon slot="start" icon={refreshOutline} />
-                    {i18n.t('Reset')}
-                  </IonButton>
-                ) : (
-                  <IonButton
-                    fill="outline"
-                    type="button"
-                    expand="block"
-                    disabled={disabled}
-                    onClick={() => onCancel()}
-                  >
-                    {i18n.t('Cancel')}
-                  </IonButton>
-                )}
-            </IonCol>
-            <IonCol size="12" size-md="6">
-              <IonButton
-                color="primary"
-                type="submit"
-                expand="block"
-                disabled={disabled || !isValidForm || !hasChanges}
-              >
-                <IonIcon slot="start" icon={saveOutline} />
-                {i18n.t('Save')}
-              </IonButton>
-            </IonCol>
+            {allowEdit
+              ? (
+                <>
+                  <IonCol size="12" size-md="6">
+                    {(hasChanges || typeof onCancel !== 'function')
+                      ? (
+                        <IonButton
+                          fill="outline"
+                          type="button"
+                          expand="block"
+                          disabled={disabled || !hasChanges}
+                          onClick={() => this.onReset()}
+                        >
+                          <IonIcon slot="start" icon={refreshOutline} />
+                          {i18n.t('Reset')}
+                        </IonButton>
+                      ) : (
+                        <IonButton
+                          fill="outline"
+                          type="button"
+                          expand="block"
+                          disabled={disabled}
+                          onClick={() => (this.isEditing()
+                            ? this.setMountedState({ allowEdit: false })
+                            : onCancel())}
+                        >
+                          {i18n.t('Cancel')}
+                        </IonButton>
+                      )}
+                  </IonCol>
+                  <IonCol size="12" size-md="6">
+                    <IonButton
+                      color="primary"
+                      type="submit"
+                      expand="block"
+                      disabled={disabled || !isValidForm || !hasChanges}
+                    >
+                      <IonIcon slot="start" icon={saveOutline} />
+                      {i18n.t('Save')}
+                    </IonButton>
+                  </IonCol>
+                </>
+              ) : (
+                <>
+                  <IonCol size="12" size-md="6">
+                    {typeof onCancel === 'function' && (
+                      <IonButton
+                        fill="outline"
+                        type="button"
+                        expand="block"
+                        onClick={() => onCancel()}
+                      >
+                        {i18n.t('Close')}
+                      </IonButton>
+                    )}
+                  </IonCol>
+                  <IonCol size="12" size-md="6">
+                    <IonButton
+                      color="primary"
+                      expand="block"
+                      onClick={() => this.setMountedState({ allowEdit: true })}
+                    >
+                      <IonIcon slot="start" icon={createOutline} />
+                      {i18n.t('Edit')}
+                    </IonButton>
+                  </IonCol>
+                </>
+              )}
           </IonRow>
         </IonGrid>
         {isLoading && (
@@ -471,14 +556,17 @@ class BookingForm extends React.Component<Props, State> {
           spaceProfile={spaceProfile}
           studioProfile={studioProfile}
           booking={booking}
+          onAdd={this.onItemAdd}
+          onDelete={this.onItemDelete}
+          onChange={this.onItemChange}
         />
       </IonList>
     );
   }
 
   render() {
-    const { isLoading, error } = this.state;
-    const disabled = isLoading || !!error;
+    const { isLoading, error, allowEdit } = this.state;
+    const disabled = isLoading || !!error || !allowEdit;
     return (
       <form className="booking-form" onSubmit={this.onSubmit}>
         <fieldset className="booking-form-fieldset" disabled={disabled}>
