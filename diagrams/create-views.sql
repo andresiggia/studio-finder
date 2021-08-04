@@ -25,7 +25,9 @@ CREATE VIEW studios_with_user_id AS (
 
 DROP VIEW IF EXISTS booking_items_with_booking;
 CREATE VIEW booking_items_with_booking AS (
-  SELECT * FROM booking_items
+  SELECT booking_items.*, bookings.studio_id, bookings.user_id, bookings.act_id, users.name as "user_name", users.surname as "user_surname", acts.title as "act_title"
+  FROM booking_items
   LEFT JOIN bookings ON booking_items.booking_id = bookings.id
   LEFT JOIN users ON bookings.user_id = users.id
+  LEFT JOIN acts ON bookings.act_id = acts.id
 );
