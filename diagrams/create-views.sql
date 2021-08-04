@@ -38,9 +38,11 @@ CREATE VIEW bookings_with_user AS (
 DROP VIEW IF EXISTS booking_items_with_booking;
 CREATE VIEW booking_items_with_booking AS (
   SELECT booking_items.*,
+    spaces.title as "space_title",
     bookings_with_user.user_id, bookings_with_user.user_name, bookings_with_user.user_surname,
     bookings_with_user.studio_id, bookings_with_user.studio_title,
     bookings_with_user.act_id, bookings_with_user.act_title
   FROM booking_items
+  LEFT JOIN spaces ON booking_items.space_id = spaces.id
   LEFT JOIN bookings_with_user ON bookings_with_user.id = booking_items.booking_id
 );
