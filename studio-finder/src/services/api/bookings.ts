@@ -90,6 +90,7 @@ export interface BookingItemWithBooking extends BookingItem {
   userName: string,
   userSurname: string,
   actTitle: string,
+  spaceTitle: string,
 }
 
 export interface Booking {
