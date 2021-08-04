@@ -233,7 +233,7 @@ class BookingCalendar extends React.Component<Props, State> {
                             // important: select booking id, not booking item id
                             onClick={() => this.onModalOpen(item.bookingId)}
                           >
-                            {`${item.actTitle || `${item.userName} ${item.userSurname}`} (${item.serviceTitle})`}
+                            {`${item.actTitle || `${item.userName} ${item.userSurname}`.trim()} (${item.serviceTitle})`}
                           </IonButton>
                         ))}
                       </td>
