@@ -143,20 +143,24 @@ export const getBookings = async (context: AppContextValue, props?: {
   return bookings;
 };
 
-export const getBookingItems = async (context: AppContextValue, props?: {
-  spaceId: number, start?: number, limit?: number
+export const getBookingItems = async (context: AppContextValue, props: {
+  spaceId?: number, bookingId?: number, start?: number, limit?: number,
 }) => {
   const {
-    spaceId, start = 0, limit = 100,
-  } = props || {};
-  if (!spaceId) {
+    spaceId, bookingId, start = 0, limit = 100,
+  } = props;
+  if (!spaceId && !bookingId) { // at least one param is required
     throw BookingError.missingSpaceId;
   }
   const { supabase } = context;
+  const filterName = spaceId
+    ? 'space_id'
+    : 'booking_id';
+  const filterValue = spaceId || bookingId;
   const { data, error } = await supabase
     .from(ViewName.bookingItemsWithBooking)
     .select()
-    .eq('space_id', spaceId)
+    .eq(filterName, filterValue)
     .range(start, start + limit - 1);
   if (error) {
     throw error;
