@@ -1,8 +1,6 @@
 import { AppContextValue } from '../../context/AppContext';
 
 import { convertDateFields, updateObjectKeysToCamelCase, updateObjectKeysToUnderscoreCase } from './helpers';
-import { SpaceProfile } from './spaces';
-import { StudioProfile } from './studios';
 import { TableName } from './tables';
 import { ViewName } from './views';
 

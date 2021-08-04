@@ -1,6 +1,7 @@
 import React from 'react';
 import {
-  IonLabel, IonList, IonInput, IonItem, IonTextarea, IonSelectOption, IonSelect, IonButton, IonButtons, IonIcon, IonToolbar, IonTitle,
+  IonLabel, IonList, IonInput, IonItem, IonTextarea, IonSelectOption, IonSelect, IonButton, IonButtons, IonIcon,
+  IonToolbar, IonTitle,
 } from '@ionic/react';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { trashOutline } from 'ionicons/icons';
