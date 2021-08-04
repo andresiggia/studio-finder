@@ -133,7 +133,8 @@ class BookingItemList extends React.Component<Props, State> {
           const label = `${index + 1}. ${item.spaceTitle} (${item.serviceTitle})`;
           return (
             <IonItem
-              key={item.id || index}
+              // eslint-disable-next-line react/no-array-index-key
+              key={index}
               detail
               button
               color={index === selectedIndex
