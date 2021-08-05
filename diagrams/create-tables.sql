@@ -123,6 +123,8 @@ CREATE TABLE "bookings" (
   "studio_id" int,
   "user_id" varchar,
   "act_id" int,
+  "created_by" varchar,
+  "modified_by" varchar,
   "created_at" timestamp DEFAULT (now()),
   "modified_at" timestamp DEFAULT (now())
 );
@@ -226,6 +228,10 @@ ALTER TABLE "space_services" ADD FOREIGN KEY ("service_type") REFERENCES "servic
 ALTER TABLE "bookings" ADD FOREIGN KEY ("studio_id") REFERENCES "studios" ("id");
 
 ALTER TABLE "bookings" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");
+
+ALTER TABLE "bookings" ADD FOREIGN KEY ("created_by") REFERENCES "users" ("id");
+
+ALTER TABLE "bookings" ADD FOREIGN KEY ("modified_by") REFERENCES "users" ("id");
 
 ALTER TABLE "bookings" ADD FOREIGN KEY ("act_id") REFERENCES "acts" ("id");
 

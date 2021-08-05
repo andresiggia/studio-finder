@@ -96,6 +96,8 @@ export interface Booking {
   studioId: number,
   userId: string,
   actId: number | null,
+  createdBy: string,
+  modifiedBy: string,
   createdAt: Date | null,
   modifiedAt: Date | null,
 }
@@ -104,6 +106,8 @@ export const defaultBooking: Booking = {
   studioId: 0,
   userId: '',
   actId: null,
+  createdBy: '',
+  modifiedBy: '',
   createdAt: null,
   modifiedAt: null,
 };
