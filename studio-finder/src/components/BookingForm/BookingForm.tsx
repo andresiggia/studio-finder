@@ -146,7 +146,10 @@ class BookingForm extends React.Component<Props, State> {
       } catch (error) {
         // eslint-disable-next-line no-console
         console.warn('error - loadData', error);
-        throw error;
+        this.setMountedState({
+          isLoading: false,
+          error,
+        });
       }
     });
   }
