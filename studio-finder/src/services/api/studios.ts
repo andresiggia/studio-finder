@@ -50,7 +50,7 @@ export const defaultStudioProfile: StudioProfile = {
 };
 
 export const getStudios = async (context: AppContextValue, props?: {
-  start?: number, limit: number, inactive?: boolean,
+  start?: number, limit?: number, inactive?: boolean,
 }) => {
   const { start = 0, limit = 100, inactive = false } = props || {};
   const { supabase, state } = context;

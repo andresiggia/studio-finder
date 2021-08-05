@@ -139,7 +139,7 @@ export const defaultBookingWithUser: BookingWithUser = {
   actTitle: '',
 };
 
-export const getBookings = async (context: AppContextValue, props?: {
+export const getBookings = async (context: AppContextValue, props: {
   studioId: number, start?: number, limit?: number, includeUser?: boolean,
 }) => {
   const {

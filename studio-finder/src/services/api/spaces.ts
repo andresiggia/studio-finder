@@ -42,7 +42,7 @@ export const defaultSpaceProfile: SpaceProfile = {
   modifiedAt: null,
 };
 
-export const getSpaces = async (context: AppContextValue, props?: {
+export const getSpaces = async (context: AppContextValue, props: {
   studioId: number, start?: number, limit?: number, inactive?: boolean,
 }) => {
   const {
