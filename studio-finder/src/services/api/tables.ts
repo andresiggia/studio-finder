@@ -8,6 +8,6 @@ export enum TableName {
   bookingItems = 'booking_items',
   bookingReviews = 'booking_reviews',
   bookingPayments = 'booking_payments',
-  // settings
   settings = 'settings',
+  services = 'services',
 }
