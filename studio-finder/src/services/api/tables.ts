@@ -2,6 +2,7 @@ export enum TableName {
   users = 'users',
   studios = 'studios',
   studioUsers = 'studio_users',
+  studioPhotos = 'studio_photos',
   spaces = 'spaces',
   spaceUsers = 'space_users',
   spacePhotos = 'space_photos',
