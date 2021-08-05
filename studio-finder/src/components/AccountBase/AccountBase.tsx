@@ -38,7 +38,7 @@ class AccountBase extends React.Component<UserValidationProps> {
 
   render() {
     const { state } = this.context;
-    const hasProfile = state.user.user_metadata?.type && !!state.profile;
+    const hasProfile = !!state.user.user_metadata?.type && !!state.profile;
     const isStudio = state.user.user_metadata?.type === UserType.studio;
     return (
       <IonGrid>
