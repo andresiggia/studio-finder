@@ -252,7 +252,7 @@ export const upsertBooking = async (context: AppContextValue, booking: Booking) 
   const [newRow] = data;
   // eslint-disable-next-line no-console
   console.log('got new booking info', newRow, data);
-  return data;
+  return newRow;
 };
 
 export const upsertBookingItem = async (context: AppContextValue, bookingItem: BookingItem) => {
@@ -282,7 +282,7 @@ export const upsertBookingItem = async (context: AppContextValue, bookingItem: B
   const [newRow] = data;
   // eslint-disable-next-line no-console
   console.log('got new booking info', newRow, data);
-  return data;
+  return newRow;
 };
 
 export const deleteBookingItem = async (context: AppContextValue, id: number) => {

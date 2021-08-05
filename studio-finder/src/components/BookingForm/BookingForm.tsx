@@ -200,6 +200,7 @@ class BookingForm extends React.Component<Props, State> {
       try {
         const { onSave } = this.props;
         const { booking: bookingWithUser, bookingItems, bookingItemsOriginal } = this.state;
+        let { id: bookingId = 0 } = bookingWithUser || {};
         if (this.hasChangesToBooking()) {
           if (!bookingWithUser) {
             throw new Error(i18n.t('Invalid booking'));
@@ -214,6 +215,7 @@ class BookingForm extends React.Component<Props, State> {
           const data = await upsertBooking(this.context, booking);
           // eslint-disable-next-line no-console
           console.log('got new booking data', data);
+          bookingId = data.id;
         }
         // handle removed items
         const deleted = await Promise.all((bookingItemsOriginal || []).map((bookingItem) => {
@@ -237,6 +239,8 @@ class BookingForm extends React.Component<Props, State> {
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             studioId, userId, actId, studioTitle, userName, userSurname, actTitle, ...bookingItem
           } = bookingItemWithBooking;
+          // update booking id of all items to match
+          bookingItem.bookingId = bookingId;
           // eslint-disable-next-line no-console
           console.log('will insert/update booking item #', i, bookingItem);
           return upsertBookingItem(this.context, bookingItem);
@@ -469,7 +473,7 @@ class BookingForm extends React.Component<Props, State> {
   }
 
   renderSelectInput = ({
-    value, disabled = false, required = false, label, fieldName, options,
+    value, disabled = false, required = false, label, fieldName, options, onChange,
   }: {
     value: any, disabled?: boolean, required?: boolean, label: string, fieldName: string,
     options: { value: any, label: string }[], onChange?: (value: any) => void,
@@ -483,13 +487,16 @@ class BookingForm extends React.Component<Props, State> {
           // required={isRequired}
           disabled={disabled}
           onIonChange={(e: any) => {
+            const newValue = e.detail.value || '';
             const { booking } = this.state;
             this.setMountedState({
               booking: {
                 ...booking,
-                [fieldName]: e.detail.value || '',
+                [fieldName]: newValue,
               },
-            });
+            }, () => (typeof onChange === 'function'
+              ? onChange(newValue)
+              : null));
           }}
         >
           {options.map((item) => (
