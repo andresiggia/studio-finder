@@ -84,6 +84,8 @@ export interface BookingItemWithBooking extends BookingItem {
   studioId: number,
   userId: string,
   actId: number,
+  createdBy: string,
+  modifiedBy: string,
   studioTitle: string,
   userName: string,
   userSurname: string,
