@@ -464,7 +464,7 @@ class BookingForm extends React.Component<Props, State> {
     }
     return (
       <IonList className="booking-form-list">
-        <IonItem>
+        <IonItem className="booking-form-list-item">
           {this.renderTextInput({
             value: booking.studioTitle,
             fieldName: 'studio',
@@ -473,9 +473,9 @@ class BookingForm extends React.Component<Props, State> {
           })}
         </IonItem>
         {booking.userId && (
-          <IonItem>
+          <IonItem className="booking-form-list-item">
             {this.renderTextInput({
-              value: `${booking.userName} ${booking.userSurname}`.trim() || booking.userId,
+              value: `${booking.userName || ''} ${booking.userSurname || ''}`.trim() || booking.userId,
               fieldName: 'user',
               label: i18n.t('User'),
               disabled: true,
@@ -483,7 +483,7 @@ class BookingForm extends React.Component<Props, State> {
           </IonItem>
         )}
         {booking.actId && (
-          <IonItem>
+          <IonItem className="booking-form-list-item">
             {this.renderTextInput({
               value: booking.actTitle || String(booking.actId),
               fieldName: 'act',
@@ -492,16 +492,38 @@ class BookingForm extends React.Component<Props, State> {
             })}
           </IonItem>
         )}
-        <BookingItemList
-          items={bookingItems}
-          disabled={disabled}
-          spaceProfile={spaceProfile}
-          studioProfile={studioProfile}
-          booking={booking}
-          onAdd={this.onItemAdd}
-          onDelete={this.onItemDelete}
-          onChange={this.onItemChange}
-        />
+        {!!booking.createdBy && (
+          <IonItem className="booking-form-list-item">
+            {this.renderTextInput({
+              value: `${booking.createdByName || ''} ${booking.createdBySurname || ''}`.trim() || booking.createdBy,
+              fieldName: 'createdBy',
+              label: i18n.t('Created By'),
+              disabled: true,
+            })}
+          </IonItem>
+        )}
+        {!!booking.modifiedBy && (
+          <IonItem className="booking-form-list-item">
+            {this.renderTextInput({
+              value: `${booking.modifiedByName || ''} ${booking.modifiedBySurname || ''}`.trim() || booking.modifiedBy,
+              fieldName: 'modifiedBy',
+              label: i18n.t('Modified By'),
+              disabled: true,
+            })}
+          </IonItem>
+        )}
+        <div className="booking-form-list-items">
+          <BookingItemList
+            items={bookingItems}
+            disabled={disabled}
+            spaceProfile={spaceProfile}
+            studioProfile={studioProfile}
+            booking={booking}
+            onAdd={this.onItemAdd}
+            onDelete={this.onItemDelete}
+            onChange={this.onItemChange}
+          />
+        </div>
       </IonList>
     );
   }

@@ -165,7 +165,7 @@ class BookingItemForm extends React.Component<Props> {
             {!disabled && (
               <IonButton
                 size="small"
-                color="primary"
+                color="danger"
                 fill="clear"
                 title={i18n.t('Delete Item')}
                 onClick={() => onDelete()}
@@ -176,7 +176,7 @@ class BookingItemForm extends React.Component<Props> {
           </IonButtons>
         </IonToolbar>
         <IonList className="booking-item-form-list">
-          <IonItem>
+          <IonItem className="booking-item-form-list-item">
             {this.renderTextInput({
               value: item.spaceTitle || spaceProfile.title,
               fieldName: 'space',
@@ -184,7 +184,7 @@ class BookingItemForm extends React.Component<Props> {
               disabled: true,
             })}
           </IonItem>
-          <IonItem>
+          <IonItem className="booking-item-form-list-item">
             {this.renderSelectInput({
               value: item.serviceType,
               fieldName: 'serviceType',
@@ -199,7 +199,7 @@ class BookingItemForm extends React.Component<Props> {
               },
             })}
           </IonItem>
-          <IonItem>
+          <IonItem className="booking-item-form-list-item">
             {this.renderDateTimeInput({
               value: item.startAt,
               fieldName: 'startAt',
@@ -207,7 +207,7 @@ class BookingItemForm extends React.Component<Props> {
               disabled,
             })}
           </IonItem>
-          <IonItem>
+          <IonItem className="booking-item-form-list-item">
             {this.renderDateTimeInput({
               value: item.endAt,
               fieldName: 'endAt',

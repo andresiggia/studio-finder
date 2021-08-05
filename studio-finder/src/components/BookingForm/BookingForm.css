@@ -48,6 +48,22 @@
   padding: 1rem;
 }
 
+@media only screen and (min-width: 768px) {
+  .booking-form-list {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  .booking-form-list-item {
+    width: calc(50% - .5rem);
+  }
+  .booking-form-list-item:nth-child(even) {
+    margin-left: 1rem;
+  }
+  .booking-form-list-items {
+    width: 100%;
+  }
+}
+
 .booking-form-loading {
   text-align: center;
 }
