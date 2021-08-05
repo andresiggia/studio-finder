@@ -163,7 +163,7 @@ class BookingItemForm extends React.Component<Props, State> {
           displayFormat="D MMM YYYY, HH:mm"
           // required={isRequired}
           disabled={disabled}
-          onIonChange={(e: any) => this.onChange(e.detail.value, fieldName)}
+          onIonChange={(e: any) => this.onChange(new Date(e.detail.value), fieldName)}
         />
       </>
     );
