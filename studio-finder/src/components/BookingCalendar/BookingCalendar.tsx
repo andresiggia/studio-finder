@@ -177,6 +177,8 @@ class BookingCalendar extends React.Component<Props, State> {
     const weekStartsAt = new Date(now.getTime());
     weekStartsAt.setDate(weekStartsAt.getDate() - currentWeekday + (weekOffset * 7));
     const halfTimes = Array.from(Array(24 * 2)).map((_item, index) => index / 2);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
     return (
       <div className="booking-calendar-container">
         <table className="booking-calendar">
@@ -188,8 +190,14 @@ class BookingCalendar extends React.Component<Props, State> {
               {weekdays.map((weekday) => {
                 const date = new Date(weekStartsAt.getTime());
                 date.setDate(date.getDate() + weekday);
+                date.setHours(0, 0, 0, 0);
                 return (
-                  <td key={weekday}>
+                  <td
+                    key={weekday}
+                    className={date.getTime() === today.getTime()
+                      ? 'booking-calendar-item-header-active'
+                      : ''}
+                  >
                     {date.toLocaleDateString()}
                   </td>
                 );

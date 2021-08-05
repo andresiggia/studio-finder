@@ -101,3 +101,7 @@
     --min-width: 800px;
   }
 }
+
+.booking-calendar-item-header-active {
+  color: var(--ion-color-primary);
+}
