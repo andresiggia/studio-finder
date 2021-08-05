@@ -419,14 +419,14 @@ class BookingForm extends React.Component<Props, State> {
           </IonRow>
         </IonGrid>
         {isLoading && (
-          <div className="booking-form-loading booking-form-bookingr">
+          <div className="booking-form-loading booking-form-spacer">
             <IonSpinner name="bubbles" />
           </div>
         )}
         {!!error && (
           <Notification
             type={NotificationType.danger}
-            className="booking-form-notification booking-form-bookingr"
+            className="booking-form-notification booking-form-spacer"
             header={i18n.t('Error')}
             message={error?.message || i18n.t('An error occurred, please try again later')}
             onDismiss={() => this.setMountedState({ error: null })}
