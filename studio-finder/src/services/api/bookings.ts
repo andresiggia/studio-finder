@@ -5,7 +5,7 @@ import { TableName } from './tables';
 import { ViewName } from './views';
 
 export enum BookingError {
-  missingUserId = 'missingUserId',
+  notLoggedIn = 'notLoggedIn',
   missingStudioId = 'missingStudioId',
   missingSpaceId = 'missingSpaceId',
   invalidResponse = 'invalidResponse',
@@ -229,7 +229,7 @@ export const upsertBooking = async (context: AppContextValue, {
   const { supabase, state } = context;
   const userId = state.user?.id;
   if (!userId) {
-    throw BookingError.missingUserId;
+    throw BookingError.notLoggedIn;
   }
   const isEditing = !!booking.id;
   const bookingObj: any = {
@@ -269,7 +269,7 @@ export const upsertBookingItem = async (context: AppContextValue, {
   const { supabase, state } = context;
   const userId = state.user?.id;
   if (!userId) {
-    throw BookingError.missingUserId;
+    throw BookingError.notLoggedIn;
   }
   const isEditing = !!bookingItem.id;
   const bookingObj: any = {

@@ -7,7 +7,7 @@ import { TableName } from './tables';
 import { ViewName } from './views';
 
 export enum SpaceError {
-  missingUserId = 'missingUserId',
+  notLoggedIn = 'notLoggedIn',
   missingStudioId = 'missingStudioId',
   invalidResponse = 'invalidResponse',
   missingSpaceRoles = 'missingSpaceRoles',
@@ -50,7 +50,7 @@ export const getSpaces = async (context: AppContextValue, props?: {
   const { supabase, state } = context;
   const userId = state.user?.id;
   if (!userId) {
-    throw SpaceError.missingUserId;
+    throw SpaceError.notLoggedIn;
   }
   const { data, error } = await supabase
     .from(ViewName.spacesWithUserId)
@@ -104,7 +104,7 @@ export const upsertSpace = async (context: AppContextValue, {
   }
   const userId = state.user?.id;
   if (!userId) {
-    throw SpaceError.missingUserId;
+    throw SpaceError.notLoggedIn;
   }
   const isEditing = !!spaceProfile.id;
   const profile: any = {

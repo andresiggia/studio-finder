@@ -6,7 +6,7 @@ import { TableName } from './tables';
 import { ViewName } from './views';
 
 export enum StudioError {
-  missingUserId = 'missingUserId',
+  notLoggedIn = 'notLoggedIn',
   invalidResponse = 'invalidResponse',
   missingStudioRoles = 'missingStudioRoles',
 }
@@ -56,7 +56,7 @@ export const getStudios = async (context: AppContextValue, props?: {
   const { supabase, state } = context;
   const userId = state.user?.id;
   if (!userId) {
-    throw StudioError.missingUserId;
+    throw StudioError.notLoggedIn;
   }
   const { data, error } = await supabase
     .from(ViewName.studiosWithUserId)
@@ -105,7 +105,7 @@ export const upsertStudio = async (context: AppContextValue, studioProfile: Stud
   }
   const userId = state.user?.id;
   if (!userId) {
-    throw StudioError.missingUserId;
+    throw StudioError.notLoggedIn;
   }
   const isEditing = !!studioProfile.id;
   const profile: any = {

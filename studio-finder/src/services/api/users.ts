@@ -4,7 +4,7 @@ import { convertDateFields, updateObjectKeysToCamelCase, updateObjectKeysToUnder
 import { TableName } from './tables';
 
 export enum UserError {
-  missingUserId = 'missingUserId',
+  notLoggedIn = 'notLoggedIn',
 }
 
 export enum UserType {
@@ -46,7 +46,7 @@ export const getUserProfile = async (context: AppContextValue) => {
   const { supabase, state } = context;
   const id = state.user?.id;
   if (!id) {
-    throw UserError.missingUserId;
+    throw UserError.notLoggedIn;
   }
   const { data, error } = await supabase
     .from(TableName.users)
@@ -67,7 +67,7 @@ export const setUserProfile = async (context: AppContextValue, userProfile: User
   const { supabase, state } = context;
   const id = state.user?.id;
   if (!id) {
-    throw UserError.missingUserId;
+    throw UserError.notLoggedIn;
   }
   const profile: any = {
     ...userProfile,
