@@ -65,13 +65,13 @@ export const getUserProfile = async (context: AppContextValue) => {
 
 export const setUserProfile = async (context: AppContextValue, userProfile: UserProfile) => {
   const { supabase, state } = context;
-  const id = state.user?.id;
-  if (!id) {
+  const userId = state.user?.id;
+  if (!userId) {
     throw UserError.notLoggedIn;
   }
   const profile: any = {
     ...userProfile,
-    id, // inject user id
+    id: userId, // inject user id
     modifiedAt: new Date(), // modifiedAt to be updated to current date/time
   };
   if (!profile.createdAt) { // createdAt should be created by back-end if not set
