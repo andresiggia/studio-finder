@@ -1,7 +1,6 @@
 import React from 'react';
 import {
   IonLabel, IonIcon, IonSpinner, IonButton, IonGrid, IonRow, IonCol, IonList, IonInput, IonItem,
-  IonTextarea, IonSelectOption, IonSelect,
 } from '@ionic/react';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import {

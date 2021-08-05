@@ -130,9 +130,7 @@ class BookingItemList extends React.Component<Props, State> {
               onClick={() => this.setMountedState({ selectedIndex: index })}
               title={label}
             >
-              <IonLabel>
-                {label}
-              </IonLabel>
+              <IonLabel>{label}</IonLabel>
             </IonItem>
           );
         })}
