@@ -9,9 +9,8 @@ import { addOutline } from 'ionicons/icons';
 import i18n from '../../services/i18n/i18n';
 import { SpaceProfile } from '../../services/api/spaces';
 import { StudioProfile } from '../../services/api/studios';
-import {
-  Booking, BookingItemWithBooking, BookingWithUser,
-} from '../../services/api/bookings';
+import { Booking, BookingWithUser } from '../../services/api/bookings';
+import { BookingItemWithBooking } from '../../services/api/bookingItems';
 
 // components
 import BookingItemForm from '../BookingItemForm/BookingItemForm';

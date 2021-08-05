@@ -10,7 +10,7 @@ import {
 // services
 import { SpaceProfile } from '../../services/api/spaces';
 import i18n from '../../services/i18n/i18n';
-import { BookingItemWithBooking, getBookingItems } from '../../services/api/bookings';
+import { BookingItemWithBooking, getBookingItems } from '../../services/api/bookingItems';
 import { pad } from '../../services/helpers/misc';
 import { StudioProfile } from '../../services/api/studios';
 

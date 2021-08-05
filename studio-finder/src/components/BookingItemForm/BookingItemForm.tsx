@@ -13,7 +13,7 @@ import AppContext from '../../context/AppContext';
 import i18n from '../../services/i18n/i18n';
 
 // constants
-import { BookingItem, bookingItemRequiredFields, BookingItemWithBooking } from '../../services/api/bookings';
+import { BookingItem, bookingItemRequiredFields, BookingItemWithBooking } from '../../services/api/bookingItems';
 import { getSpaces, SpaceProfile } from '../../services/api/spaces';
 import { Service } from '../../services/api/services';
 
