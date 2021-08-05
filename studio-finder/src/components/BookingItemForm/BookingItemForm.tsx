@@ -1,7 +1,7 @@
 import React from 'react';
 import {
   IonLabel, IonList, IonInput, IonItem, IonTextarea, IonSelectOption, IonSelect, IonButton, IonButtons, IonIcon,
-  IonToolbar, IonTitle,
+  IonToolbar, IonTitle, IonDatetime,
 } from '@ionic/react';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { trashOutline } from 'ionicons/icons';
@@ -70,6 +70,28 @@ class BookingItemForm extends React.Component<Props> {
           value={value}
           type="text"
           required={isRequired}
+          disabled={disabled}
+          onIonChange={(e: any) => this.onChange(e.detail.value, fieldName)}
+        />
+      </>
+    );
+  }
+
+  renderDateTimeInput = ({
+    value, disabled = false, required = false, label, fieldName,
+  }: {
+    value: Date | null, disabled?: boolean, required?: boolean, label: string, fieldName: string,
+  }) => {
+    const isRequired = required || this.requiredFields.includes(fieldName);
+    return (
+      <>
+        {this.renderLabel(label, isRequired)}
+        <IonDatetime
+          value={value instanceof Date
+            ? value.toISOString()
+            : ''}
+          displayFormat="D MMM YYYY, HH:mm"
+          // required={isRequired}
           disabled={disabled}
           onIonChange={(e: any) => this.onChange(e.detail.value, fieldName)}
         />
@@ -175,6 +197,22 @@ class BookingItemForm extends React.Component<Props> {
                 const serviceType = serviceTypeOptions.find((sItem: any) => sItem.value === value);
                 this.onChange(serviceType?.title || '', 'serviceTitle');
               },
+            })}
+          </IonItem>
+          <IonItem>
+            {this.renderDateTimeInput({
+              value: item.startAt,
+              fieldName: 'startAt',
+              label: i18n.t('Start At'),
+              disabled,
+            })}
+          </IonItem>
+          <IonItem>
+            {this.renderDateTimeInput({
+              value: item.endAt,
+              fieldName: 'endAt',
+              label: i18n.t('End At'),
+              disabled,
             })}
           </IonItem>
         </IonList>
