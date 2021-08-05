@@ -121,6 +121,10 @@ export interface BookingWithUser extends Booking {
   studioTitle: string,
   userName: string,
   userSurname: string,
+  createdByName: string,
+  createdBySurname: string,
+  modifiedByName: string,
+  modifiedBySurname: string,
   actTitle: string,
 }
 export const defaultBookingWithUser: BookingWithUser = {
@@ -128,6 +132,10 @@ export const defaultBookingWithUser: BookingWithUser = {
   studioTitle: '',
   userName: '',
   userSurname: '',
+  createdByName: '',
+  createdBySurname: '',
+  modifiedByName: '',
+  modifiedBySurname: '',
   actTitle: '',
 };
 
