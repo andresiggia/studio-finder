@@ -97,9 +97,10 @@ class BookingItemForm extends React.Component<Props> {
   }
 
   renderSelectInput = ({
-    value, disabled = false, required = false, label, fieldName, options,
+    value, disabled = false, required = false, label, fieldName, options, onChange,
   }: {
-    value: string, disabled?: boolean, required?: boolean, label: string, fieldName: string, options: { value: any, label: string }[],
+    value: string, disabled?: boolean, required?: boolean, label: string, fieldName: string,
+    options: { value: any, label: string }[], onChange?: (value: any) => void,
   }) => {
     const isRequired = required || this.requiredFields.includes(fieldName);
     return (
@@ -109,7 +110,9 @@ class BookingItemForm extends React.Component<Props> {
           value={value}
           // required={isRequired}
           disabled={disabled}
-          onIonChange={(e: any) => this.onChange(e.detail.value, fieldName)}
+          onIonChange={(e: any) => (typeof onChange === 'function'
+            ? onChange(e.detail.value)
+            : this.onChange(e.detail.value, fieldName))}
         >
           {options.map((item) => (
             <IonSelectOption key={item.value} value={item.value}>
@@ -126,6 +129,10 @@ class BookingItemForm extends React.Component<Props> {
       spaceProfile, disabled, item, index, onDelete,
     } = this.props;
     const { state } = this.context;
+    const serviceTypeOptions = (state.services || []).map((service: Service) => ({
+      value: service.type,
+      label: service.title,
+    }));
     return (
       <div className="booking-item-form">
         <IonToolbar className="booking-item-form-toolbar">
@@ -161,10 +168,13 @@ class BookingItemForm extends React.Component<Props> {
               fieldName: 'serviceType',
               label: i18n.t('Service Type'),
               disabled,
-              options: (state.services || []).map((service: Service) => ({
-                value: service.type,
-                label: service.title,
-              })),
+              options: serviceTypeOptions,
+              onChange: (value) => {
+                this.onChange(value, 'serviceType');
+                // update service title manually
+                const serviceType = serviceTypeOptions.find((sItem: any) => sItem.value === value);
+                this.onChange(serviceType?.title || '', 'serviceTitle');
+              },
             })}
           </IonItem>
         </IonList>
