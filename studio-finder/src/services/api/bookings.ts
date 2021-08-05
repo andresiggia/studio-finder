@@ -17,7 +17,7 @@ export enum BookingError {
 export interface BookingPayment {
   id: number,
   bookingId: number,
-  userId: number,
+  userId: string,
   vendor: string,
   metadata: any,
   value: number,
@@ -27,7 +27,7 @@ export interface BookingPayment {
 export const defaultBookingPayment: BookingPayment = {
   id: 0,
   bookingId: 0,
-  userId: 0,
+  userId: '',
   vendor: '',
   metadata: null,
   value: 0,
@@ -39,7 +39,7 @@ export const defaultBookingPayment: BookingPayment = {
 export interface BookingReview {
   bookingId: number,
   spaceId: number,
-  userId: number,
+  userId: string,
   title: string,
   description: string,
   stars: number,
@@ -48,7 +48,7 @@ export interface BookingReview {
 export const defaultBookingReview: BookingReview = {
   bookingId: 0,
   spaceId: 0,
-  userId: 0,
+  userId: '',
   title: '',
   description: '',
   stars: 0,
@@ -82,7 +82,7 @@ const bookingItemDateFields = ['startAt', 'endAt'];
 
 export interface BookingItemWithBooking extends BookingItem {
   studioId: number,
-  userId: number,
+  userId: string,
   actId: number,
   studioTitle: string,
   userName: string,
