@@ -456,66 +456,6 @@ class BookingForm extends React.Component<Props, State> {
     );
   }
 
-  renderTextareaInput = ({
-    value, disabled = false, required = false, label, fieldName,
-  }: {
-    value: string, disabled?: boolean, required?: boolean, label: string, fieldName: string,
-  }) => {
-    const isRequired = required || this.requiredFields.includes(fieldName);
-    return (
-      <>
-        {this.renderLabel(label, isRequired)}
-        <IonTextarea
-          value={value}
-          required={isRequired}
-          disabled={disabled}
-          onIonChange={(e: any) => {
-            const { booking } = this.state;
-            this.setMountedState({
-              booking: {
-                ...booking,
-                [fieldName]: e.detail.value || '',
-              },
-            });
-          }}
-        />
-      </>
-    );
-  }
-
-  renderSelectInput = ({
-    value, disabled = false, required = false, label, fieldName, options,
-  }: {
-    value: string, disabled?: boolean, required?: boolean, label: string, fieldName: string, options: { value: any, label: string }[],
-  }) => {
-    const isRequired = required || this.requiredFields.includes(fieldName);
-    return (
-      <>
-        {this.renderLabel(label, isRequired)}
-        <IonSelect
-          value={value}
-          // required={isRequired}
-          disabled={disabled}
-          onIonChange={(e: any) => {
-            const { booking } = this.state;
-            this.setMountedState({
-              booking: {
-                ...booking,
-                [fieldName]: e.detail.value || '',
-              },
-            });
-          }}
-        >
-          {options.map((item) => (
-            <IonSelectOption key={item.value} value={item.value}>
-              {item.label}
-            </IonSelectOption>
-          ))}
-        </IonSelect>
-      </>
-    );
-  }
-
   renderFields = (disabled: boolean) => {
     const { spaceProfile, studioProfile } = this.props;
     const { booking, bookingItems } = this.state;
