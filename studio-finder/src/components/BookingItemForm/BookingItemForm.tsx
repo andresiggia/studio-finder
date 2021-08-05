@@ -157,7 +157,7 @@ class BookingItemForm extends React.Component<Props, State> {
       <>
         {this.renderLabel(label, isRequired)}
         <IonDatetime
-          value={value instanceof Date
+          value={(!!value && value instanceof Date)
             ? value.toISOString()
             : ''}
           displayFormat="D MMM YYYY, HH:mm"
