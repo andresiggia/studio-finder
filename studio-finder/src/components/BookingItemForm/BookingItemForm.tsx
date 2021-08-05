@@ -125,9 +125,9 @@ class BookingItemForm extends React.Component<Props> {
       spaceProfile, disabled, item, index, onDelete,
     } = this.props;
     return (
-      <>
-        <IonToolbar>
-          <IonTitle size="small">
+      <div className="booking-item-form">
+        <IonToolbar className="booking-item-form-toolbar">
+          <IonTitle size="small" className="booking-item-form-title">
             {`${i18n.t('Item')} #${index + 1}`}
           </IonTitle>
           <IonButtons slot="end">
@@ -162,7 +162,7 @@ class BookingItemForm extends React.Component<Props> {
             })}
           </IonItem>
         </IonList>
-      </>
+      </div>
     );
   }
 }
