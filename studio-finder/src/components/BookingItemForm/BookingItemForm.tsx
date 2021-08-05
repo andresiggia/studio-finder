@@ -1,7 +1,7 @@
 import React from 'react';
 import {
   IonLabel, IonList, IonInput, IonItem, IonTextarea, IonSelectOption, IonSelect, IonButton, IonButtons, IonIcon,
-  IonToolbar, IonTitle, IonDatetime,
+  IonToolbar, IonTitle, IonDatetime, IonSpinner,
 } from '@ionic/react';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { trashOutline } from 'ionicons/icons';
@@ -14,9 +14,11 @@ import i18n from '../../services/i18n/i18n';
 
 // constants
 import { BookingItemWithBooking } from '../../services/api/bookings';
-import { StudioProfile } from '../../services/api/studios';
-import { SpaceProfile } from '../../services/api/spaces';
+import { getSpaces, SpaceProfile } from '../../services/api/spaces';
 import { Service } from '../../services/api/services';
+
+// components
+import Notification, { NotificationType } from '../Notification/Notification';
 
 // css
 import './BookingItemForm.css';
@@ -25,18 +27,88 @@ interface Props {
   index: number,
   item: BookingItemWithBooking,
   disabled: boolean,
-  studioProfile: StudioProfile,
-  spaceProfile: SpaceProfile,
+  studioId: number,
   onDelete: () => void,
   onChange: (item: BookingItemWithBooking) => void,
 }
 
-class BookingItemForm extends React.Component<Props> {
+interface State {
+  spaces: SpaceProfile[],
+  isLoading: boolean,
+  error: Error | null,
+}
+
+class BookingItemForm extends React.Component<Props, State> {
+  mounted = false
+
   requiredFields = ['spaceId', 'serviceType']
+
+  constructor(props: Props) {
+    super(props);
+    this.state = {
+      spaces: [],
+      isLoading: false,
+      error: null,
+    };
+  }
+
+  componentDidMount() {
+    this.mounted = true;
+    this.loadData();
+  }
+
+  componentDidUpdate(prevProps: Props) {
+    const { studioId } = this.props;
+    if (prevProps.studioId !== studioId) {
+      this.loadData();
+    }
+  }
+
+  componentWillUnmount() {
+    this.mounted = false;
+  }
+
+  setMountedState = (state: any, callback?: () => any) => {
+    if (this.mounted) {
+      this.setState(state, callback);
+    } else {
+      // eslint-disable-next-line no-console
+      console.log('unmounted request', state);
+      if (typeof callback === 'function') {
+        callback();
+      }
+    }
+  }
 
   isEditing = () => {
     const { item } = this.props;
     return !!item.id;
+  }
+
+  loadData = () => {
+    this.setMountedState({
+      isLoading: true,
+    }, async () => {
+      try {
+        const { studioId } = this.props;
+        // eslint-disable-next-line no-console
+        console.log('loading spaces...');
+        const spaces = await getSpaces(this.context, {
+          studioId,
+        });
+        this.setMountedState({
+          isLoading: false,
+          spaces,
+        });
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.warn('error - loadData', error);
+        this.setMountedState({
+          isLoading: false,
+          error,
+        });
+      }
+    });
   }
 
   onChange = (value: any, fieldName: string) => {
@@ -121,7 +193,7 @@ class BookingItemForm extends React.Component<Props> {
   renderSelectInput = ({
     value, disabled = false, required = false, label, fieldName, options, onChange,
   }: {
-    value: string, disabled?: boolean, required?: boolean, label: string, fieldName: string,
+    value: any, disabled?: boolean, required?: boolean, label: string, fieldName: string,
     options: { value: any, label: string }[], onChange?: (value: any) => void,
   }) => {
     const isRequired = required || this.requiredFields.includes(fieldName);
@@ -146,17 +218,78 @@ class BookingItemForm extends React.Component<Props> {
     );
   }
 
-  render() {
-    const {
-      spaceProfile, disabled, item, index, onDelete,
-    } = this.props;
+  renderFields = (disabled: boolean) => {
+    const { item } = this.props;
     const { state } = this.context;
+    const { spaces } = this.state;
     const serviceTypeOptions = (state.services || []).map((service: Service) => ({
       value: service.type,
       label: service.title,
     }));
+    const spaceOptions = spaces.map((space) => ({
+      value: space.id,
+      label: space.title,
+    }));
     return (
-      <div className="booking-item-form">
+      <IonList className="booking-item-form-list">
+        <IonItem className="booking-item-form-list-item">
+          {this.renderSelectInput({
+            value: item.spaceId,
+            fieldName: 'spaceId',
+            label: i18n.t('Space'),
+            disabled,
+            options: spaceOptions,
+            onChange: (value) => {
+              this.onChange(value, 'spaceId');
+              // update space title manually
+              const space = spaceOptions.find((sItem: any) => sItem.value === value);
+              this.onChange(space?.label || '', 'spaceTitle');
+            },
+          })}
+        </IonItem>
+        <IonItem className="booking-item-form-list-item">
+          {this.renderSelectInput({
+            value: item.serviceType,
+            fieldName: 'serviceType',
+            label: i18n.t('Service Type'),
+            disabled,
+            options: serviceTypeOptions,
+            onChange: (value) => {
+              this.onChange(value, 'serviceType');
+              // update service title manually
+              const serviceType = serviceTypeOptions.find((sItem: any) => sItem.value === value);
+              this.onChange(serviceType?.label || '', 'serviceTitle');
+            },
+          })}
+        </IonItem>
+        <IonItem className="booking-item-form-list-item">
+          {this.renderDateTimeInput({
+            value: item.startAt,
+            fieldName: 'startAt',
+            label: i18n.t('Start At'),
+            disabled,
+          })}
+        </IonItem>
+        <IonItem className="booking-item-form-list-item">
+          {this.renderDateTimeInput({
+            value: item.endAt,
+            fieldName: 'endAt',
+            label: i18n.t('End At'),
+            disabled,
+          })}
+        </IonItem>
+      </IonList>
+    );
+  }
+
+  render() {
+    const {
+      disabled: parentDisabled, index, onDelete,
+    } = this.props;
+    const { isLoading, error } = this.state;
+    const disabled = parentDisabled || isLoading || !!error;
+    return (
+      <fieldset className="booking-item-form-fieldset" disabled={disabled}>
         <IonToolbar className="booking-item-form-toolbar">
           <IonTitle size="small" className="booking-item-form-title">
             {`${i18n.t('Item')} #${index + 1}`}
@@ -175,48 +308,22 @@ class BookingItemForm extends React.Component<Props> {
             )}
           </IonButtons>
         </IonToolbar>
-        <IonList className="booking-item-form-list">
-          <IonItem className="booking-item-form-list-item">
-            {this.renderTextInput({
-              value: item.spaceTitle || spaceProfile.title,
-              fieldName: 'space',
-              label: i18n.t('Space'),
-              disabled: true,
-            })}
-          </IonItem>
-          <IonItem className="booking-item-form-list-item">
-            {this.renderSelectInput({
-              value: item.serviceType,
-              fieldName: 'serviceType',
-              label: i18n.t('Service Type'),
-              disabled,
-              options: serviceTypeOptions,
-              onChange: (value) => {
-                this.onChange(value, 'serviceType');
-                // update service title manually
-                const serviceType = serviceTypeOptions.find((sItem: any) => sItem.value === value);
-                this.onChange(serviceType?.title || '', 'serviceTitle');
-              },
-            })}
-          </IonItem>
-          <IonItem className="booking-item-form-list-item">
-            {this.renderDateTimeInput({
-              value: item.startAt,
-              fieldName: 'startAt',
-              label: i18n.t('Start At'),
-              disabled,
-            })}
-          </IonItem>
-          <IonItem className="booking-item-form-list-item">
-            {this.renderDateTimeInput({
-              value: item.endAt,
-              fieldName: 'endAt',
-              label: i18n.t('End At'),
-              disabled,
-            })}
-          </IonItem>
-        </IonList>
-      </div>
+        {isLoading && (
+          <div className="booking-item-form-loading booking-item-form-spacer">
+            <IonSpinner name="bubbles" />
+          </div>
+        )}
+        {!!error && (
+          <Notification
+            type={NotificationType.danger}
+            className="booking-item-form-notification booking-item-form-spacer"
+            header={i18n.t('Error')}
+            message={error?.message || i18n.t('An error occurred, please try again later')}
+            onDismiss={() => this.setMountedState({ error: null })}
+          />
+        )}
+        {this.renderFields(disabled)}
+      </fieldset>
     );
   }
 }

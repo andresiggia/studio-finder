@@ -1,4 +1,4 @@
-.booking-item-form {
+.booking-item-form-fieldset {
   padding: .5rem;
   border: 1px solid var(--ion-color-light-shade);
   max-height: 250px;
@@ -36,4 +36,18 @@
   .booking-item-form-list-item:nth-child(even) {
     margin-left: 1rem;
   }
+}
+
+.booking-form-loading {
+  text-align: center;
+}
+
+.booking-form-notification {
+  margin-left: 1rem;
+  margin-right: 1rem;
+}
+
+.booking-form-spacer {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
 }

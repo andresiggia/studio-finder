@@ -91,15 +91,14 @@ class BookingItemList extends React.Component<Props, State> {
 
   renderSelectedItem = () => {
     const {
-      items, spaceProfile, studioProfile, disabled, onDelete, onChange,
+      items, studioProfile, disabled, onDelete, onChange,
     } = this.props;
     const { selectedIndex } = this.state;
     return (
       <BookingItemForm
         index={selectedIndex}
         item={items[selectedIndex]}
-        spaceProfile={spaceProfile}
-        studioProfile={studioProfile}
+        studioId={studioProfile.id}
         disabled={disabled}
         onDelete={() => onDelete(selectedIndex)}
         onChange={(item: BookingItemWithBooking) => onChange(item, selectedIndex)}
