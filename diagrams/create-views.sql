@@ -23,22 +23,6 @@ CREATE VIEW studios_with_user_id AS (
   WHERE studio_users.studio_id = studios.id
 );
 
-DROP VIEW IF EXISTS bookings_with_user;
-CREATE VIEW bookings_with_user AS (
-  SELECT bookings.*,
-    studios.title as "studio_title",
-    users.name as "user_name", users.surname as "user_surname",
-    users_created_by.name as "created_by_name", users_created_by.surname as "created_by_surname",
-    users_modified_by.name as "modified_by_name", users_modified_by.surname as "modified_by_surname",
-    acts.title as "act_title"
-  FROM bookings
-  LEFT JOIN studios ON bookings.studio_id = studios.id
-  LEFT JOIN users ON bookings.user_id = users.id
-  LEFT JOIN users as users_created_by ON bookings.created_by = users.id
-  LEFT JOIN users as users_modified_by ON bookings.modified_by = users.id
-  LEFT JOIN acts ON bookings.act_id = acts.id
-);
-
 DROP VIEW IF EXISTS booking_items_with_booking;
 CREATE VIEW booking_items_with_booking AS (
   SELECT booking_items.*,
@@ -51,4 +35,20 @@ CREATE VIEW booking_items_with_booking AS (
   FROM booking_items
   LEFT JOIN spaces ON booking_items.space_id = spaces.id
   LEFT JOIN bookings_with_user ON bookings_with_user.id = booking_items.booking_id
+);
+
+DROP VIEW IF EXISTS bookings_with_user;
+CREATE VIEW bookings_with_user AS (
+  SELECT bookings.*,
+    studios.title as "studio_title",
+    users.name as "user_name", users.surname as "user_surname",
+    users_created_by.name as "created_by_name", users_created_by.surname as "created_by_surname",
+    users_modified_by.name as "modified_by_name", users_modified_by.surname as "modified_by_surname",
+    acts.title as "act_title"
+  FROM bookings
+  LEFT JOIN studios ON bookings.studio_id = studios.id
+  LEFT JOIN users ON bookings.user_id = users.id
+  LEFT JOIN users as users_created_by ON bookings.created_by = users_created_by.id
+  LEFT JOIN users as users_modified_by ON bookings.modified_by = users_modified_by.id
+  LEFT JOIN acts ON bookings.act_id = acts.id
 );
