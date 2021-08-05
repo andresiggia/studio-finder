@@ -17,7 +17,7 @@ import { deepEqual } from '../../services/helpers/misc';
 // constants
 import {
   defaultBookingWithUser, getBooking, upsertBooking, Booking, BookingWithUser, bookingRequiredFields,
-  BookingItemWithBooking, getBookingItems, upsertBookingItem, deleteBookingItem, defaultBookingItem,
+  BookingItemWithBooking, getBookingItems, upsertBookingItem, deleteBookingItem, defaultBookingItem, BookingItem, bookingItemRequiredFields,
 } from '../../services/api/bookings';
 import { getStudios, StudioProfile } from '../../services/api/studios';
 import { SpaceProfile } from '../../services/api/spaces';
@@ -263,10 +263,16 @@ class BookingForm extends React.Component<Props, State> {
   }
 
   isValidForm = () => {
-    const { booking } = this.state;
-    return !!booking && Object.keys(booking).every((key: string) => (
-      !bookingRequiredFields.includes(key as keyof Booking) || !!booking[key as keyof Booking]
-    ));
+    const { booking, bookingItems } = this.state;
+    return !!booking
+      // required fields for booking
+      && Object.keys(booking).every((key: string) => (
+        !bookingRequiredFields.includes(key as keyof Booking) || !!booking[key as keyof Booking]
+      ))
+      // required fields for every booking item
+      && (!bookingItems || bookingItems.every((bookingItem) => Object.keys(bookingItem).every((key: string) => (
+        !bookingItemRequiredFields.includes(key as keyof BookingItem) || !!bookingItem[key as keyof BookingItem]
+      ))));
   }
 
   onItemAdd = () => {
