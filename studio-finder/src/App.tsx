@@ -78,9 +78,8 @@ class App extends React.Component<any, State> {
       isLoading: true,
     }, async () => {
       try {
-        const { loadRoles, loadSettings } = this.context;
-        await loadRoles();
-        await loadSettings();
+        const { loadDefinitions } = this.context;
+        await loadDefinitions();
         this.setMountedState({
           isLoading: false,
         });

@@ -13,6 +13,7 @@ import {
   UserType, UserProfile, getUserProfile, setUserProfile,
 } from '../services/api/users';
 import { getSettings, Setting } from '../services/api/settings';
+import { getServices, Service } from '../services/api/services';
 
 const AppContext = React.createContext({});
 
@@ -33,6 +34,7 @@ interface State {
   profile: UserProfile | null,
   roles: Role[] | null,
   settings: Setting[] | null,
+  services: Service[] | null,
 }
 
 export interface AppContextValue {
@@ -60,6 +62,7 @@ export class AppContextProvider extends React.Component<Props, State> {
       profile: null,
       roles: null,
       settings: null,
+      services: null,
     };
 
     i18nInit();
@@ -93,36 +96,25 @@ export class AppContextProvider extends React.Component<Props, State> {
     }
   }
 
-  loadRoles = async () => {
+  loadDefinitions = async () => {
     try {
-      const roles = await getRoles(this.getContext());
+      const [settings, roles, services] = await Promise.all([
+        getSettings(this.getContext()),
+        getRoles(this.getContext()),
+        getServices(this.getContext()),
+      ]);
       // eslint-disable-next-line no-console
-      console.log('got roles', roles);
+      console.log('got definitions', {
+        settings, roles, services,
+      });
       return new Promise((resolve) => {
         this.setMountedState({
-          roles,
+          settings, roles, services,
         }, () => resolve(true));
       });
     } catch (error) {
       // eslint-disable-next-line no-console
-      console.warn('error - loadRoles', error);
-      return Promise.reject(error);
-    }
-  }
-
-  loadSettings = async () => {
-    try {
-      const settings = await getSettings(this.getContext());
-      // eslint-disable-next-line no-console
-      console.log('got settings', settings);
-      return new Promise((resolve) => {
-        this.setMountedState({
-          settings,
-        }, () => resolve(true));
-      });
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.warn('error - loadSettings', error);
+      console.warn('error - loadDefinitions', error);
       return Promise.reject(error);
     }
   }
@@ -215,8 +207,7 @@ export class AppContextProvider extends React.Component<Props, State> {
   getContext = () => ({
     state: this.state,
     supabase: this.supabase,
-    loadRoles: this.loadRoles,
-    loadSettings: this.loadSettings,
+    loadDefinitions: this.loadDefinitions,
     updateProfile: this.updateProfile,
     getLoginPath: this.getLoginPath,
     getDefaultLoggedInRouteName: this.getDefaultLoggedInRouteName,
