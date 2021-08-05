@@ -5,11 +5,6 @@
   overflow-y: auto;
 }
 
-.booking-item-form-fieldset {
-  padding: 0;
-  border: none;
-}
-
 .booking-item-form-toolbar {
   --min-height: 25px;
 }
