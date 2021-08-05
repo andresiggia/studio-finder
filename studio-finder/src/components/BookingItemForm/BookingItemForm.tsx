@@ -16,6 +16,7 @@ import i18n from '../../services/i18n/i18n';
 import { BookingItemWithBooking } from '../../services/api/bookings';
 import { StudioProfile } from '../../services/api/studios';
 import { SpaceProfile } from '../../services/api/spaces';
+import { Service } from '../../services/api/services';
 
 // css
 import './BookingItemForm.css';
@@ -124,6 +125,7 @@ class BookingItemForm extends React.Component<Props> {
     const {
       spaceProfile, disabled, item, index, onDelete,
     } = this.props;
+    const { state } = this.context;
     return (
       <div className="booking-item-form">
         <IonToolbar className="booking-item-form-toolbar">
@@ -154,11 +156,15 @@ class BookingItemForm extends React.Component<Props> {
             })}
           </IonItem>
           <IonItem>
-            {this.renderTextInput({
+            {this.renderSelectInput({
               value: item.serviceType,
               fieldName: 'serviceType',
               label: i18n.t('Service Type'),
               disabled,
+              options: (state.services || []).map((service: Service) => ({
+                value: service.type,
+                label: service.title,
+              })),
             })}
           </IonItem>
         </IonList>
