@@ -10,8 +10,6 @@ export enum BookingError {
   missingSpaceId = 'missingSpaceId',
   invalidResponse = 'invalidResponse',
   missingBookingRoles = 'missingBookingRoles',
-  editingBookingOfWrongStudio = 'editingBookingOfWrongStudio',
-  editingBookingOfWrongSpace = 'editingBookingOfWrongSpace',
 }
 
 export interface BookingPayment {
@@ -221,11 +219,7 @@ export const getBooking = async (context: AppContextValue, props: {
   return booking;
 };
 
-export const upsertBooking = async (context: AppContextValue, {
-  booking, studioId,
-}: {
-  booking: Booking, studioId: number,
-}) => {
+export const upsertBooking = async (context: AppContextValue, booking: Booking) => {
   const { supabase, state } = context;
   const userId = state.user?.id;
   if (!userId) {
@@ -237,13 +231,11 @@ export const upsertBooking = async (context: AppContextValue, {
     modifiedAt: new Date(), // modifiedAt to be updated to current date/time
   };
   if (!isEditing) { // inserting new row
-    bookingObj.studioId = studioId; // injecting studio id provided
-    bookingObj.userId = userId; // injecting user id provided
+    bookingObj.createdBy = userId; // injecting user id provided
     delete bookingObj.createdAt; // createdAt should be created by back-end
     delete bookingObj.id; // id should be created by back-end
-  } else if (bookingObj.studioId !== studioId) { // only when editing
-    // studio id must match studioProfile provided
-    throw new Error(BookingError.editingBookingOfWrongStudio);
+  } else {
+    bookingObj.modifiedBy = userId; // injecting user id provided
   }
   const bookingData = updateObjectKeysToUnderscoreCase(bookingObj);
   const { data, error } = await supabase
@@ -261,11 +253,7 @@ export const upsertBooking = async (context: AppContextValue, {
   return data;
 };
 
-export const upsertBookingItem = async (context: AppContextValue, {
-  bookingItem, spaceId,
-}: {
-    bookingItem: BookingItem, spaceId: number,
-}) => {
+export const upsertBookingItem = async (context: AppContextValue, bookingItem: BookingItem) => {
   const { supabase, state } = context;
   const userId = state.user?.id;
   if (!userId) {
@@ -277,13 +265,7 @@ export const upsertBookingItem = async (context: AppContextValue, {
     modifiedAt: new Date(), // modifiedAt to be updated to current date/time
   };
   if (!isEditing) { // inserting new row
-    bookingObj.spaceId = spaceId; // injecting space id provided
-    bookingObj.userId = userId; // injecting user id provided
-    delete bookingObj.createdAt; // createdAt should be created by back-end
     delete bookingObj.id; // id should be created by back-end
-  } else if (bookingObj.spaceId !== spaceId) { // only when editing
-    // studio id must match spaceProfile provided
-    throw new Error(BookingError.editingBookingOfWrongSpace);
   }
   const bookingData = updateObjectKeysToUnderscoreCase(bookingObj);
   const { data, error } = await supabase

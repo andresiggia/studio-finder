@@ -192,7 +192,7 @@ class BookingForm extends React.Component<Props, State> {
       isLoading: true,
     }, async () => {
       try {
-        const { onSave, studioProfile, spaceProfile } = this.props;
+        const { onSave } = this.props;
         const { booking: bookingWithUser, bookingItems, bookingItemsOriginal } = this.state;
         if (this.hasChangesToBooking()) {
           if (!bookingWithUser) {
@@ -204,10 +204,8 @@ class BookingForm extends React.Component<Props, State> {
             studioTitle, userName, userSurname, actTitle, ...booking
           } = bookingWithUser;
           // eslint-disable-next-line no-console
-          console.log('will insert/update booking', booking, 'in studio', studioProfile.id);
-          const data = await upsertBooking(this.context, {
-            booking, studioId: studioProfile.id,
-          });
+          console.log('will insert/update booking', booking);
+          const data = await upsertBooking(this.context, booking);
           // eslint-disable-next-line no-console
           console.log('got new booking data', data);
         }
@@ -234,10 +232,8 @@ class BookingForm extends React.Component<Props, State> {
             studioId, userId, actId, studioTitle, userName, userSurname, actTitle, ...bookingItem
           } = bookingItemWithBooking;
           // eslint-disable-next-line no-console
-          console.log('will insert/update booking item #', i, bookingItem, 'in space', spaceProfile.id);
-          return upsertBookingItem(this.context, {
-            bookingItem, spaceId: spaceProfile.id,
-          });
+          console.log('will insert/update booking item #', i, bookingItem);
+          return upsertBookingItem(this.context, bookingItem);
         }));
         // eslint-disable-next-line no-console
         console.log('inserted/updated items', upserted);
@@ -279,6 +275,12 @@ class BookingForm extends React.Component<Props, State> {
       userId: state.user.id,
       userName: state.user.name,
       userSurname: state.user.surname,
+      createdBy: state.user.id,
+      createdByName: state.user.name,
+      createdBySurname: state.user.surname,
+      modifiedBy: '',
+      modifiedByName: '',
+      modifiedBySurname: '',
       actId: 0,
       actTitle: '',
       spaceTitle: spaceProfile.title,
