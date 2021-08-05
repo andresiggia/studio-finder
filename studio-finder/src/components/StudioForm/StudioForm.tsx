@@ -16,7 +16,7 @@ import { deepEqual } from '../../services/helpers/misc';
 
 // constants
 import {
-  defaultStudioProfile, getStudio, upsertStudio, StudioProfile,
+  defaultStudioProfile, getStudio, upsertStudio, StudioProfile, studioRequiredFields,
 } from '../../services/api/studios';
 
 // components
@@ -41,8 +41,6 @@ interface State {
 
 class StudioForm extends React.Component<Props, State> {
   mounted = false
-
-  requiredFields = ['title']
 
   constructor(props: Props) {
     super(props);
@@ -165,7 +163,7 @@ class StudioForm extends React.Component<Props, State> {
   isValidForm = () => {
     const { studioProfile } = this.state;
     return Object.keys(studioProfile).every((key: string) => (
-      !this.requiredFields.includes(key) || !!studioProfile[key as keyof StudioProfile]
+      !studioRequiredFields.includes(key as keyof StudioProfile) || !!studioProfile[key as keyof StudioProfile]
     ));
   }
 
@@ -251,9 +249,9 @@ class StudioForm extends React.Component<Props, State> {
   renderTextInput = ({
     value, disabled = false, required = false, label, fieldName,
   }: {
-    value: string, disabled?: boolean, required?: boolean, label: string, fieldName: string,
+  value: string, disabled ?: boolean, required ?: boolean, label: string, fieldName: keyof StudioProfile,
   }) => {
-    const isRequired = required || this.requiredFields.includes(fieldName);
+    const isRequired = required || studioRequiredFields.includes(fieldName);
     return (
       <>
         {this.renderLabel(label, isRequired)}

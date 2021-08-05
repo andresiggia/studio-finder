@@ -16,7 +16,7 @@ import { deepEqual } from '../../services/helpers/misc';
 
 // constants
 import {
-  defaultSpaceProfile, getSpace, upsertSpace, SpaceProfile,
+  defaultSpaceProfile, getSpace, upsertSpace, SpaceProfile, spaceRequiredFields,
 } from '../../services/api/spaces';
 import { StudioProfile } from '../../services/api/studios';
 
@@ -43,8 +43,6 @@ interface State {
 
 class SpaceForm extends React.Component<Props, State> {
   mounted = false
-
-  requiredFields = ['title']
 
   constructor(props: Props) {
     super(props);
@@ -167,7 +165,7 @@ class SpaceForm extends React.Component<Props, State> {
   isValidForm = () => {
     const { spaceProfile } = this.state;
     return Object.keys(spaceProfile).every((key: string) => (
-      !this.requiredFields.includes(key) || !!spaceProfile[key as keyof SpaceProfile]
+      !spaceRequiredFields.includes(key as keyof SpaceProfile) || !!spaceProfile[key as keyof SpaceProfile]
     ));
   }
 
@@ -255,7 +253,7 @@ class SpaceForm extends React.Component<Props, State> {
   }: {
     value: string, disabled?: boolean, required?: boolean, label: string, fieldName: string,
   }) => {
-    const isRequired = required || this.requiredFields.includes(fieldName);
+    const isRequired = required || spaceRequiredFields.includes(fieldName as keyof SpaceProfile);
     return (
       <>
         {this.renderLabel(label, isRequired)}
@@ -283,7 +281,7 @@ class SpaceForm extends React.Component<Props, State> {
   }: {
     value: string, disabled?: boolean, required?: boolean, label: string, fieldName: string,
   }) => {
-    const isRequired = required || this.requiredFields.includes(fieldName);
+    const isRequired = required || spaceRequiredFields.includes(fieldName as keyof SpaceProfile);
     return (
       <>
         {this.renderLabel(label, isRequired)}

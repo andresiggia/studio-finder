@@ -16,7 +16,7 @@ import { deepEqual } from '../../services/helpers/misc';
 
 // constants
 import {
-  defaultBookingWithUser, getBooking, upsertBooking, Booking, BookingWithUser,
+  defaultBookingWithUser, getBooking, upsertBooking, Booking, BookingWithUser, bookingRequiredFields,
   BookingItemWithBooking, getBookingItems, upsertBookingItem, deleteBookingItem, defaultBookingItem,
 } from '../../services/api/bookings';
 import { getStudios, StudioProfile } from '../../services/api/studios';
@@ -51,8 +51,6 @@ interface State {
 
 class BookingForm extends React.Component<Props, State> {
   mounted = false
-
-  requiredFields = ['studioId']
 
   constructor(props: Props) {
     super(props);
@@ -267,7 +265,7 @@ class BookingForm extends React.Component<Props, State> {
   isValidForm = () => {
     const { booking } = this.state;
     return !!booking && Object.keys(booking).every((key: string) => (
-      !this.requiredFields.includes(key) || !!booking[key as keyof Booking]
+      !bookingRequiredFields.includes(key as keyof Booking) || !!booking[key as keyof Booking]
     ));
   }
 
@@ -441,7 +439,7 @@ class BookingForm extends React.Component<Props, State> {
   }: {
     value: string, disabled?: boolean, required?: boolean, label: string, fieldName: string,
   }) => {
-    const isRequired = required || this.requiredFields.includes(fieldName);
+    const isRequired = required || bookingRequiredFields.includes(fieldName as keyof Booking);
     return (
       <>
         {this.renderLabel(label, isRequired)}
@@ -465,12 +463,12 @@ class BookingForm extends React.Component<Props, State> {
   }
 
   renderSelectInput = ({
-    value, disabled = false, required = false, label, fieldName, options, onChange,
+    value, disabled = false, required = false, label, fieldName, options,
   }: {
     value: any, disabled?: boolean, required?: boolean, label: string, fieldName: string,
     options: { value: any, label: string }[], onChange?: (value: any) => void,
   }) => {
-    const isRequired = required || this.requiredFields.includes(fieldName);
+    const isRequired = required || bookingRequiredFields.includes(fieldName as keyof Booking);
     return (
       <>
         {this.renderLabel(label, isRequired)}

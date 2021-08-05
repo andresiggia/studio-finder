@@ -26,7 +26,8 @@ export interface StudioProfile {
   modifiedAt: Date | null,
 }
 
-const dateFields = ['createdAt', 'modifiedAt'];
+const studioDateFields: (keyof StudioProfile)[] = ['createdAt', 'modifiedAt'];
+export const studioRequiredFields: (keyof StudioProfile)[] = ['title'];
 
 export interface StudioUser {
   studioId: number,
@@ -74,7 +75,7 @@ export const getStudios = async (context: AppContextValue, props?: {
       // extract userId from studioDataWithUserId before saving
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { userId: _userId, ...studio } = updateObjectKeysToCamelCase(studioDataWithUserId);
-      return convertDateFields(studio, dateFields);
+      return convertDateFields(studio, studioDateFields);
     });
   }
   return studios;
@@ -92,7 +93,7 @@ export const getStudio = async (context: AppContextValue, studioId: number) => {
   }
   let studio: any = null;
   if (data && data.id === studioId) {
-    studio = convertDateFields(updateObjectKeysToCamelCase(data), dateFields);
+    studio = convertDateFields(updateObjectKeysToCamelCase(data), studioDateFields);
   }
   return studio;
 };

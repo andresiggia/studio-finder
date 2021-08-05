@@ -13,7 +13,7 @@ import AppContext from '../../context/AppContext';
 import i18n from '../../services/i18n/i18n';
 
 // constants
-import { BookingItemWithBooking } from '../../services/api/bookings';
+import { BookingItem, bookingItemRequiredFields, BookingItemWithBooking } from '../../services/api/bookings';
 import { getSpaces, SpaceProfile } from '../../services/api/spaces';
 import { Service } from '../../services/api/services';
 
@@ -40,8 +40,6 @@ interface State {
 
 class BookingItemForm extends React.Component<Props, State> {
   mounted = false
-
-  requiredFields = ['spaceId', 'serviceType']
 
   constructor(props: Props) {
     super(props);
@@ -134,7 +132,7 @@ class BookingItemForm extends React.Component<Props, State> {
   }: {
     value: string, disabled?: boolean, required?: boolean, label: string, fieldName: string,
   }) => {
-    const isRequired = required || this.requiredFields.includes(fieldName);
+    const isRequired = required || bookingItemRequiredFields.includes(fieldName as keyof BookingItem);
     return (
       <>
         {this.renderLabel(label, isRequired)}
@@ -154,7 +152,7 @@ class BookingItemForm extends React.Component<Props, State> {
   }: {
     value: Date | null, disabled?: boolean, required?: boolean, label: string, fieldName: string,
   }) => {
-    const isRequired = required || this.requiredFields.includes(fieldName);
+    const isRequired = required || bookingItemRequiredFields.includes(fieldName as keyof BookingItem);
     return (
       <>
         {this.renderLabel(label, isRequired)}
@@ -176,7 +174,7 @@ class BookingItemForm extends React.Component<Props, State> {
   }: {
     value: string, disabled?: boolean, required?: boolean, label: string, fieldName: string,
     }) => {
-    const isRequired = required || this.requiredFields.includes(fieldName);
+    const isRequired = required || bookingItemRequiredFields.includes(fieldName as keyof BookingItem);
     return (
       <>
         {this.renderLabel(label, isRequired)}
@@ -196,7 +194,7 @@ class BookingItemForm extends React.Component<Props, State> {
     value: any, disabled?: boolean, required?: boolean, label: string, fieldName: string,
     options: { value: any, label: string }[], onChange?: (value: any) => void,
   }) => {
-    const isRequired = required || this.requiredFields.includes(fieldName);
+    const isRequired = required || bookingItemRequiredFields.includes(fieldName as keyof BookingItem);
     return (
       <>
         {this.renderLabel(label, isRequired)}

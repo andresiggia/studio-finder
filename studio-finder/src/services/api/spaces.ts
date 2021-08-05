@@ -24,7 +24,8 @@ export interface SpaceProfile {
   modifiedAt: Date | null,
 }
 
-const dateFields = ['createdAt', 'modifiedAt'];
+const spaceDateFields: (keyof SpaceProfile)[] = ['createdAt', 'modifiedAt'];
+export const spaceRequiredFields: (keyof SpaceProfile)[] = ['title'];
 
 export interface SpaceUser {
   spaceId: number,
@@ -73,7 +74,7 @@ export const getSpaces = async (context: AppContextValue, props: {
       // extract userId from spaceDataWithUserId before saving
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { userId: _userId, ...spaceData } = updateObjectKeysToCamelCase(spaceDataWithUserId);
-      return convertDateFields(spaceData, dateFields);
+      return convertDateFields(spaceData, spaceDateFields);
     });
   }
   return spaces;
@@ -91,7 +92,7 @@ export const getSpace = async (context: AppContextValue, spaceId: number) => {
   }
   let space: any = null;
   if (data && data.id === spaceId) {
-    space = convertDateFields(updateObjectKeysToCamelCase(data), dateFields);
+    space = convertDateFields(updateObjectKeysToCamelCase(data), spaceDateFields);
   }
   return space;
 };
