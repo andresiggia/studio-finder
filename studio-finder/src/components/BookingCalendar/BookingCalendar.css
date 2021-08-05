@@ -1,68 +1,68 @@
 
-.booking-item-list-loading {
+.booking-calendar-list-loading {
   text-align: center;
 }
 
-.booking-item-list-spacer {
+.booking-calendar-list-spacer {
   margin-top: 1rem;
 }
 
-.booking-item-list-title {
+.booking-calendar-list-title {
   font-size: 1rem;
   font-weight: bold;
   padding: 0 0 0 .5rem;
 }
 
-.booking-item-list-items {
+.booking-calendar-list-items {
   padding: 0;
 }
 
-.booking-item-list-item-container {
+.booking-calendar-list-item-container {
   padding: .5rem;
   border: 1px solid var(--ion-color-light-shade);
 }
 
-.booking-item-list-item-title {
+.booking-calendar-list-item-title {
   padding: 0 0 .5rem 0;
   font-size: 1rem;
 }
 
-.booking-item-list-item-toolbar {
+.booking-calendar-list-item-toolbar {
   margin-left: .5rem;
 }
 
-.booking-item-calendar-container {
+.booking-calendar-container {
   overflow: auto;
 }
 
 /* table */
-.booking-item-calendar {
+.booking-calendar {
   width: calc((7rem * 7) + 5rem);
   table-layout: fixed;
   border-collapse: collapse;
 }
 
 /* all table cells */
-.booking-item-calendar tr > td {
+.booking-calendar tr > td {
   width: 7rem;
   padding: 0;
   text-align: center;
 }
 
 /* table header row */
-.booking-item-calendar > thead tr {
+.booking-calendar > thead tr {
   display: block;
 }
 
 /* table header cells */
-.booking-item-calendar > thead > tr > td {
+.booking-calendar > thead > tr > td {
   font-weight: bold;
   padding: .25rem;
   border-bottom: 2px solid var(--ion-color-light-shade);
 }
 
 /* table body */
-.booking-item-calendar > tbody {
+.booking-calendar > tbody {
   display: block;
   width: 100%;
   overflow: auto;
@@ -70,28 +70,34 @@
 }
 
 /* table body cells */
-.booking-item-calendar > tbody > tr > td {
+.booking-calendar > tbody > tr > td {
   border-bottom: 1px solid var(--ion-color-light);
 }
 
 /* table body - first cell */
-.booking-item-calendar > tbody > tr > td:first-child {
+.booking-calendar > tbody > tr > td:first-child {
   padding: .25rem;
 }
 
 /* every other table body row */
-.booking-item-calendar > tbody > tr:nth-child(even) > td {
+.booking-calendar > tbody > tr:nth-child(even) > td {
   border-bottom: 1px solid var(--ion-color-light-shade);
 }
 
 /* all table cells - text */
-.booking-item-calendar tr > td,
-.booking-item-calendar tr > td p {
+.booking-calendar tr > td,
+.booking-calendar tr > td p {
   font-size: .75rem;
   line-height: 1.25;
 }
 
 /* table first cell in a row */
-.booking-item-calendar tr > td:first-child {
+.booking-calendar tr > td:first-child {
   width: 5rem;
+}
+
+@media only screen and (min-width: 820px) {
+  .booking-calendar-modal {
+    --min-width: 800px;
+  }
 }

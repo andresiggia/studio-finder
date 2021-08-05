@@ -132,6 +132,7 @@ class BookingCalendar extends React.Component<Props, State> {
     const { showModal, modalSelectedId } = this.state;
     return (
       <IonModal
+        cssClass="booking-calendar-modal"
         isOpen={showModal}
         onWillDismiss={() => this.onModalClose()}
       >
@@ -177,8 +178,8 @@ class BookingCalendar extends React.Component<Props, State> {
     weekStartsAt.setDate(weekStartsAt.getDate() - currentWeekday + (weekOffset * 7));
     const halfTimes = Array.from(Array(24 * 2)).map((_item, index) => index / 2);
     return (
-      <div className="booking-item-calendar-container">
-        <table className="booking-item-calendar">
+      <div className="booking-calendar-container">
+        <table className="booking-calendar">
           <thead>
             <tr>
               <td>
@@ -253,7 +254,7 @@ class BookingCalendar extends React.Component<Props, State> {
 
     if (isLoading) {
       return (
-        <div className="booking-item-list-loading booking-item-list-spacer">
+        <div className="booking-calendar-list-loading booking-calendar-list-spacer">
           <IonSpinner name="bubbles" />
         </div>
       );
@@ -263,7 +264,7 @@ class BookingCalendar extends React.Component<Props, State> {
       return (
         <Notification
           type={NotificationType.danger}
-          className="booking-item-list-spacer"
+          className="booking-calendar-list-spacer"
           header={i18n.t('Error')}
           message={error?.message || i18n.t('An error occurred, please try again later')}
           onDismiss={() => this.setMountedState({ error: null })}
@@ -279,7 +280,7 @@ class BookingCalendar extends React.Component<Props, State> {
     return (
       <>
         <IonToolbar>
-          <IonTitle size="small" className="booking-item-list-title">
+          <IonTitle size="small" className="booking-calendar-list-title">
             {i18n.t('Booking Weekly Calendar')}
           </IonTitle>
           <IonButtons slot="end">
