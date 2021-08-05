@@ -50,9 +50,9 @@ export const defaultStudioProfile: StudioProfile = {
 };
 
 export const getStudios = async (context: AppContextValue, props?: {
-  start?: number, limit: number
+  start?: number, limit: number, inactive?: boolean,
 }) => {
-  const { start = 0, limit = 100 } = props || {};
+  const { start = 0, limit = 100, inactive = false } = props || {};
   const { supabase, state } = context;
   const userId = state.user?.id;
   if (!userId) {
@@ -62,6 +62,7 @@ export const getStudios = async (context: AppContextValue, props?: {
     .from(ViewName.studiosWithUserId)
     .select()
     .eq('user_id', userId)
+    .eq('inactive', inactive)
     .order('title', { ascending: true })
     .range(start, start + limit - 1);
   if (error) {
@@ -161,6 +162,21 @@ export const upsertStudio = async (context: AppContextValue, studioProfile: Stud
     }
     // eslint-disable-next-line no-console
     console.log('added join', newJoinRow);
+  }
+  return data;
+};
+
+export const deleteStudio = async (context: AppContextValue, id: number) => {
+  const { supabase } = context;
+  const { data, error } = await supabase
+    .from(TableName.studios)
+    .update({ inactive: true })
+    .match({ id });
+  if (error) {
+    throw error;
+  }
+  if (!data) {
+    throw StudioError.invalidResponse;
   }
   return data;
 };

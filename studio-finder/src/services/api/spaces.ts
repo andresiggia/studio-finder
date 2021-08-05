@@ -19,6 +19,7 @@ export interface SpaceProfile {
   studioId: number,
   title: string,
   description: string,
+  inactive: boolean,
   createdAt: Date | null,
   modifiedAt: Date | null,
 }
@@ -36,14 +37,17 @@ export const defaultSpaceProfile: SpaceProfile = {
   studioId: 0,
   title: '',
   description: '',
+  inactive: false,
   createdAt: null,
   modifiedAt: null,
 };
 
 export const getSpaces = async (context: AppContextValue, props?: {
-  studioId: number, start?: number, limit?: number
+  studioId: number, start?: number, limit?: number, inactive?: boolean,
 }) => {
-  const { studioId, start = 0, limit = 100 } = props || {};
+  const {
+    studioId, start = 0, limit = 100, inactive = false,
+  } = props || {};
   if (!studioId) {
     throw SpaceError.missingStudioId;
   }
@@ -57,6 +61,7 @@ export const getSpaces = async (context: AppContextValue, props?: {
     .select()
     .eq('studio_id', studioId)
     .eq('user_id', userId)
+    .eq('inactive', inactive)
     .order('title', { ascending: true })
     .range(start, start + limit - 1);
   if (error) {

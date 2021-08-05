@@ -56,6 +56,7 @@ CREATE TABLE "studios" (
   "city" varchar,
   "region" varchar,
   "country" varchar,
+  "inactive" boolean,
   "created_at" timestamp DEFAULT (now()),
   "modified_at" timestamp DEFAULT (now())
 );
@@ -79,6 +80,7 @@ CREATE TABLE "spaces" (
   "studio_id" int,
   "title" varchar,
   "description" varchar,
+  "inactive" boolean,
   "created_at" timestamp DEFAULT (now()),
   "modified_at" timestamp DEFAULT (now())
 );

@@ -1,13 +1,16 @@
 import React from 'react';
 import {
+  IonAlert,
   IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonContent, IonIcon, IonModal,
   IonSelect, IonSelectOption, IonSpinner, IonTitle, IonToolbar,
 } from '@ionic/react';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { addOutline, closeOutline, createOutline } from 'ionicons/icons';
+import {
+  addOutline, closeOutline, createOutline, trashOutline,
+} from 'ionicons/icons';
 
 // services
-import { getStudios, StudioProfile } from '../../services/api/studios';
+import { deleteStudio, getStudios, StudioProfile } from '../../services/api/studios';
 import i18n from '../../services/i18n/i18n';
 
 // components
@@ -28,6 +31,7 @@ interface State {
   selectedId: number,
   showModal: boolean,
   modalSelectedId: number,
+  showDeleteAlert: boolean,
 }
 
 class StudioList extends React.Component<any, State> {
@@ -42,6 +46,7 @@ class StudioList extends React.Component<any, State> {
       selectedId: 0,
       showModal: false,
       modalSelectedId: 0,
+      showDeleteAlert: false,
     };
   }
 
@@ -111,6 +116,24 @@ class StudioList extends React.Component<any, State> {
     });
   }
 
+  onDelete = (selectedId: number) => {
+    this.setMountedState({
+      isLoading: true,
+    }, async () => {
+      try {
+        await deleteStudio(this.context, selectedId);
+        this.loadItems();
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.warn('error - onDelete', error);
+        this.setMountedState({
+          isLoading: false,
+          error,
+        });
+      }
+    });
+  }
+
   // render
 
   renderSpaces = () => {
@@ -128,7 +151,9 @@ class StudioList extends React.Component<any, State> {
       );
     }
     return (
-      <SpaceList studioProfile={studioProfile} />
+      <div className="studio-list-spacer">
+        <SpaceList studioProfile={studioProfile} />
+      </div>
     );
   }
 
@@ -154,7 +179,7 @@ class StudioList extends React.Component<any, State> {
         )}
         {!items || items.length === 0
           ? (
-            <>
+            <div className="studio-list-spacer">
               <p>{i18n.t('No studios found.')}</p>
               <IonButton
                 type="button"
@@ -166,7 +191,7 @@ class StudioList extends React.Component<any, State> {
                 <IonIcon icon={addOutline} />
                 {i18n.t('Studio')}
               </IonButton>
-            </>
+            </div>
           ) : !!selectedId && (
             this.renderSpaces()
           )}
@@ -214,8 +239,12 @@ class StudioList extends React.Component<any, State> {
 
   render() {
     const {
-      items, selectedId, isLoading, error,
+      items, selectedId, isLoading, error, showDeleteAlert,
     } = this.state;
+    let studioProfile;
+    if (selectedId) {
+      studioProfile = items?.find((item) => item.id === selectedId);
+    }
     return (
       <>
         <IonCard>
@@ -246,14 +275,44 @@ class StudioList extends React.Component<any, State> {
                   </IonSelect>
                   <IonButtons className="studio-list-header-toolbar-buttons">
                     {!!selectedId && (
-                      <IonButton
-                        fill="clear"
-                        color="primary"
-                        title={i18n.t('Edit Studio')}
-                        onClick={() => this.onModalOpen(selectedId)}
-                      >
-                        <IonIcon icon={createOutline} ariaLabel={i18n.t('Edit Studio')} />
-                      </IonButton>
+                      <>
+                        <IonButton
+                          fill="clear"
+                          color="primary"
+                          title={i18n.t('Edit Studio')}
+                          onClick={() => this.onModalOpen(selectedId)}
+                        >
+                          <IonIcon icon={createOutline} ariaLabel={i18n.t('Edit Studio')} />
+                        </IonButton>
+                        <IonButton
+                          fill="clear"
+                          color="danger"
+                          title={i18n.t('Delete Studio')}
+                          onClick={() => this.setMountedState({ showDeleteAlert: true })}
+                        >
+                          <IonIcon icon={trashOutline} ariaLabel={i18n.t('Delete Studio')} />
+                        </IonButton>
+                        <IonAlert
+                          isOpen={showDeleteAlert}
+                          onDidDismiss={() => this.setMountedState({ showDeleteAlert: false })}
+                          header={i18n.t('Deletion Confirmation')}
+                          subHeader={studioProfile?.title || ''}
+                          message={i18n.t('Are you sure you want to delete this studio?')}
+                          buttons={[
+                            {
+                              text: 'Cancel',
+                              role: 'cancel',
+                              cssClass: 'secondary',
+                              handler: () => this.setMountedState({ showDeleteAlert: false }),
+                            },
+                            {
+                              text: 'Okay',
+                              cssClass: 'danger',
+                              handler: () => this.onDelete(selectedId),
+                            },
+                          ]}
+                        />
+                      </>
                     )}
                     <IonButton
                       type="button"
