@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  IonLabel, IonIcon, IonSpinner, IonButton, IonGrid, IonRow, IonCol, IonList, IonInput, IonItem,
+  IonLabel, IonIcon, IonSpinner, IonButton, IonGrid, IonRow, IonCol, IonList, IonInput, IonItem, IonSelect, IonSelectOption,
 } from '@ionic/react';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import {
@@ -19,7 +19,7 @@ import {
   defaultBookingWithUser, getBooking, upsertBooking, Booking, BookingWithUser,
   BookingItemWithBooking, getBookingItems, upsertBookingItem, deleteBookingItem, defaultBookingItem,
 } from '../../services/api/bookings';
-import { StudioProfile } from '../../services/api/studios';
+import { getStudios, StudioProfile } from '../../services/api/studios';
 import { SpaceProfile } from '../../services/api/spaces';
 
 // components
@@ -41,6 +41,7 @@ interface State {
   allowEdit: boolean,
   isLoading: boolean,
   error: Error | null,
+  studios: StudioProfile[],
   // fields
   booking: BookingWithUser | null,
   bookingOriginal: BookingWithUser | null,
@@ -59,10 +60,11 @@ class BookingForm extends React.Component<Props, State> {
       allowEdit: false,
       isLoading: false,
       error: null,
+      studios: [],
       booking: null,
       bookingOriginal: null,
       bookingItems: [],
-      bookingItemsOriginal: null,
+      bookingItemsOriginal: [],
     };
   }
 
@@ -128,10 +130,14 @@ class BookingForm extends React.Component<Props, State> {
             getBookingItems(this.context, { bookingId: id, includeBookingAndUser: true }),
           ]);
         }
+        // eslint-disable-next-line no-console
+        console.log('loading studios...');
+        const studios = await getStudios(this.context);
         const defaultBooking = this.getDefaultBookingWithUser();
         this.setMountedState({
           isLoading: false,
           allowEdit: !isEditing, // if creating new, skip allowEdit
+          studios,
           booking: booking || defaultBooking,
           bookingOriginal: booking || defaultBooking,
           bookingItems,
@@ -455,20 +461,58 @@ class BookingForm extends React.Component<Props, State> {
     );
   }
 
+  renderSelectInput = ({
+    value, disabled = false, required = false, label, fieldName, options, onChange,
+  }: {
+    value: any, disabled?: boolean, required?: boolean, label: string, fieldName: string,
+    options: { value: any, label: string }[], onChange?: (value: any) => void,
+  }) => {
+    const isRequired = required || this.requiredFields.includes(fieldName);
+    return (
+      <>
+        {this.renderLabel(label, isRequired)}
+        <IonSelect
+          value={value}
+          // required={isRequired}
+          disabled={disabled}
+          onIonChange={(e: any) => {
+            const { booking } = this.state;
+            this.setMountedState({
+              booking: {
+                ...booking,
+                [fieldName]: e.detail.value || '',
+              },
+            });
+          }}
+        >
+          {options.map((item) => (
+            <IonSelectOption key={item.value} value={item.value}>
+              {item.label}
+            </IonSelectOption>
+          ))}
+        </IonSelect>
+      </>
+    );
+  }
+
   renderFields = (disabled: boolean) => {
     const { spaceProfile, studioProfile } = this.props;
-    const { booking, bookingItems } = this.state;
+    const { booking, bookingItems, studios } = this.state;
     if (!booking || !bookingItems) {
       return null;
     }
     return (
       <IonList className="booking-form-list">
         <IonItem className="booking-form-list-item">
-          {this.renderTextInput({
-            value: booking.studioTitle,
+          {this.renderSelectInput({
+            value: booking.studioId,
             fieldName: 'studio',
             label: i18n.t('Studio'),
-            disabled: true,
+            disabled,
+            options: studios.map((item) => ({
+              value: item.id,
+              label: item.title,
+            })),
           })}
         </IonItem>
         {booking.userId && (
