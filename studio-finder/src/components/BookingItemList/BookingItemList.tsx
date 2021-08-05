@@ -53,8 +53,9 @@ class BookingItemList extends React.Component<Props, State> {
   }
 
   componentDidUpdate(prevProps: Props) {
-    const { spaceProfile } = this.props;
-    if (prevProps.spaceProfile.id !== spaceProfile.id) {
+    const { spaceProfile, items } = this.props;
+    if (prevProps.spaceProfile.id !== spaceProfile.id
+      || prevProps.items.length !== items.length) {
       this.updateState();
     }
   }
@@ -80,14 +81,9 @@ class BookingItemList extends React.Component<Props, State> {
 
   updateState = () => {
     const { items } = this.props;
-    // pre-select first item
-    let selectedIndex = -1;
-    if (items.length > 0) {
-      selectedIndex = 0;
-    }
     this.setMountedState({
       items,
-      selectedIndex,
+      selectedIndex: items.length - 1, // pre-select last item
     });
   }
 
