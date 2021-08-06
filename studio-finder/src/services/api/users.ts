@@ -1,6 +1,9 @@
 import { AppContextValue } from '../../context/AppContext';
 
 import { convertDateFields, updateObjectKeysToCamelCase, updateObjectKeysToUnderscoreCase } from './helpers';
+import {
+  deleteFile, StorageBucket, uploadFile, getFileUrl,
+} from './storage';
 import { TableName } from './tables';
 
 export enum UserError {
@@ -63,25 +66,64 @@ export const getUserProfile = async (context: AppContextValue) => {
   return profile;
 };
 
-export const setUserProfile = async (context: AppContextValue, userProfile: UserProfile) => {
+export const setUserProfile = async (context: AppContextValue, {
+  userProfile, file,
+}: {
+  userProfile: UserProfile, file?: File,
+}) => {
   const { supabase, state } = context;
   const userId = state.user?.id;
   if (!userId) {
     throw UserError.notLoggedIn;
   }
-  const profile: any = {
+  const itemObj: any = {
     ...userProfile,
-    id: userId, // inject user id
     modifiedAt: new Date(), // modifiedAt to be updated to current date/time
   };
-  if (!profile.createdAt) { // createdAt should be created by back-end if not set
-    delete profile.createdAt;
+  const filePath = `${userId}/${file?.name || ''}`;
+  if (file) {
+    // eslint-disable-next-line no-console
+    console.log('will upload file', file, 'to', `${userId}/${file.name}`);
+    const { data: fileUploaded, error: fileUploadError } = await uploadFile(context, {
+      filePath, fileBody: file, bucketName: StorageBucket.users,
+    });
+    if (fileUploadError) {
+      throw fileUploadError;
+    }
+    // eslint-disable-next-line no-console
+    console.log('fileUploaded', fileUploaded);
+    const { publicURL: photoUrl = '', error: urlError } = getFileUrl(context, {
+      filePath, bucketName: StorageBucket.users,
+    });
+    if (urlError) {
+      throw urlError;
+    }
+    itemObj.photoUrl = photoUrl;
   }
-  const userProfileData = updateObjectKeysToUnderscoreCase(profile);
+  if (!itemObj.id) { // new row
+    itemObj.id = userId; // inject userId
+    delete itemObj.createdAt; // createdAt should be created by back-end if not set
+  }
+  const itemData = updateObjectKeysToUnderscoreCase(itemObj);
   const { data, error } = await supabase
     .from(TableName.users)
-    .upsert([userProfileData]);
+    .upsert(itemData);
   if (error) {
+    if (file) {
+      // revert operation if update failed
+      // eslint-disable-next-line no-console
+      console.log('will delete file', file, 'from', `${userId}/${file.name}`);
+      const { data: fileDeleted, error: fileDeleteError } = await deleteFile(context, {
+        filePath: `${userId}/${file.name}`, bucketName: StorageBucket.users,
+      });
+      if (fileDeleteError) {
+        // eslint-disable-next-line no-console
+        console.warn('error when deleting file (optional)', fileDeleteError);
+      } else {
+        // eslint-disable-next-line no-console
+        console.log('file deleted', fileDeleted);
+      }
+    }
     throw error;
   }
   return data;

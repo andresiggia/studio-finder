@@ -144,11 +144,13 @@ export class AppContextProvider extends React.Component<Props, State> {
     }
   }
 
-  updateProfile = async (profile: UserProfile) => {
+  updateProfile = async (userProfile: UserProfile, file?: File) => {
     try {
       // eslint-disable-next-line no-console
-      console.log('will update user profile', profile);
-      const response = await setUserProfile(this.getContext(), profile);
+      console.log('will update user profile', userProfile, file);
+      const response = await setUserProfile(this.getContext(), {
+        userProfile, file,
+      });
       // eslint-disable-next-line no-console
       console.log('user profile updated', response);
       await this.loadUserProfile();
