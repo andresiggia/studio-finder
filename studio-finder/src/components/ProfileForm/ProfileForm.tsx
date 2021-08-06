@@ -2,11 +2,12 @@ import React from 'react';
 import {
   IonLabel, IonIcon, IonSegmentButton, IonSegment, IonSpinner, IonButton, IonGrid, IonRow, IonCol, IonList,
   IonItem, IonInput, IonDatetime, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonModal, IonButtons,
-  IonContent, IonTitle, IonToolbar,
+  IonContent, IonTitle, IonToolbar, IonAvatar,
 } from '@ionic/react';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import {
   musicalNotesOutline, storefrontOutline, createOutline, refreshOutline, saveOutline, lockClosedOutline, closeOutline,
+  person, trashOutline,
 } from 'ionicons/icons';
 
 // context
@@ -22,6 +23,7 @@ import { deepEqual } from '../../services/helpers/misc';
 // components
 import Notification, { NotificationProps, NotificationType } from '../Notification/Notification';
 import ChangePasswordForm from '../ChangePasswordForm/ChangePasswordForm';
+import FileUpload from '../FileUpload/FileUpload';
 
 // css
 import './ProfileForm.css';
@@ -41,12 +43,16 @@ interface State {
   userType: string,
   userProfile: UserProfile,
   userProfileOriginal: UserProfile | null,
+  file: File | null,
+  filePreview: string,
 }
 
 class ProfileForm extends React.Component<Props, State> {
   mounted = false
 
   requiredFields = ['name', 'surname']
+
+  fileReader = new FileReader()
 
   constructor(props: Props) {
     super(props);
@@ -59,12 +65,24 @@ class ProfileForm extends React.Component<Props, State> {
       userType: props.userType,
       userProfile: defaultUserProfile,
       userProfileOriginal: null,
+      file: null,
+      filePreview: '',
     };
   }
 
   componentDidMount() {
     this.mounted = true;
     this.updateState();
+
+    this.fileReader.onload = (e: any) => {
+      const { file } = this.state;
+      if (file) {
+        const filePreview = e.target.result;
+        this.setMountedState({
+          filePreview,
+        });
+      }
+    };
   }
 
   componentDidUpdate(prevProps: Props) {
@@ -94,10 +112,11 @@ class ProfileForm extends React.Component<Props, State> {
 
   updateState = () => {
     const { state } = this.context;
-    const { userType } = this.props;
+    const { userType, unlockToEdit } = this.props;
     // eslint-disable-next-line no-console
     console.log('updating state...', state.profile);
     this.setMountedState({
+      allowEdit: !unlockToEdit,
       userType: state.user.user_metadata?.type || userType,
       userProfile: state.profile || defaultUserProfile,
       userProfileOriginal: state.profile,
@@ -116,11 +135,32 @@ class ProfileForm extends React.Component<Props, State> {
     return state.user.user_metadata.type !== userType;
   }
 
+  fileHasChanges = () => {
+    const { file } = this.state;
+    return !!file;
+  }
+
   hasChanges = () => this.typeHasChanges() || this.profileHasChanges()
 
+  onFileChange = (files: File[]) => {
+    const file = files.length > 0 ? files[0] : null;
+    if (file) {
+      this.fileReader.readAsDataURL(file);
+    }
+    this.setMountedState({
+      file,
+      filePreview: '',
+    });
+  }
+
   onSubmit = (e: any) => {
+    const { unlockToEdit } = this.props;
+    const { isLoading, error } = this.state;
     // prevent form from submitting
     e.preventDefault();
+    if (isLoading || error) {
+      return;
+    }
     if (!this.isValidForm()) {
       // eslint-disable-next-line no-console
       console.warn('Invalid form');
@@ -136,24 +176,24 @@ class ProfileForm extends React.Component<Props, State> {
     }, async () => {
       try {
         const { state, updateProfile } = this.context;
-        const { userType, userProfile } = this.state;
+        const { userType, userProfile, file } = this.state;
         if (!state.user.user_metadata?.type || this.typeHasChanges()) {
           const user = await updateUserType(this.context, userType);
           // eslint-disable-next-line no-console
           console.log('user type updated', user);
         }
         if (this.profileHasChanges()) {
-          await updateProfile(userProfile);
+          await updateProfile(userProfile, file);
         }
         this.setMountedState({
           isLoading: false,
         }, () => this.updateState());
-      } catch (error) {
+      } catch (newError) {
         // eslint-disable-next-line no-console
-        console.warn('error - onSubmit', error);
+        console.warn('error - onSubmit', newError);
         this.setMountedState({
           isLoading: false,
-          error,
+          error: newError,
         });
       }
     });
@@ -188,7 +228,7 @@ class ProfileForm extends React.Component<Props, State> {
   // render
 
   renderLabel = (label: string, required = false) => (
-    <IonLabel position="stacked">
+    <IonLabel position="stacked" className="profile-form-label">
       {`${label} ${required
         ? '*'
         : ''}`}
@@ -246,6 +286,30 @@ class ProfileForm extends React.Component<Props, State> {
             {`* ${i18n.t('Required')}`}
           </p>
         )}
+        {isLoading && (
+          <div className="profile-form-loading profile-form-spacer">
+            <IonSpinner name="bubbles" />
+          </div>
+        )}
+        {!!error && (
+          <Notification
+            type={NotificationType.danger}
+            className="profile-form-spacer"
+            header={i18n.t('Error')}
+            message={error?.message || i18n.t('An error occurred, please try again later')}
+            onDismiss={() => this.setMountedState({ error: null })}
+          />
+        )}
+        {!!notification && (
+          <Notification
+            type={notification?.type}
+            className="profile-form-spacer"
+            header={notification?.header}
+            message={notification?.message}
+            preventDismiss={notification?.preventDismiss}
+            onDismiss={notification?.onDismiss || (() => this.setMountedState({ notification: null }))}
+          />
+        )}
         <IonGrid>
           <IonRow>
             {(unlockToEdit && !allowEdit)
@@ -298,6 +362,7 @@ class ProfileForm extends React.Component<Props, State> {
                   </IonCol>
                   <IonCol size="12" size-md="6">
                     <IonButton
+                      fill="solid"
                       color="primary"
                       type="submit"
                       expand="block"
@@ -311,30 +376,6 @@ class ProfileForm extends React.Component<Props, State> {
               )}
           </IonRow>
         </IonGrid>
-        {isLoading && (
-          <div className="profile-form-loading profile-form-spacer">
-            <IonSpinner name="bubbles" />
-          </div>
-        )}
-        {!!error && (
-          <Notification
-            type={NotificationType.danger}
-            className="profile-form-spacer"
-            header={i18n.t('Error')}
-            message={error?.message || i18n.t('An error occurred, please try again later')}
-            onDismiss={() => this.setMountedState({ error: null })}
-          />
-        )}
-        {!!notification && (
-          <Notification
-            type={notification?.type}
-            className="profile-form-spacer"
-            header={notification?.header}
-            message={notification?.message}
-            preventDismiss={notification?.preventDismiss}
-            onDismiss={notification?.onDismiss || (() => this.setMountedState({ notification: null }))}
-          />
-        )}
       </div>
     );
   }
@@ -369,7 +410,7 @@ class ProfileForm extends React.Component<Props, State> {
 
   renderFields = (disabled: boolean, showRequired: boolean) => {
     const { state } = this.context;
-    const { userProfile } = this.state;
+    const { userProfile, file, filePreview } = this.state;
     return (
       <IonList className="profile-form-list">
         <IonItem>
@@ -396,6 +437,41 @@ class ProfileForm extends React.Component<Props, State> {
             disabled,
           }, showRequired)}
         </IonItem>
+        {showRequired && (
+          <IonItem>
+            {this.renderLabel(i18n.t('Photo'))}
+            {userProfile.photoUrl
+              ? (
+                <div className="profile-form-photo">
+                  {this.renderAvatar(userProfile.photoUrl)}
+                  <IonButton
+                    color="danger"
+                    fill="clear"
+                    title={i18n.t('Remove Photo')}
+                    onClick={() => this.setMountedState({
+                      userProfile: {
+                        ...userProfile,
+                        photoUrl: '',
+                      },
+                    })}
+                  >
+                    <IonIcon icon={trashOutline} />
+                  </IonButton>
+                </div>
+              ) : (
+                <>
+                  {(!!file && !!filePreview) && (
+                    this.renderAvatar(filePreview)
+                  )}
+                  <FileUpload
+                    files={file ? [file] : []}
+                    accept=".png,.jpg,.jpeg"
+                    onChange={this.onFileChange}
+                  />
+                </>
+              )}
+          </IonItem>
+        )}
         <IonItem>
           {this.renderLabel(i18n.t('Date of birth'))}
           <IonDatetime
@@ -419,6 +495,17 @@ class ProfileForm extends React.Component<Props, State> {
       </IonList>
     );
   }
+
+  renderAvatar = (photoUrl: string, className = '') => (
+    <IonAvatar className={`profile-avatar ${className}`}>
+      {photoUrl
+        ? (
+          <img src={photoUrl} alt={i18n.t('Photo')} />
+        ) : (
+          <IonIcon className="profile-avatar-icon" icon={person} />
+        )}
+    </IonAvatar>
+  )
 
   renderModal = () => {
     const { showPasswordModal } = this.state;
@@ -461,6 +548,9 @@ class ProfileForm extends React.Component<Props, State> {
         <form className="profile-form" onSubmit={this.onSubmit}>
           <IonCard>
             <IonCardHeader>
+              {(unlockToEdit && !allowEdit) && (
+                this.renderAvatar(state.profile?.photoUrl, 'profile-float-right')
+              )}
               <IonCardTitle>
                 {isEditing
                   ? i18n.t('My Profile')
