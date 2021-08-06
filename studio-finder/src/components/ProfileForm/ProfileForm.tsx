@@ -17,6 +17,7 @@ import i18n from '../../services/i18n/i18n';
 import {
   UserType, defaultUserProfile, UserProfile, updateUserType,
 } from '../../services/api/users';
+import { deepEqual } from '../../services/helpers/misc';
 
 // components
 import Notification, { NotificationProps, NotificationType } from '../Notification/Notification';
@@ -106,7 +107,7 @@ class ProfileForm extends React.Component<Props, State> {
   profileHasChanges = () => {
     const { state } = this.context;
     const { userProfile } = this.state;
-    return userProfile !== (state.profile || defaultUserProfile);
+    return !deepEqual(userProfile, (state.profile || defaultUserProfile)) || this.fileHasChanges();
   }
 
   typeHasChanges = () => {
