@@ -154,13 +154,8 @@ class ProfileForm extends React.Component<Props, State> {
   }
 
   onSubmit = (e: any) => {
-    const { unlockToEdit } = this.props;
-    const { isLoading, error } = this.state;
     // prevent form from submitting
     e.preventDefault();
-    if (isLoading || error) {
-      return;
-    }
     if (!this.isValidForm()) {
       // eslint-disable-next-line no-console
       console.warn('Invalid form');
