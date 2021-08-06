@@ -400,7 +400,7 @@ class ProfileForm extends React.Component<Props, State> {
           <IonDatetime
             displayFormat="DD MM YYYY"
             disabled={disabled}
-            value={userProfile.birthday instanceof Date
+            value={(!!userProfile.birthday && userProfile.birthday instanceof Date)
               ? userProfile.birthday.toString()
               : null}
             onIonChange={(e: any) => {
