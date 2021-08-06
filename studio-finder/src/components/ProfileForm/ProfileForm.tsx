@@ -7,7 +7,7 @@ import {
 // eslint-disable-next-line import/no-extraneous-dependencies
 import {
   musicalNotesOutline, storefrontOutline, createOutline, refreshOutline, saveOutline, lockClosedOutline, closeOutline,
-  person, trashOutline,
+  person,
 } from 'ionicons/icons';
 
 // context
@@ -23,7 +23,7 @@ import { deepEqual } from '../../services/helpers/misc';
 // components
 import Notification, { NotificationProps, NotificationType } from '../Notification/Notification';
 import ChangePasswordForm from '../ChangePasswordForm/ChangePasswordForm';
-import FileUpload from '../FileUpload/FileUpload';
+import ImageInput from '../ImageInput/ImageInput';
 
 // css
 import './ProfileForm.css';
@@ -44,7 +44,6 @@ interface State {
   userProfile: UserProfile,
   userProfileOriginal: UserProfile | null,
   file: File | null,
-  filePreview: string,
 }
 
 class ProfileForm extends React.Component<Props, State> {
@@ -66,23 +65,12 @@ class ProfileForm extends React.Component<Props, State> {
       userProfile: defaultUserProfile,
       userProfileOriginal: null,
       file: null,
-      filePreview: '',
     };
   }
 
   componentDidMount() {
     this.mounted = true;
     this.updateState();
-
-    this.fileReader.onload = (e: any) => {
-      const { file } = this.state;
-      if (file) {
-        const filePreview = e.target.result;
-        this.setMountedState({
-          filePreview,
-        });
-      }
-    };
   }
 
   componentDidUpdate(prevProps: Props) {
@@ -113,13 +101,23 @@ class ProfileForm extends React.Component<Props, State> {
   updateState = () => {
     const { state } = this.context;
     const { userType, unlockToEdit } = this.props;
+    const userProfile = state.profile || defaultUserProfile;
     // eslint-disable-next-line no-console
-    console.log('updating state...', state.profile);
+    console.log('updating state...', userProfile);
     this.setMountedState({
       allowEdit: !unlockToEdit,
       userType: state.user.user_metadata?.type || userType,
+      userProfile,
+      userProfileOriginal: userProfile,
+    });
+  }
+
+  onReset = () => {
+    const { state } = this.context;
+    const { userType } = this.props;
+    this.setMountedState({
+      userType: state.user.user_metadata?.type || userType,
       userProfile: state.profile || defaultUserProfile,
-      userProfileOriginal: state.profile,
     });
   }
 
@@ -144,12 +142,8 @@ class ProfileForm extends React.Component<Props, State> {
 
   onFileChange = (files: File[]) => {
     const file = files.length > 0 ? files[0] : null;
-    if (file) {
-      this.fileReader.readAsDataURL(file);
-    }
     this.setMountedState({
       file,
-      filePreview: '',
     });
   }
 
@@ -336,24 +330,29 @@ class ProfileForm extends React.Component<Props, State> {
               ) : (
                 <>
                   <IonCol size="12" size-md="6">
-                    <IonButton
-                      fill="outline"
-                      type="button"
-                      expand="block"
-                      disabled={isLoading || !!error || (!unlockToEdit && !hasChanges)}
-                      onClick={() => {
-                        if (hasChanges) {
-                          this.updateState();
-                        } else if (unlockToEdit) {
-                          this.setMountedState({ allowEdit: false });
-                        }
-                      }}
-                    >
-                      <IonIcon slot="start" icon={refreshOutline} />
-                      {(hasChanges || !unlockToEdit)
-                        ? i18n.t('Reset')
-                        : i18n.t('Cancel')}
-                    </IonButton>
+                    {(hasChanges || !unlockToEdit)
+                      ? (
+                        <IonButton
+                          fill="outline"
+                          type="button"
+                          expand="block"
+                          disabled={isLoading || !!error || !hasChanges}
+                          onClick={() => this.onReset()}
+                        >
+                          <IonIcon slot="start" icon={refreshOutline} />
+                          {i18n.t('Reset')}
+                        </IonButton>
+                      ) : (
+                        <IonButton
+                          fill="outline"
+                          type="button"
+                          expand="block"
+                          disabled={isLoading || !!error}
+                          onClick={() => this.setMountedState({ allowEdit: false })}
+                        >
+                          {i18n.t('Cancel')}
+                        </IonButton>
+                      )}
                   </IonCol>
                   <IonCol size="12" size-md="6">
                     <IonButton
@@ -405,7 +404,7 @@ class ProfileForm extends React.Component<Props, State> {
 
   renderFields = (disabled: boolean, showRequired: boolean) => {
     const { state } = this.context;
-    const { userProfile, file, filePreview } = this.state;
+    const { userProfile, file } = this.state;
     return (
       <IonList className="profile-form-list">
         <IonItem>
@@ -435,36 +434,20 @@ class ProfileForm extends React.Component<Props, State> {
         {showRequired && (
           <IonItem>
             {this.renderLabel(i18n.t('Photo'))}
-            {userProfile.photoUrl
-              ? (
-                <div className="profile-form-photo">
-                  {this.renderAvatar(userProfile.photoUrl)}
-                  <IonButton
-                    color="danger"
-                    fill="clear"
-                    title={i18n.t('Remove Photo')}
-                    onClick={() => this.setMountedState({
-                      userProfile: {
-                        ...userProfile,
-                        photoUrl: '',
-                      },
-                    })}
-                  >
-                    <IonIcon icon={trashOutline} />
-                  </IonButton>
-                </div>
-              ) : (
-                <>
-                  {(!!file && !!filePreview) && (
-                    this.renderAvatar(filePreview)
-                  )}
-                  <FileUpload
-                    files={file ? [file] : []}
-                    accept=".png,.jpg,.jpeg"
-                    onChange={this.onFileChange}
-                  />
-                </>
-              )}
+            <ImageInput
+              files={file ? [file] : []}
+              imageUrls={userProfile.photoUrl ? [userProfile.photoUrl] : []}
+              renderImage={this.renderAvatar}
+              onFilesChange={this.onFileChange}
+              onImageUrlsChange={(imageUrls: string[]) => this.setMountedState({
+                userProfile: {
+                  ...userProfile,
+                  photoUrl: imageUrls.length > 0
+                    ? imageUrls[0]
+                    : '',
+                },
+              })}
+            />
           </IonItem>
         )}
         <IonItem>
@@ -540,19 +523,19 @@ class ProfileForm extends React.Component<Props, State> {
     const isEditing = this.isEditing();
     return (
       <>
-        <form className="profile-form" onSubmit={this.onSubmit}>
-          <IonCard>
-            <IonCardHeader>
-              {(unlockToEdit && !allowEdit) && (
-                this.renderAvatar(state.profile?.photoUrl, 'profile-float-right')
-              )}
-              <IonCardTitle>
-                {isEditing
-                  ? i18n.t('My Profile')
-                  : i18n.t('Create Profile')}
-              </IonCardTitle>
-            </IonCardHeader>
-            <IonCardContent>
+        <IonCard>
+          <IonCardHeader>
+            {(unlockToEdit && !allowEdit) && (
+              this.renderAvatar(state.profile?.photoUrl, 'profile-float-right')
+            )}
+            <IonCardTitle>
+              {isEditing
+                ? i18n.t('My Profile')
+                : i18n.t('Create Profile')}
+            </IonCardTitle>
+          </IonCardHeader>
+          <IonCardContent>
+            <form className="profile-form" onSubmit={this.onSubmit}>
               <fieldset className="profile-form-fieldset" disabled={disabled}>
                 {(!state.user.user_metadata?.type || !state.profile) && (
                   this.renderUserType(disabled)
@@ -560,9 +543,9 @@ class ProfileForm extends React.Component<Props, State> {
                 {this.renderFields(disabled, showRequired)}
                 {this.renderFooter(showRequired)}
               </fieldset>
-            </IonCardContent>
-          </IonCard>
-        </form>
+            </form>
+          </IonCardContent>
+        </IonCard>
         {this.renderModal()}
       </>
     );

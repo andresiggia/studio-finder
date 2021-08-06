@@ -51,11 +51,6 @@
   margin: 1rem 0;
 }
 
-.profile-form-photo {
-  margin: 1rem 0;
-  display: flex;
-}
-
 .profile-form-label {
   flex-grow: 1;
 }
