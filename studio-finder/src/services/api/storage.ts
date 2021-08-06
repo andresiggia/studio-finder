@@ -6,36 +6,40 @@ export enum StorageBucket {
   studios = 'studios',
 }
 
-export const uploadFile = async (context: AppContextValue, {
-  fileName, fileBody, bucketName,
+export const getFileUrl = (context: AppContextValue, {
+  filePath, bucketName,
 }: {
-  fileName: string, fileBody: any, bucketName: string,
+  filePath: string, bucketName: string,
 }) => {
   const { supabase } = context;
-  const { data, error } = await supabase
+  return supabase
     .storage
     .from(bucketName)
-    .upload(fileName, fileBody, {
-      upsert: true,
-    });
-  if (error) {
-    throw error;
-  }
-  return data;
+    .getPublicUrl(filePath);
 };
 
-export const deleteFile = async (context: AppContextValue, {
-  fileName, bucketName,
+export const uploadFile = (context: AppContextValue, {
+  filePath, fileBody, bucketName,
 }: {
-  fileName: string, bucketName: string,
+  filePath: string, fileBody: any, bucketName: string,
 }) => {
   const { supabase } = context;
-  const { data, error } = await supabase
+  return supabase
     .storage
     .from(bucketName)
-    .remove([fileName]);
-  if (error) {
-    throw error;
-  }
-  return data;
+    .upload(filePath, fileBody, {
+      upsert: true,
+    });
+};
+
+export const deleteFile = (context: AppContextValue, {
+  filePath, bucketName,
+}: {
+  filePath: string, bucketName: string,
+}) => {
+  const { supabase } = context;
+  return supabase
+    .storage
+    .from(bucketName)
+    .remove([filePath]);
 };
