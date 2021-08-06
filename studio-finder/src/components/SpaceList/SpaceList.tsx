@@ -158,7 +158,7 @@ class SpaceList extends React.Component<Props, State> {
               title={i18n.t('Edit Space')}
               onClick={() => this.onModalOpen(selectedId)}
             >
-              <IonIcon icon={createOutline} />
+              <IonIcon slot="start" icon={createOutline} />
               {i18n.t('Edit Space')}
             </IonButton>
           </IonButtons>
@@ -287,7 +287,7 @@ class SpaceList extends React.Component<Props, State> {
             title={i18n.t('Add Space')}
             onClick={() => this.onModalOpen()}
           >
-            <IonIcon icon={addOutline} />
+            <IonIcon slot="start" icon={addOutline} />
             {i18n.t('Space')}
           </IonButton>
         </>

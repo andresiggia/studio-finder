@@ -157,7 +157,7 @@ class BookingItemList extends React.Component<Props, State> {
             title={i18n.t('Add Item')}
             onClick={() => onAdd()}
           >
-            <IonIcon icon={addOutline} />
+            <IonIcon slot="start" icon={addOutline} />
             {i18n.t('Item')}
           </IonButton>
         </>

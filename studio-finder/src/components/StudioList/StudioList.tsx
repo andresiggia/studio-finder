@@ -188,7 +188,7 @@ class StudioList extends React.Component<any, State> {
                 title={i18n.t('Add Studio')}
                 onClick={() => this.onModalOpen()}
               >
-                <IonIcon icon={addOutline} />
+                <IonIcon slot="start" icon={addOutline} />
                 {i18n.t('Studio')}
               </IonButton>
             </div>

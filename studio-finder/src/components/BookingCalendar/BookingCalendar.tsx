@@ -319,7 +319,7 @@ class BookingCalendar extends React.Component<Props, State> {
               fill="clear"
               onClick={() => this.onModalOpen()}
             >
-              <IonIcon icon={addOutline} ariaLabel={i18n.t('Add Booking')} />
+              <IonIcon slot="start" icon={addOutline} ariaLabel={i18n.t('Add Booking')} />
               {i18n.t('Booking')}
             </IonButton>
           </IonButtons>
