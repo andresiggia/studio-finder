@@ -15,6 +15,7 @@ import './FileUpload.css';
 
 interface Props {
   files: File[],
+  renderFilePreview?: (file: File) => any,
   onChange: (files: File[]) => void,
   accept?: string,
   multiple?: boolean,
@@ -48,7 +49,9 @@ class FileUpload extends React.Component<Props> {
   }
 
   render() {
-    const { multiple, accept, files } = this.props;
+    const {
+      multiple, accept, files, renderFilePreview,
+    } = this.props;
 
     return (
       <div className="file-uploader">
@@ -70,16 +73,20 @@ class FileUpload extends React.Component<Props> {
           </IonButton>
         )}
         {files.map((file, index) => (
-          <IonChip
-            // eslint-disable-next-line react/no-array-index-key
-            key={index}
-            color="primary"
-            title={i18n.t('Remove File')}
-            onClick={() => this.onRemove(index)}
-          >
-            <IonLabel>{file.name}</IonLabel>
-            <IonIcon icon={closeCircle} />
-          </IonChip>
+          // eslint-disable-next-line react/no-array-index-key
+          <div key={index} className="file-uploader-item">
+            {typeof renderFilePreview === 'function' && (
+              renderFilePreview(file)
+            )}
+            <IonChip
+              color="primary"
+              title={i18n.t('Remove File')}
+              onClick={() => this.onRemove(index)}
+            >
+              <IonLabel>{file.name}</IonLabel>
+              <IonIcon icon={closeCircle} ariaLabel={i18n.t('Remove File')} />
+            </IonChip>
+          </div>
         ))}
       </div>
     );
