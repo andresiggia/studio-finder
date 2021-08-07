@@ -1,6 +1,7 @@
 import { AppContextValue } from '../../context/AppContext';
 
 import { updateObjectKeysToCamelCase, updateObjectKeysToUnderscoreCase } from './helpers';
+import { Photo } from './photos';
 import { TableName } from './tables';
 
 export enum StudioPhotoError {
@@ -9,11 +10,8 @@ export enum StudioPhotoError {
   invalidResponse = 'invalidResponse',
 }
 
-export interface StudioPhoto {
-  id: number,
+export interface StudioPhoto extends Photo {
   studioId: number,
-  photoUrl: string,
-  order: number,
 }
 export const defaultStudioPhoto: StudioPhoto = {
   id: 0,

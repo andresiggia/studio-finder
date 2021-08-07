@@ -1,6 +1,7 @@
 import { AppContextValue } from '../../context/AppContext';
 
 import { updateObjectKeysToCamelCase, updateObjectKeysToUnderscoreCase } from './helpers';
+import { Photo } from './photos';
 import { TableName } from './tables';
 
 export enum SpacePhotoError {
@@ -9,11 +10,8 @@ export enum SpacePhotoError {
   invalidResponse = 'invalidResponse',
 }
 
-export interface SpacePhoto {
-  id: number,
+export interface SpacePhoto extends Photo {
   spaceId: number,
-  photoUrl: string,
-  order: number,
 }
 export const defaultSpacePhoto: SpacePhoto = {
   id: 0,
