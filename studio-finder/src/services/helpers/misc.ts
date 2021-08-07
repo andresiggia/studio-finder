@@ -45,5 +45,11 @@ export const pad = (num: number, size: number) => {
   return s;
 };
 
-// from https://reactgo.com/sort-arrayofobjects/
-export const sortByKey = (arr: any[], key: string) => arr.sort((a, b) => b[key] - a[key]);
+// adapted from https://stackoverflow.com/questions/6712034/sort-array-by-firstname-alphabetically-in-javascript
+export const sortByKey = (arr: any[], key: string) => arr.sort((a, b) => {
+  const valA = a[key];
+  const valB = b[key];
+  if (valA < valB) return -1;
+  if (valA > valB) return 1;
+  return 0;
+});
