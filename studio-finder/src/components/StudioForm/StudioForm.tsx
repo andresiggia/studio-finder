@@ -18,9 +18,12 @@ import { deepEqual } from '../../services/helpers/misc';
 import {
   defaultStudioProfile, getStudio, upsertStudio, StudioProfile, studioRequiredFields,
 } from '../../services/api/studios';
+import { defaultStudioPhoto, getStudioPhotos, StudioPhoto } from '../../services/api/studioPhotos';
+import { Photo } from '../../services/api/photos';
 
 // components
 import Notification, { NotificationType } from '../Notification/Notification';
+import PhotoList from '../PhotoList/PhotoList';
 
 // css
 import './StudioForm.css';
@@ -36,7 +39,9 @@ interface State {
   error: Error | null,
   // fields
   studioProfile: StudioProfile,
-  studioProfileOriginal: StudioProfile | null,
+  studioProfileOriginal: StudioProfile,
+  studioPhotos: StudioPhoto[],
+  studioPhotosOriginal: StudioPhoto[],
 }
 
 class StudioForm extends React.Component<Props, State> {
@@ -48,7 +53,9 @@ class StudioForm extends React.Component<Props, State> {
       isLoading: false,
       error: null,
       studioProfile: defaultStudioProfile,
-      studioProfileOriginal: null,
+      studioProfileOriginal: defaultStudioProfile,
+      studioPhotos: [],
+      studioPhotosOriginal: [],
     };
   }
 
@@ -86,16 +93,20 @@ class StudioForm extends React.Component<Props, State> {
     }, async () => {
       try {
         let studioProfile = defaultStudioProfile; // new studio
+        let studioPhotos: StudioPhoto[] = [];
         const { id } = this.props;
         if (id) {
           // eslint-disable-next-line no-console
           console.log('loading studio data...', id);
           studioProfile = await getStudio(this.context, id);
+          studioPhotos = await getStudioPhotos(this.context, { studioId: id });
         }
         this.setMountedState({
           isLoading: false,
           studioProfile,
           studioProfileOriginal: studioProfile,
+          studioPhotos,
+          studioPhotosOriginal: studioPhotos,
         });
       } catch (error) {
         // eslint-disable-next-line no-console
@@ -106,16 +117,25 @@ class StudioForm extends React.Component<Props, State> {
   }
 
   onReset = () => {
-    const { studioProfileOriginal } = this.state;
+    const { studioProfileOriginal, studioPhotosOriginal } = this.state;
     this.setMountedState({
       studioProfile: studioProfileOriginal,
+      studioPhotos: studioPhotosOriginal,
     });
   }
 
-  hasChanges = () => {
+  hasPhotoChanges = () => {
+    const { studioPhotos, studioPhotosOriginal } = this.state;
+    return studioPhotos.length !== studioPhotosOriginal.length
+      || studioPhotos.some((studioPhoto, index) => !deepEqual(studioPhoto, studioPhotosOriginal[index]));
+  }
+
+  hasProfileChanges = () => {
     const { studioProfile, studioProfileOriginal } = this.state;
     return !deepEqual(studioProfile, studioProfileOriginal);
   }
+
+  hasChanges = () => this.hasProfileChanges() || this.hasPhotoChanges()
 
   onSubmit = (e: any) => {
     // prevent form from submitting
@@ -135,12 +155,19 @@ class StudioForm extends React.Component<Props, State> {
     }, async () => {
       try {
         const { onSave } = this.props;
-        const { studioProfile } = this.state;
-        // eslint-disable-next-line no-console
-        console.log('will insert new studio', studioProfile);
-        const data = await upsertStudio(this.context, studioProfile);
-        // eslint-disable-next-line no-console
-        console.log('got new studio data', data);
+        const { studioProfile, studioPhotos } = this.state;
+        if (this.hasProfileChanges()) {
+          // eslint-disable-next-line no-console
+          console.log('will insert/update studio', studioProfile);
+          const data = await upsertStudio(this.context, studioProfile);
+          // eslint-disable-next-line no-console
+          console.log('got new studio data', data);
+        }
+        if (this.hasPhotoChanges()) {
+          // eslint-disable-next-line no-console
+          console.log('will insert/update studio photos', studioPhotos);
+          // TO DO
+        }
         this.setMountedState({
           isLoading: false,
         }, () => onSave());
@@ -275,7 +302,7 @@ class StudioForm extends React.Component<Props, State> {
   }
 
   renderFields = (disabled: boolean) => {
-    const { studioProfile } = this.state;
+    const { studioProfile, studioPhotos } = this.state;
     return (
       <IonList className="studio-form-list">
         <IonItem>
@@ -286,6 +313,38 @@ class StudioForm extends React.Component<Props, State> {
             disabled,
           })}
         </IonItem>
+        <PhotoList
+          items={studioPhotos.map((studioPhoto) => {
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const { studioId, ...photo } = studioPhoto;
+            return photo;
+          })}
+          disabled={disabled}
+          onAdd={() => {
+            const updatedItems = studioPhotos.slice();
+            updatedItems.push(defaultStudioPhoto);
+            this.setMountedState({
+              studioPhotos: updatedItems,
+            });
+          }}
+          onDelete={(index: number) => {
+            const updatedItems = studioPhotos.slice();
+            updatedItems.splice(index, 1);
+            this.setMountedState({
+              studioPhotos: updatedItems,
+            });
+          }}
+          onChange={(item: Photo, index: number) => {
+            const updatedItems = studioPhotos.slice();
+            updatedItems[index] = {
+              ...item,
+              studioId: studioProfile.id,
+            } as StudioPhoto;
+            this.setMountedState({
+              studioPhotos: updatedItems,
+            });
+          }}
+        />
       </IonList>
     );
   }
