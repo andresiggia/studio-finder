@@ -44,3 +44,6 @@ export const pad = (num: number, size: number) => {
   while (s.length < size) s = `0${s}`;
   return s;
 };
+
+// from https://reactgo.com/sort-arrayofobjects/
+export const sortByKey = (arr: any[], key: string) => arr.sort((a, b) => b[key] - a[key]);
