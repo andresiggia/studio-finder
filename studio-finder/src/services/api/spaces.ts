@@ -1,7 +1,7 @@
 import { AppContextValue } from '../../context/AppContext';
 
 import { convertDateFields, updateObjectKeysToCamelCase, updateObjectKeysToUnderscoreCase } from './helpers';
-import { getDefaultSpaceRoleName, Role, RoleTable } from './roles';
+import { getDefaultSpaceRoleName, Role, RoleType } from './roles';
 import { StudioProfile } from './studios';
 import { TableName } from './tables';
 import { ViewName } from './views';
@@ -105,7 +105,7 @@ export const upsertSpace = async (context: AppContextValue, {
   const { supabase, state } = context;
   const { roles } = state;
   const defaultSpaceRoleName = getDefaultSpaceRoleName(context);
-  if (!roles || !roles.some((item: Role) => item.tableName === RoleTable.spaceRoles && item.name === defaultSpaceRoleName)) {
+  if (!roles || !roles.some((item: Role) => item.type === RoleType.space && item.name === defaultSpaceRoleName)) {
     throw SpaceError.missingSpaceRoles;
   }
   const userId = state.user?.id;

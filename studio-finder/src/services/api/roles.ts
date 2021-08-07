@@ -2,6 +2,7 @@ import { AppContextValue } from '../../context/AppContext';
 
 import { updateObjectKeysToCamelCase } from './helpers';
 import { SettingKey } from './settings';
+import { TableName } from './tables';
 import { ViewName } from './views';
 
 export enum RoleError {
@@ -9,45 +10,48 @@ export enum RoleError {
   noDefaultSpaceRole = 'noDefaultSpaceRole',
 }
 
-export enum PermissionType {
-  read = 'read',
-  list = 'list',
-  insert = 'insert',
-  update = 'update',
-  delete = 'delete',
-}
-
-export enum RoleTable {
-  userRoles = 'user_roles',
-  studioRoles = 'studio_roles',
-  spaceRoles = 'space_roles',
+export enum RoleType {
+  space = 'space',
+  studio = 'studio',
 }
 
 export interface Permission {
-  entity: string,
-  name: PermissionType | null,
-  value: boolean,
-}
-
-export interface Role {
-  tableName: RoleTable | null,
-  name: string,
-  title: string,
-  permissions: Permission[] | null,
+  id: number,
+  entity: TableName | null,
+  read: boolean,
+  insert: boolean,
+  update: boolean,
+  delete: boolean,
 }
 
 export const defaultPermission: Permission = {
-  entity: '',
-  name: null,
-  value: false,
+  id: 0,
+  entity: null,
+  read: false,
+  insert: false,
+  update: false,
+  delete: false,
 };
 
+export interface Role {
+  name: string,
+  title: string,
+  type: RoleType | null,
+  permissions: Permission[],
+}
+
 export const defaultRole: Role = {
-  tableName: null,
   name: '',
   title: '',
-  permissions: null,
+  type: null,
+  permissions: [],
 };
+
+export interface PermissionWithRole extends Permission {
+  roleName: string,
+  roleTitle: string,
+  roleType: string,
+}
 
 export const getDefaultStudioRoleName = (context: AppContextValue) => {
   const { state } = context;
@@ -70,30 +74,30 @@ export const getDefaultSpaceRoleName = (context: AppContextValue) => {
 export const getRoles = async (context: AppContextValue) => {
   const { supabase } = context;
   const { data, error } = await supabase
-    .from(ViewName.roles)
+    .from(ViewName.permissionsWithRole)
     .select();
   if (error) {
     throw error;
   }
-  let roles: any[] = [];
+  const roles: Role[] = [];
   if (data && Array.isArray(data) && data.length > 0) {
-    roles = data.map((roleItem: any) => {
-      const role = updateObjectKeysToCamelCase(roleItem);
-      const permissionsArr: Permission[] = [];
-      Object.keys(role.permissions).forEach((entity) => {
-        Object.values(PermissionType).forEach((type) => {
-          permissionsArr.push({
-            entity,
-            name: type,
-            value: role.permissions[entity][type] || false,
+    data.map((item: any) => updateObjectKeysToCamelCase(item))
+      .forEach((permissionWithRole) => {
+        const {
+          roleName, roleTitle, roleType, ...permission
+        } = permissionWithRole;
+        const index = roles.findIndex((role) => role.name === roleName);
+        if (index === -1) { // new role
+          roles.push({
+            name: roleName,
+            title: roleTitle,
+            type: roleType as RoleType || null,
+            permissions: [permission],
           });
-        });
+        } else { // existing role
+          roles[index].permissions.push(permission);
+        }
       });
-      return {
-        ...role,
-        permissions: permissionsArr,
-      };
-    });
   }
   return roles;
 };

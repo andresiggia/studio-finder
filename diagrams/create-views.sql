@@ -1,12 +1,9 @@
-DROP VIEW IF EXISTS roles;
-CREATE VIEW roles AS (
-  SELECT 'studio_roles' as "table_name", * FROM studio_roles
-  UNION (
-    SELECT 'space_roles' as "table_name", * FROM space_roles
-    UNION (
-      SELECT 'user_roles' as "table_name", * FROM user_roles
-    )
-  )
+DROP VIEW IF EXISTS permissions_with_role;
+CREATE VIEW permissions_with_role AS (
+  SELECT permissions.*, roles.title as "role_title", roles.type as "role_type"
+  FROM permissions
+  LEFT JOIN roles
+  ON roles.name = permissions.role_name
 );
 
 DROP VIEW IF EXISTS spaces_with_user_id;

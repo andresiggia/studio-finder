@@ -3,6 +3,8 @@ export enum TableName {
   studios = 'studios',
   studioUsers = 'studio_users',
   studioPhotos = 'studio_photos',
+  roles = 'roles',
+  rolePermissions = 'role_permissions',
   spaces = 'spaces',
   spaceUsers = 'space_users',
   spacePhotos = 'space_photos',

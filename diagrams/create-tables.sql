@@ -27,7 +27,7 @@ CREATE TABLE "acts" (
 CREATE TABLE "act_users" (
   "act_id" int,
   "user_id" varchar,
-  "user_role_name" varchar,
+  "role_name" varchar,
   PRIMARY KEY ("act_id", "user_id")
 );
 
@@ -71,7 +71,7 @@ CREATE TABLE "studio_photos" (
 CREATE TABLE "studio_users" (
   "studio_id" int,
   "user_id" varchar,
-  "studio_role_name" varchar,
+  "role_name" varchar,
   PRIMARY KEY ("studio_id", "user_id")
 );
 
@@ -95,7 +95,7 @@ CREATE TABLE "space_photos" (
 CREATE TABLE "space_users" (
   "space_id" int,
   "user_id" varchar,
-  "space_role_name" varchar,
+  "role_name" varchar,
   PRIMARY KEY ("space_id", "user_id")
 );
 
@@ -173,29 +173,29 @@ CREATE TABLE "booking_review_photos" (
   "order" int
 );
 
-CREATE TABLE "studio_roles" (
-  "name" varchar PRIMARY KEY,
-  "title" varchar,
-  "permissions" jsonb
+CREATE TABLE "permissions" (
+  "id" SERIAL PRIMARY KEY,
+  "role_name" varchar,
+  "entity" varchar,
+  "read" boolean,
+  "insert" boolean,
+  "update" boolean,
+  "delete" boolean
 );
 
-CREATE TABLE "space_roles" (
+CREATE TABLE "roles" (
   "name" varchar PRIMARY KEY,
   "title" varchar,
-  "permissions" jsonb
+  "type" varchar
 );
 
-CREATE TABLE "user_roles" (
-  "name" varchar PRIMARY KEY,
-  "title" varchar,
-  "permissions" jsonb
-);
+ALTER TABLE "permissions" ADD FOREIGN KEY ("role_name") REFERENCES "roles" ("name");
 
 ALTER TABLE "act_users" ADD FOREIGN KEY ("act_id") REFERENCES "acts" ("id");
 
 ALTER TABLE "act_users" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");
 
-ALTER TABLE "act_users" ADD FOREIGN KEY ("user_role_name") REFERENCES "user_roles" ("name");
+ALTER TABLE "act_users" ADD FOREIGN KEY ("role_name") REFERENCES "roles" ("name");
 
 ALTER TABLE "user_payment_methods" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");
 
@@ -207,7 +207,7 @@ ALTER TABLE "studio_users" ADD FOREIGN KEY ("studio_id") REFERENCES "studios" ("
 
 ALTER TABLE "studio_users" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");
 
-ALTER TABLE "studio_users" ADD FOREIGN KEY ("studio_role_name") REFERENCES "studio_roles" ("name");
+ALTER TABLE "studio_users" ADD FOREIGN KEY ("role_name") REFERENCES "roles" ("name");
 
 ALTER TABLE "spaces" ADD FOREIGN KEY ("studio_id") REFERENCES "studios" ("id");
 
@@ -217,7 +217,7 @@ ALTER TABLE "space_users" ADD FOREIGN KEY ("space_id") REFERENCES "spaces" ("id"
 
 ALTER TABLE "space_users" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");
 
-ALTER TABLE "space_users" ADD FOREIGN KEY ("space_role_name") REFERENCES "space_roles" ("name");
+ALTER TABLE "space_users" ADD FOREIGN KEY ("role_name") REFERENCES "roles" ("name");
 
 ALTER TABLE "studio_services" ADD FOREIGN KEY ("studio_id") REFERENCES "studios" ("id");
 
@@ -258,10 +258,3 @@ ALTER TABLE "booking_reviews" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("i
 ALTER TABLE "booking_review_photos" ADD FOREIGN KEY ("booking_id") REFERENCES "bookings" ("id");
 
 ALTER TABLE "booking_review_photos" ADD FOREIGN KEY ("space_id") REFERENCES "spaces" ("id");
-
-
-COMMENT ON COLUMN "studio_roles"."permissions" IS 'array';
-
-COMMENT ON COLUMN "space_roles"."permissions" IS 'array';
-
-COMMENT ON COLUMN "user_roles"."permissions" IS 'array';

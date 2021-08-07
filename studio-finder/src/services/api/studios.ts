@@ -1,7 +1,7 @@
 import { AppContextValue } from '../../context/AppContext';
 
 import { convertDateFields, updateObjectKeysToCamelCase, updateObjectKeysToUnderscoreCase } from './helpers';
-import { getDefaultStudioRoleName, Role, RoleTable } from './roles';
+import { getDefaultStudioRoleName, Role, RoleType } from './roles';
 import { TableName } from './tables';
 import { ViewName } from './views';
 
@@ -102,7 +102,7 @@ export const upsertStudio = async (context: AppContextValue, studioProfile: Stud
   const { supabase, state } = context;
   const { roles } = state;
   const defaultStudioRoleName = getDefaultStudioRoleName(context);
-  if (!roles || !roles.some((item: Role) => item.tableName === RoleTable.studioRoles && item.name === defaultStudioRoleName)) {
+  if (!roles || !roles.some((item: Role) => item.type === RoleType.studio && item.name === defaultStudioRoleName)) {
     throw StudioError.missingStudioRoles;
   }
   const userId = state.user?.id;
