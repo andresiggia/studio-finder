@@ -161,18 +161,16 @@ class PhotoList extends React.Component<Props, State> {
     }
 
     return (
-      <IonGrid>
-        <IonRow>
-          <IonCol size="6" size-lg="4">
-            {this.renderItems()}
-          </IonCol>
-          <IonCol size="6" size-lg="8">
-            {selectedIndex > -1 && (
-              this.renderSelectedItem()
-            )}
-          </IonCol>
-        </IonRow>
-      </IonGrid>
+      <IonRow style={{ width: '100%' }}>
+        <IonCol size="6" size-lg="4">
+          {this.renderItems()}
+        </IonCol>
+        <IonCol size="6" size-lg="8">
+          {selectedIndex > -1 && (
+            this.renderSelectedItem()
+          )}
+        </IonCol>
+      </IonRow>
     );
   }
 }
