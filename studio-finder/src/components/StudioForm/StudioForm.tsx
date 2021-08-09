@@ -42,6 +42,7 @@ interface State {
   studioProfileOriginal: StudioProfile,
   studioPhotos: StudioPhoto[],
   studioPhotosOriginal: StudioPhoto[],
+  studioPhotoFiles: (File | null)[],
 }
 
 class StudioForm extends React.Component<Props, State> {
@@ -56,6 +57,7 @@ class StudioForm extends React.Component<Props, State> {
       studioProfileOriginal: defaultStudioProfile,
       studioPhotos: [],
       studioPhotosOriginal: [],
+      studioPhotoFiles: [],
     };
   }
 
@@ -302,7 +304,7 @@ class StudioForm extends React.Component<Props, State> {
   }
 
   renderFields = (disabled: boolean) => {
-    const { studioProfile, studioPhotos } = this.state;
+    const { studioProfile, studioPhotos, studioPhotoFiles } = this.state;
     return (
       <IonList className="studio-form-list">
         <IonItem>
@@ -323,6 +325,7 @@ class StudioForm extends React.Component<Props, State> {
               const { studioId, ...photo } = studioPhoto;
               return photo;
             })}
+            files={studioPhotoFiles}
             disabled={disabled}
             onAdd={() => {
               const updatedItems = studioPhotos.slice();
@@ -346,6 +349,13 @@ class StudioForm extends React.Component<Props, State> {
               } as StudioPhoto;
               this.setMountedState({
                 studioPhotos: updatedItems,
+              });
+            }}
+            onFileChange={(file: File | null, index: number) => {
+              const updatedItems = studioPhotoFiles.slice();
+              updatedItems[index] = file;
+              this.setMountedState({
+                studioPhotoFiles: updatedItems,
               });
             }}
           />

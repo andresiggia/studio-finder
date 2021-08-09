@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  IonButton, IonCol, IonGrid, IonIcon, IonItem, IonLabel, IonList, IonRow,
+  IonButton, IonCol, IonIcon, IonItem, IonLabel, IonList, IonRow,
 } from '@ionic/react';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { addOutline } from 'ionicons/icons';
@@ -13,6 +13,9 @@ import { deepEqual, sortByKey } from '../../services/helpers/misc';
 // context
 import AppContext from '../../context/AppContext';
 
+// components
+import PhotoForm from '../PhotoForm/PhotoForm';
+
 // css
 import './PhotoList.css';
 
@@ -22,9 +25,11 @@ interface State {
 
 interface Props {
   items: Photo[],
+  files: (File | null)[],
   disabled: boolean,
   onDelete: (index: number) => void,
   onChange: (item: Photo, index: number) => void,
+  onFileChange: (file: File | null, index: number) => void,
   onAdd: () => void,
 }
 
@@ -80,23 +85,24 @@ class PhotoList extends React.Component<Props, State> {
   // render
 
   renderSelectedItem = () => {
-    // const {
-    //   items, disabled, onDelete, onChange,
-    // } = this.props;
+    const {
+      items, disabled, files, onDelete, onChange, onFileChange,
+    } = this.props;
     const { selectedIndex } = this.state;
     return (
-      <p>
-        {`${'Photo #'}${selectedIndex + 1}`}
-        (under development)
-      </p>
-      // <BookingItemForm
-      //   index={selectedIndex}
-      //   item={items[selectedIndex]}
-      //   studioId={studioProfile.id}
-      //   disabled={disabled}
-      //   onDelete={() => onDelete(selectedIndex)}
-      //   onChange={(item: Photo) => onChange(item, selectedIndex)}
-      // />
+      <PhotoForm
+        index={selectedIndex}
+        item={items[selectedIndex]}
+        file={files[selectedIndex]}
+        disabled={disabled}
+        count={items.length}
+        onDelete={() => onDelete(selectedIndex)}
+        onChange={(item: Photo) => onChange(item, selectedIndex)}
+        onFilesChange={(updatedFiles: (File | null)[]) => {
+          const file = updatedFiles.length > 0 ? updatedFiles[0] : null;
+          onFileChange(file, selectedIndex);
+        }}
+      />
     );
   }
 
@@ -111,7 +117,7 @@ class PhotoList extends React.Component<Props, State> {
           return (
             <IonItem
               // eslint-disable-next-line react/no-array-index-key
-              key={index}
+              key={`${index}-${JSON.stringify(item)}`}
               detail
               button
               color={index === selectedIndex

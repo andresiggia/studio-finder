@@ -1,0 +1,48 @@
+.photo-form-fieldset {
+  padding: .5rem;
+  border: 1px solid var(--ion-color-light-shade);
+  max-height: 250px;
+  overflow-y: auto;
+}
+
+.photo-form-toolbar {
+  --min-height: 25px;
+}
+
+.photo-form-title {
+  padding: 0 0 0 .5rem;
+  margin-bottom: 0;
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+.photo-form-list {
+  padding: 0;
+}
+
+@media only screen and (min-width: 820px) {
+  .photo-form-list {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  .photo-form-list-item {
+    width: calc(50% - .5rem);
+  }
+  .photo-form-list-item:nth-child(even) {
+    margin-left: 1rem;
+  }
+}
+
+.booking-form-loading {
+  text-align: center;
+}
+
+.booking-form-notification {
+  margin-left: 1rem;
+  margin-right: 1rem;
+}
+
+.booking-form-spacer {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
