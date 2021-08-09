@@ -94,26 +94,6 @@ class PhotoForm extends React.Component<Props, State> {
     </IonLabel>
   )
 
-  renderTextInput = ({
-    value, disabled = false, required = false, label, fieldName,
-  }: {
-    value: string, disabled?: boolean, required?: boolean, label: string, fieldName: string,
-  }) => {
-    const isRequired = required || photoRequiredFields.includes(fieldName as keyof Photo);
-    return (
-      <>
-        {this.renderLabel(label, isRequired)}
-        <IonInput
-          value={value}
-          type="text"
-          required={isRequired}
-          disabled={disabled}
-          onIonChange={(e: any) => this.onChange(e.detail.value, fieldName)}
-        />
-      </>
-    );
-  }
-
   renderSelectInput = ({
     value, disabled = false, required = false, label, fieldName, options, onChange,
   }: {
