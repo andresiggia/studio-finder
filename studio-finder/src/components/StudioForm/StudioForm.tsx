@@ -313,38 +313,43 @@ class StudioForm extends React.Component<Props, State> {
             disabled,
           })}
         </IonItem>
-        <PhotoList
-          items={studioPhotos.map((studioPhoto) => {
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            const { studioId, ...photo } = studioPhoto;
-            return photo;
-          })}
-          disabled={disabled}
-          onAdd={() => {
-            const updatedItems = studioPhotos.slice();
-            updatedItems.push(defaultStudioPhoto);
-            this.setMountedState({
-              studioPhotos: updatedItems,
-            });
-          }}
-          onDelete={(index: number) => {
-            const updatedItems = studioPhotos.slice();
-            updatedItems.splice(index, 1);
-            this.setMountedState({
-              studioPhotos: updatedItems,
-            });
-          }}
-          onChange={(item: Photo, index: number) => {
-            const updatedItems = studioPhotos.slice();
-            updatedItems[index] = {
-              ...item,
-              studioId: studioProfile.id,
-            } as StudioPhoto;
-            this.setMountedState({
-              studioPhotos: updatedItems,
-            });
-          }}
-        />
+        <IonItem>
+          <div className="studio-form-photo-label">
+            {this.renderLabel(i18n.t('Photos'))}
+          </div>
+          <PhotoList
+            items={studioPhotos.map((studioPhoto) => {
+              // eslint-disable-next-line @typescript-eslint/no-unused-vars
+              const { studioId, ...photo } = studioPhoto;
+              return photo;
+            })}
+            disabled={disabled}
+            onAdd={() => {
+              const updatedItems = studioPhotos.slice();
+              updatedItems.push(defaultStudioPhoto);
+              this.setMountedState({
+                studioPhotos: updatedItems,
+              });
+            }}
+            onDelete={(index: number) => {
+              const updatedItems = studioPhotos.slice();
+              updatedItems.splice(index, 1);
+              this.setMountedState({
+                studioPhotos: updatedItems,
+              });
+            }}
+            onChange={(item: Photo, index: number) => {
+              const updatedItems = studioPhotos.slice();
+              updatedItems[index] = {
+                ...item,
+                studioId: studioProfile.id,
+              } as StudioPhoto;
+              this.setMountedState({
+                studioPhotos: updatedItems,
+              });
+            }}
+          />
+        </IonItem>
       </IonList>
     );
   }
