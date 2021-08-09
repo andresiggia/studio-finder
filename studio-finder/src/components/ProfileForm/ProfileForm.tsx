@@ -77,7 +77,8 @@ class ProfileForm extends React.Component<Props, State> {
     const { state } = this.context;
     const { userType } = this.props;
     const { userProfileOriginal } = this.state;
-    if (userType !== prevProps.userType || !deepEqual(state.profile, userProfileOriginal)) {
+    const userProfile = state.profile || defaultUserProfile;
+    if (userType !== prevProps.userType || !deepEqual(userProfile, userProfileOriginal)) {
       this.updateState();
     }
   }
