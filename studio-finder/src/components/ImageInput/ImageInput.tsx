@@ -36,7 +36,11 @@ class ImageInput extends React.Component<Props> {
       return renderImage(imageUrl);
     }
     return (
-      <img src={imageUrl} alt={i18n.t('Image preview')} />
+      <div
+        className="image-input-preview"
+        title={i18n.t('Image preview')}
+        style={{ backgroundImage: `url(${imageUrl})` }}
+      />
     );
   }
 

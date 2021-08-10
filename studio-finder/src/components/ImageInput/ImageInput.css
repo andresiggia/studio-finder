@@ -1,6 +1,12 @@
 .image-input {
   margin: 1rem 0;
 }
-.image-input-photo {
-  display: flex;
+
+.image-input-preview {
+  width: 100%;
+  height: 10rem;
+  background-color: var(--ion-color-light-tint);
+  background-position: center center;
+  background-size: contain;
+  background-repeat: no-repeat;
 }
