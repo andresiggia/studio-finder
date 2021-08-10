@@ -1,14 +1,14 @@
 import React from 'react';
 import {
-  IonButton, IonCol, IonIcon, IonItem, IonLabel, IonList, IonRow,
+  IonButton, IonCol, IonIcon, IonItem, IonLabel, IonReorder, IonReorderGroup, IonRow, IonList,
 } from '@ionic/react';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { addOutline } from 'ionicons/icons';
+import { addOutline, trashOutline } from 'ionicons/icons';
 
 // services
 import i18n from '../../services/i18n/i18n';
 import { Photo } from '../../services/api/photos';
-import { deepEqual, sortByKey } from '../../services/helpers/misc';
+import { deepEqual, getFilename } from '../../services/helpers/misc';
 
 // context
 import AppContext from '../../context/AppContext';
@@ -28,6 +28,7 @@ interface Props {
   files: (File | null)[],
   disabled: boolean,
   onDelete: (index: number) => void,
+  onOrderChange: (items: Photo[]) => void,
   onChange: (item: Photo, index: number) => void,
   onFileChange: (file: File | null, index: number) => void,
   onAdd: () => void,
@@ -86,20 +87,19 @@ class PhotoList extends React.Component<Props, State> {
 
   renderSelectedItem = () => {
     const {
-      items, disabled, files, onDelete, onChange, onFileChange,
+      items, disabled, files, onChange, onFileChange,
     } = this.props;
     const { selectedIndex } = this.state;
     return (
       <PhotoForm
-        index={selectedIndex}
         item={items[selectedIndex]}
         file={files[selectedIndex]}
         disabled={disabled}
-        count={items.length}
-        onDelete={() => onDelete(selectedIndex)}
         onChange={(item: Photo) => onChange(item, selectedIndex)}
         onFilesChange={(updatedFiles: (File | null)[]) => {
           const file = updatedFiles.length > 0 ? updatedFiles[0] : null;
+          // eslint-disable-next-line no-console
+          console.log('file changed', file, selectedIndex);
           onFileChange(file, selectedIndex);
         }}
       />
@@ -107,29 +107,80 @@ class PhotoList extends React.Component<Props, State> {
   }
 
   renderItems = () => {
-    const { items, disabled, onAdd } = this.props;
+    const {
+      items, files, disabled, onAdd, onOrderChange, onDelete,
+    } = this.props;
     const { selectedIndex } = this.state;
-    const sortedItems = sortByKey(items, 'order');
     return (
       <IonList className="photo-list-items">
-        {sortedItems.map((item, index) => {
-          const label = `${index + 1}`;
-          return (
-            <IonItem
-              // eslint-disable-next-line react/no-array-index-key
-              key={`${index}-${JSON.stringify(item)}`}
-              detail
-              button
-              color={index === selectedIndex
-                ? 'primary'
-                : ''}
-              onClick={() => this.setMountedState({ selectedIndex: index })}
-              title={label}
-            >
-              <IonLabel>{label}</IonLabel>
-            </IonItem>
-          );
-        })}
+        <IonReorderGroup
+          disabled={false}
+          onIonItemReorder={(e: any) => {
+            const { from, to } = e.detail;
+            if (from !== to) {
+              // eslint-disable-next-line no-console
+              console.log('will reorder items', { from, to });
+              const updatedItems = items.slice();
+              const [movedItem] = updatedItems.splice(from, 1);
+              updatedItems.splice(to, 0, movedItem);
+              this.setMountedState({
+                selectedIndex: to,
+              }, () => onOrderChange(updatedItems));
+            }
+            e.detail.complete();
+          }}
+        >
+          {items.map((item, index) => {
+            let label = `(${i18n.t('empty')})`;
+            if (item.photoUrl) {
+              label = getFilename(item.photoUrl);
+            } else {
+              const file = files[index];
+              if (file?.name) {
+                label = getFilename(file.name);
+              }
+            }
+            return (
+              <IonItem
+                // eslint-disable-next-line react/no-array-index-key
+                key={index}
+                detail
+                button
+                color={index === selectedIndex
+                  ? 'primary'
+                  : ''}
+                onClick={() => this.setMountedState({ selectedIndex: index })}
+                title={label}
+              >
+                <IonReorder slot="start" />
+                <IonLabel>{label}</IonLabel>
+                {
+                // index === selectedIndex && (
+                  <IonButton
+                    slot="end"
+                    size="small"
+                    color={index === selectedIndex
+                      ? 'light'
+                      : 'danger'}
+                    fill="clear"
+                    title={i18n.t('Delete Item')}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      const newIndex = index >= selectedIndex
+                        ? selectedIndex - 1
+                        : selectedIndex;
+                      this.setMountedState({
+                        selectedIndex: newIndex,
+                      }, () => onDelete(index));
+                    }}
+                  >
+                    <IonIcon icon={trashOutline} />
+                  </IonButton>
+                }
+              </IonItem>
+            );
+          })}
+        </IonReorderGroup>
         {!disabled && (
           <IonItem
             button

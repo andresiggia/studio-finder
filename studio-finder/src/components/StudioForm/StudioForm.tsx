@@ -12,7 +12,7 @@ import AppContext from '../../context/AppContext';
 
 // services
 import i18n from '../../services/i18n/i18n';
-import { deepEqual } from '../../services/helpers/misc';
+import { deepEqual, sortByKey } from '../../services/helpers/misc';
 
 // constants
 import {
@@ -96,12 +96,19 @@ class StudioForm extends React.Component<Props, State> {
       try {
         let studioProfile = defaultStudioProfile; // new studio
         let studioPhotos: StudioPhoto[] = [];
+        let studioPhotoFiles: (File | null)[] = [];
         const { id } = this.props;
         if (id) {
           // eslint-disable-next-line no-console
           console.log('loading studio data...', id);
           studioProfile = await getStudio(this.context, id);
           studioPhotos = await getStudioPhotos(this.context, { studioId: id });
+          studioPhotos = sortByKey(studioPhotos, 'order');
+          const {
+            studioPhotos: updatedPhotos, studioPhotoFiles: updatedPhotoFiles,
+          } = this.reorderPhotosAndFiles(studioPhotos);
+          studioPhotoFiles = updatedPhotoFiles.slice();
+          studioPhotos = updatedPhotos.slice();
         }
         this.setMountedState({
           isLoading: false,
@@ -109,6 +116,7 @@ class StudioForm extends React.Component<Props, State> {
           studioProfileOriginal: studioProfile,
           studioPhotos,
           studioPhotosOriginal: studioPhotos,
+          studioPhotoFiles,
         });
       } catch (error) {
         // eslint-disable-next-line no-console
@@ -194,6 +202,41 @@ class StudioForm extends React.Component<Props, State> {
     return Object.keys(studioProfile).every((key: string) => (
       !studioRequiredFields.includes(key as keyof StudioProfile) || !!studioProfile[key as keyof StudioProfile]
     ));
+  }
+
+  reorderPhotosAndFiles = (items: Photo[], studioPhotoFiles?: (File | null)[]) => {
+    const updatedPhotoFiles = (studioPhotoFiles || Array.from(Array(items.length)).map(() => null)).slice();
+    const updatedPhotos = items.map((item, index) => {
+      const previousIndex = item.order;
+      const updatedItem = { ...item };
+      if (previousIndex !== index) {
+        // update order
+        updatedItem.order = index;
+        // reorder files
+        const [fileItem] = updatedPhotoFiles.splice(previousIndex, 1);
+        updatedPhotoFiles.splice(index, 0, fileItem);
+      }
+      return updatedItem;
+    }) as StudioPhoto[];
+    return {
+      studioPhotos: updatedPhotos,
+      studioPhotoFiles: updatedPhotoFiles,
+    };
+  }
+
+  onPhotoItemsChange = (studioPhotos: Photo[], files?: (File | null)[]) => {
+    const { studioPhotoFiles } = this.state;
+    const {
+      studioPhotos: updatedItems, studioPhotoFiles: updatedPhotoFiles,
+    } = this.reorderPhotosAndFiles(studioPhotos, studioPhotoFiles);
+    // eslint-disable-next-line no-console
+    console.log('reordered items', {
+      studioPhotos: updatedItems, studioPhotoFiles: files || updatedPhotoFiles,
+    });
+    this.setMountedState({
+      studioPhotos: updatedItems,
+      studioPhotoFiles: files || updatedPhotoFiles,
+    });
   }
 
   // render
@@ -316,49 +359,55 @@ class StudioForm extends React.Component<Props, State> {
           })}
         </IonItem>
         <IonItem>
-          <div className="studio-form-photo-label">
-            {this.renderLabel(i18n.t('Photos'))}
+          <div className="studio-form-photo">
+            <div className="studio-form-photo-label">
+              {this.renderLabel(i18n.t('Photos'))}
+            </div>
+            <PhotoList
+              items={studioPhotos.map((studioPhoto) => {
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                const { studioId, ...photo } = studioPhoto;
+                return photo;
+              })}
+              files={studioPhotoFiles}
+              disabled={disabled}
+              onAdd={() => {
+                const updatedItems = studioPhotos.slice();
+                const updatedFiles = studioPhotoFiles.slice();
+                updatedItems.push({
+                  ...defaultStudioPhoto,
+                  order: updatedItems.length,
+                });
+                updatedFiles.push(null);
+                this.onPhotoItemsChange(updatedItems, updatedFiles);
+              }}
+              onDelete={(index: number) => {
+                const updatedItems = studioPhotos.slice();
+                const updatedFiles = studioPhotoFiles.slice();
+                updatedItems.splice(index, 1);
+                updatedFiles.splice(index, 1);
+                this.onPhotoItemsChange(updatedItems, updatedFiles);
+              }}
+              onOrderChange={this.onPhotoItemsChange}
+              onChange={(item: Photo, index: number) => {
+                const updatedItems = studioPhotos.slice();
+                updatedItems[index] = {
+                  ...item,
+                  studioId: studioProfile.id,
+                } as StudioPhoto;
+                this.onPhotoItemsChange(updatedItems);
+              }}
+              onFileChange={(file: File | null, index: number) => {
+                const updatedFiles = studioPhotoFiles.slice();
+                updatedFiles[index] = file;
+                // eslint-disable-next-line no-console
+                console.log('will update files', updatedFiles, index);
+                this.setMountedState({
+                  studioPhotoFiles: updatedFiles,
+                });
+              }}
+            />
           </div>
-          <PhotoList
-            items={studioPhotos.map((studioPhoto) => {
-              // eslint-disable-next-line @typescript-eslint/no-unused-vars
-              const { studioId, ...photo } = studioPhoto;
-              return photo;
-            })}
-            files={studioPhotoFiles}
-            disabled={disabled}
-            onAdd={() => {
-              const updatedItems = studioPhotos.slice();
-              updatedItems.push(defaultStudioPhoto);
-              this.setMountedState({
-                studioPhotos: updatedItems,
-              });
-            }}
-            onDelete={(index: number) => {
-              const updatedItems = studioPhotos.slice();
-              updatedItems.splice(index, 1);
-              this.setMountedState({
-                studioPhotos: updatedItems,
-              });
-            }}
-            onChange={(item: Photo, index: number) => {
-              const updatedItems = studioPhotos.slice();
-              updatedItems[index] = {
-                ...item,
-                studioId: studioProfile.id,
-              } as StudioPhoto;
-              this.setMountedState({
-                studioPhotos: updatedItems,
-              });
-            }}
-            onFileChange={(file: File | null, index: number) => {
-              const updatedItems = studioPhotoFiles.slice();
-              updatedItems[index] = file;
-              this.setMountedState({
-                studioPhotoFiles: updatedItems,
-              });
-            }}
-          />
         </IonItem>
       </IonList>
     );

@@ -52,6 +52,13 @@
   text-align: center;
 }
 
+.studio-form-photo {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+  width: 100%;
+}
+
 .studio-form-photo-label {
   margin-bottom: .5rem;
 }
