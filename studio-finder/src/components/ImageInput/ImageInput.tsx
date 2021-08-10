@@ -67,12 +67,17 @@ class ImageInput extends React.Component<Props> {
             disabled={disabled}
             accept=".png,.jpg,.jpeg"
             onChange={onFilesChange}
-            renderFilePreview={(file) => (
-              <ImageReader
-                file={file}
-                renderImage={this.renderImage}
-              />
-            )}
+            renderFilePreview={(file) => {
+              if (!file) {
+                return null;
+              }
+              return (
+                <ImageReader
+                  file={file}
+                  renderImage={this.renderImage}
+                />
+              );
+            }}
           />
         )}
       </div>
