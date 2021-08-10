@@ -110,6 +110,7 @@ class ProfileForm extends React.Component<Props, State> {
       userType: state.user.user_metadata?.type || userType,
       userProfile,
       userProfileOriginal: userProfile,
+      file: null,
     });
   }
 
@@ -119,6 +120,7 @@ class ProfileForm extends React.Component<Props, State> {
     this.setMountedState({
       userType: state.user.user_metadata?.type || userType,
       userProfile: state.profile || defaultUserProfile,
+      file: null,
     });
   }
 
