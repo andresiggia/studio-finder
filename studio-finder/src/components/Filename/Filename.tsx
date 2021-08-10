@@ -9,6 +9,7 @@ import {
 
 // services
 import i18n from '../../services/i18n/i18n';
+import { getFilename } from '../../services/helpers/misc';
 
 // css
 import './Filename.css';
@@ -26,8 +27,7 @@ class Filename extends React.Component<Props> {
     const {
       name, color = 'primary', title = i18n.t('Remove'), disabled = false, onRemove,
     } = this.props;
-    const nameArr = name.split('/');
-    const cleanName = nameArr[nameArr.length - 1];
+    const cleanName = getFilename(name);
     return (
       <IonChip
         color={color}

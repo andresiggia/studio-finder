@@ -53,3 +53,8 @@ export const sortByKey = (arr: any[], key: string) => arr.sort((a, b) => {
   if (valA > valB) return 1;
   return 0;
 });
+
+export const getFilename = (url: string) => {
+  const nameArr = url.split('/');
+  return nameArr[nameArr.length - 1];
+};
