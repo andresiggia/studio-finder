@@ -13,11 +13,11 @@ import './ImageInput.css';
 import Filename from '../Filename/Filename';
 
 interface Props {
-  files: File[],
+  files: (File | null)[],
   imageUrls: string[],
   disabled?: boolean,
   multiple?: boolean,
-  onFilesChange: (files: File[]) => void,
+  onFilesChange: (files: (File | null)[]) => void,
   onImageUrlsChange: (imageUrls: string[]) => void,
   renderImage?: (imageUrl: string) => any,
 }
@@ -45,6 +45,7 @@ class ImageInput extends React.Component<Props> {
       multiple, files, imageUrls, disabled, onFilesChange,
     } = this.props;
     const validImages = imageUrls.map((imageUrl) => imageUrl);
+    const validFiles = files.map((file) => file) as File[];
 
     return (
       <div className="image-input">
@@ -61,7 +62,7 @@ class ImageInput extends React.Component<Props> {
         ))}
         {(validImages.length === 0 || multiple) && (
           <FileUpload
-            files={files}
+            files={validFiles}
             multiple={multiple}
             disabled={disabled}
             accept=".png,.jpg,.jpeg"

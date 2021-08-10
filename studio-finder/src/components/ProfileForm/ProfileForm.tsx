@@ -143,7 +143,7 @@ class ProfileForm extends React.Component<Props, State> {
 
   hasChanges = () => this.typeHasChanges() || this.profileHasChanges()
 
-  onFileChange = (files: File[]) => {
+  onFileChange = (files: (File | null)[]) => {
     const file = files.length > 0 ? files[0] : null;
     this.setMountedState({
       file,
@@ -438,9 +438,9 @@ class ProfileForm extends React.Component<Props, State> {
           <IonItem>
             {this.renderLabel(i18n.t('Photo'))}
             <ImageInput
-              files={file ? [file] : []}
+              files={[file]}
               disabled={disabled}
-              imageUrls={userProfile.photoUrl ? [userProfile.photoUrl] : []}
+              imageUrls={[userProfile.photoUrl]}
               renderImage={this.renderAvatar}
               onFilesChange={this.onFileChange}
               onImageUrlsChange={(imageUrls: string[]) => this.setMountedState({
