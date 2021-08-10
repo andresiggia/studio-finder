@@ -15,6 +15,7 @@ import './FileUpload.css';
 
 interface Props {
   files: File[],
+  disabled?: boolean,
   renderFilePreview?: (file: File) => any,
   onChange: (files: File[]) => void,
   accept?: string,
@@ -50,7 +51,7 @@ class FileUpload extends React.Component<Props> {
 
   render() {
     const {
-      multiple, accept, files, renderFilePreview,
+      multiple, accept, files, disabled, renderFilePreview,
     } = this.props;
 
     return (
@@ -58,6 +59,7 @@ class FileUpload extends React.Component<Props> {
         <input
           type="file"
           ref={this.fileRef}
+          disabled={disabled}
           multiple={multiple || false}
           accept={accept}
           className="file-uploader-input"
@@ -66,6 +68,7 @@ class FileUpload extends React.Component<Props> {
         {(files.length === 0 || multiple) && (
           <IonButton
             color="primary"
+            disabled={disabled}
             onClick={() => this.fileRef.current.click()}
           >
             <IonIcon slot="start" icon={cloudUpload} />
@@ -81,6 +84,7 @@ class FileUpload extends React.Component<Props> {
             <IonChip
               color="primary"
               title={i18n.t('Remove File')}
+              disabled={disabled}
               onClick={() => this.onRemove(index)}
             >
               <IonLabel>{file.name}</IonLabel>

@@ -21,6 +21,7 @@ import './ImageInput.css';
 interface Props {
   files: File[],
   imageUrls: string[],
+  disabled?: boolean,
   multiple?: boolean,
   onFilesChange: (files: File[]) => void,
   onImageUrlsChange: (imageUrls: string[]) => void,
@@ -47,7 +48,7 @@ class ImageInput extends React.Component<Props> {
 
   render() {
     const {
-      multiple, files, imageUrls, onFilesChange,
+      multiple, files, imageUrls, disabled, onFilesChange,
     } = this.props;
 
     return (
@@ -58,6 +59,7 @@ class ImageInput extends React.Component<Props> {
             <IonButton
               color="danger"
               fill="clear"
+              disabled={disabled}
               title={i18n.t('Remove Photo')}
               onClick={() => this.onRemoveImageUrl(index)}
             >
@@ -69,6 +71,7 @@ class ImageInput extends React.Component<Props> {
           <FileUpload
             files={files}
             multiple={multiple}
+            disabled={disabled}
             accept=".png,.jpg,.jpeg"
             onChange={onFilesChange}
             renderFilePreview={(file) => (

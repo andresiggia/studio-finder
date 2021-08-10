@@ -145,6 +145,7 @@ class PhotoForm extends React.Component<Props, State> {
           {this.renderLabel(i18n.t('Photo'))}
           <ImageInput
             files={file ? [file] : []}
+            disabled={disabled}
             imageUrls={item.photoUrl ? [item.photoUrl] : []}
             renderImage={(url: string) => (
               <img src={url} alt="" />

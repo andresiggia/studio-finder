@@ -437,6 +437,7 @@ class ProfileForm extends React.Component<Props, State> {
             {this.renderLabel(i18n.t('Photo'))}
             <ImageInput
               files={file ? [file] : []}
+              disabled={disabled}
               imageUrls={userProfile.photoUrl ? [userProfile.photoUrl] : []}
               renderImage={this.renderAvatar}
               onFilesChange={this.onFileChange}
