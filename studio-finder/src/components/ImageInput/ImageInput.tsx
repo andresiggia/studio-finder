@@ -1,11 +1,4 @@
 import React from 'react';
-import {
-  IonButton, IonIcon,
-} from '@ionic/react';
-// eslint-disable-next-line import/no-extraneous-dependencies
-import {
-  trashOutline,
-} from 'ionicons/icons';
 
 // services
 import i18n from '../../services/i18n/i18n';
@@ -17,6 +10,7 @@ import ImageReader from './ImageReader';
 
 // css
 import './ImageInput.css';
+import Filename from '../Filename/Filename';
 
 interface Props {
   files: File[],
@@ -50,24 +44,22 @@ class ImageInput extends React.Component<Props> {
     const {
       multiple, files, imageUrls, disabled, onFilesChange,
     } = this.props;
+    const validImages = imageUrls.map((imageUrl) => imageUrl);
 
     return (
       <div className="image-input">
-        {imageUrls.map((imageUrl, index) => (
+        {validImages.map((imageUrl, index) => (
           <div className="image-input-photo" key={imageUrl}>
             {this.renderImage(imageUrl)}
-            <IonButton
-              color="danger"
-              fill="clear"
-              disabled={disabled}
+            <Filename
               title={i18n.t('Remove Photo')}
-              onClick={() => this.onRemoveImageUrl(index)}
-            >
-              <IonIcon icon={trashOutline} />
-            </IonButton>
+              disabled={disabled}
+              onRemove={() => this.onRemoveImageUrl(index)}
+              name={imageUrl}
+            />
           </div>
         ))}
-        {(imageUrls.length === 0 || multiple) && (
+        {(validImages.length === 0 || multiple) && (
           <FileUpload
             files={files}
             multiple={multiple}

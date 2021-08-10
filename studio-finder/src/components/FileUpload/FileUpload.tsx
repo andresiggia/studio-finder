@@ -1,14 +1,17 @@
 import React from 'react';
 import {
-  IonButton, IonChip, IonIcon, IonLabel,
+  IonButton, IonIcon,
 } from '@ionic/react';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import {
-  cloudUpload, closeCircle,
+  cloudUpload,
 } from 'ionicons/icons';
 
 // services
 import i18n from '../../services/i18n/i18n';
+
+// components
+import Filename from '../Filename/Filename';
 
 // css
 import './FileUpload.css';
@@ -81,15 +84,12 @@ class FileUpload extends React.Component<Props> {
             {typeof renderFilePreview === 'function' && (
               renderFilePreview(file)
             )}
-            <IonChip
-              color="primary"
+            <Filename
               title={i18n.t('Remove File')}
               disabled={disabled}
-              onClick={() => this.onRemove(index)}
-            >
-              <IonLabel>{file.name}</IonLabel>
-              <IonIcon icon={closeCircle} ariaLabel={i18n.t('Remove File')} />
-            </IonChip>
+              onRemove={() => this.onRemove(index)}
+              name={file.name}
+            />
           </div>
         ))}
       </div>
