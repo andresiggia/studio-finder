@@ -203,6 +203,7 @@ class StudioList extends React.Component<any, State> {
     const { showModal, modalSelectedId } = this.state;
     return (
       <IonModal
+        cssClass="studio-list-modal"
         isOpen={showModal}
         onWillDismiss={() => this.onModalClose()}
       >

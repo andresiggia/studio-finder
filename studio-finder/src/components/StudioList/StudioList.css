@@ -27,3 +27,9 @@
 .studio-list-header-toolbar-buttons {
   margin-left: .5rem;
 }
+
+@media only screen and (min-width: 820px) {
+  .studio-list-modal {
+    --min-width: 800px;
+  }
+}
