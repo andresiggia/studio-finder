@@ -33,16 +33,16 @@
   }
 }
 
-.booking-form-loading {
+.booking-item-form-loading {
   text-align: center;
 }
 
-.booking-form-notification {
+.booking-item-form-notification {
   margin-left: 1rem;
   margin-right: 1rem;
 }
 
-.booking-form-spacer {
+.booking-item-form-spacer {
   margin-top: 1rem;
   margin-bottom: 1rem;
 }
