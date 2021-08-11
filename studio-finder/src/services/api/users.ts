@@ -80,10 +80,14 @@ export const setUserProfile = async (context: AppContextValue, {
     ...userProfile,
     modifiedAt: new Date(), // modifiedAt to be updated to current date/time
   };
+  if (!itemObj.id) { // new row
+    itemObj.id = userId; // inject userId
+    delete itemObj.createdAt; // createdAt should be created by back-end if not set
+  }
   const filePath = `${userId}/${file?.name || ''}`;
   if (file) {
     // eslint-disable-next-line no-console
-    console.log('will upload file', file, 'to', `${userId}/${file.name}`);
+    console.log('will upload file', file, 'to', filePath);
     const { data: fileUploaded, error: fileUploadError } = await uploadFile(context, {
       filePath, fileBody: file, bucketName: StorageBucket.users,
     });
@@ -91,7 +95,7 @@ export const setUserProfile = async (context: AppContextValue, {
       throw fileUploadError;
     }
     // eslint-disable-next-line no-console
-    console.log('fileUploaded', fileUploaded);
+    console.log('file uploaded', fileUploaded);
     const { publicURL: photoUrl = '', error: urlError } = getFileUrl(context, {
       filePath, bucketName: StorageBucket.users,
     });
@@ -99,10 +103,6 @@ export const setUserProfile = async (context: AppContextValue, {
       throw urlError;
     }
     itemObj.photoUrl = photoUrl;
-  }
-  if (!itemObj.id) { // new row
-    itemObj.id = userId; // inject userId
-    delete itemObj.createdAt; // createdAt should be created by back-end if not set
   }
   const itemData = updateObjectKeysToUnderscoreCase(itemObj);
   const { data, error } = await supabase
@@ -112,9 +112,9 @@ export const setUserProfile = async (context: AppContextValue, {
     if (file) {
       // revert operation if update failed
       // eslint-disable-next-line no-console
-      console.log('will delete file', file, 'from', `${userId}/${file.name}`);
+      console.log('will delete file', file, 'from', filePath);
       const { data: fileDeleted, error: fileDeleteError } = await deleteFile(context, {
-        filePath: `${userId}/${file.name}`, bucketName: StorageBucket.users,
+        filePath, bucketName: StorageBucket.users,
       });
       if (fileDeleteError) {
         // eslint-disable-next-line no-console
