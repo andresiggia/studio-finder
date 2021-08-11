@@ -12,16 +12,19 @@ import AppContext from '../../context/AppContext';
 
 // services
 import i18n from '../../services/i18n/i18n';
-import { deepEqual } from '../../services/helpers/misc';
-
-// constants
+import { deepEqual, sortByKey } from '../../services/helpers/misc';
 import {
   defaultSpaceProfile, getSpace, upsertSpace, SpaceProfile, spaceRequiredFields,
 } from '../../services/api/spaces';
 import { StudioProfile } from '../../services/api/studios';
+import {
+  defaultSpacePhoto, getSpacePhotos, SpacePhoto, upsertSpacePhoto,
+} from '../../services/api/spacePhotos';
+import { Photo } from '../../services/api/photos';
 
 // components
 import Notification, { NotificationType } from '../Notification/Notification';
+import PhotoList from '../PhotoList/PhotoList';
 
 // css
 import './SpaceForm.css';
@@ -39,6 +42,9 @@ interface State {
   // fields
   spaceProfile: SpaceProfile,
   spaceProfileOriginal: SpaceProfile | null,
+  spacePhotos: SpacePhoto[],
+  spacePhotosOriginal: SpacePhoto[],
+  spacePhotoFiles: (File | null)[],
 }
 
 class SpaceForm extends React.Component<Props, State> {
@@ -51,6 +57,9 @@ class SpaceForm extends React.Component<Props, State> {
       error: null,
       spaceProfile: defaultSpaceProfile,
       spaceProfileOriginal: null,
+      spacePhotos: [],
+      spacePhotosOriginal: [],
+      spacePhotoFiles: [],
     };
   }
 
@@ -88,16 +97,28 @@ class SpaceForm extends React.Component<Props, State> {
     }, async () => {
       try {
         let spaceProfile = defaultSpaceProfile; // new space
+        let spacePhotos: SpacePhoto[] = [];
+        let spacePhotoFiles: (File | null)[] = [];
         const { id } = this.props;
         if (id) {
           // eslint-disable-next-line no-console
           console.log('loading space data...', id);
           spaceProfile = await getSpace(this.context, id);
+          spacePhotos = await getSpacePhotos(this.context, { spaceId: id });
+          spacePhotos = sortByKey(spacePhotos, 'order');
+          const {
+            spacePhotos: updatedPhotos, spacePhotoFiles: updatedPhotoFiles,
+          } = this.reorderPhotosAndFiles(spacePhotos);
+          spacePhotoFiles = updatedPhotoFiles.slice();
+          spacePhotos = updatedPhotos.slice();
         }
         this.setMountedState({
           isLoading: false,
           spaceProfile,
           spaceProfileOriginal: spaceProfile,
+          spacePhotos,
+          spacePhotosOriginal: spacePhotos,
+          spacePhotoFiles,
         });
       } catch (error) {
         // eslint-disable-next-line no-console
@@ -108,16 +129,25 @@ class SpaceForm extends React.Component<Props, State> {
   }
 
   onReset = () => {
-    const { spaceProfileOriginal } = this.state;
+    const { spaceProfileOriginal, spacePhotosOriginal } = this.state;
     this.setMountedState({
       spaceProfile: spaceProfileOriginal,
+      spacePhotos: spacePhotosOriginal,
     });
   }
 
-  hasChanges = () => {
+  hasPhotoChanges = () => {
+    const { spacePhotos, spacePhotosOriginal } = this.state;
+    return spacePhotos.length !== spacePhotosOriginal.length
+      || spacePhotos.some((spacePhoto, index) => !deepEqual(spacePhoto, spacePhotosOriginal[index]));
+  }
+
+  hasProfileChanges = () => {
     const { spaceProfile, spaceProfileOriginal } = this.state;
     return !deepEqual(spaceProfile, spaceProfileOriginal);
   }
+
+  hasChanges = () => this.hasProfileChanges() || this.hasPhotoChanges()
 
   onSubmit = (e: any) => {
     // prevent form from submitting
@@ -137,14 +167,27 @@ class SpaceForm extends React.Component<Props, State> {
     }, async () => {
       try {
         const { onSave, studioProfile } = this.props;
-        const { spaceProfile } = this.state;
+        const { spaceProfile, spacePhotos, spacePhotoFiles } = this.state;
+        if (this.hasProfileChanges()) {
         // eslint-disable-next-line no-console
-        console.log('will insert new space', spaceProfile, 'in studio', studioProfile);
-        const data = await upsertSpace(this.context, {
-          spaceProfile, studioId: studioProfile.id,
-        });
-        // eslint-disable-next-line no-console
-        console.log('got new space data', data);
+          console.log('will insert/update space', spaceProfile, 'in studio', studioProfile);
+          const data = await upsertSpace(this.context, {
+            spaceProfile, studioId: studioProfile.id,
+          });
+          // eslint-disable-next-line no-console
+          console.log('got space data', data);
+        }
+        if (this.hasPhotoChanges()) {
+          // eslint-disable-next-line no-console
+          console.log('will insert/update space photos', spacePhotos);
+          await Promise.all(spacePhotos.map((spacePhoto, index) => {
+            // eslint-disable-next-line no-console
+            console.log('will insert/update space photo', spacePhoto);
+            return upsertSpacePhoto(this.context, {
+              spacePhoto, spaceId: spaceProfile.id, file: spacePhotoFiles[index],
+            });
+          }));
+        }
         this.setMountedState({
           isLoading: false,
         }, () => onSave());
@@ -169,6 +212,41 @@ class SpaceForm extends React.Component<Props, State> {
     return Object.keys(spaceProfile).every((key: string) => (
       !spaceRequiredFields.includes(key as keyof SpaceProfile) || !!spaceProfile[key as keyof SpaceProfile]
     ));
+  }
+
+  reorderPhotosAndFiles = (items: Photo[], spacePhotoFiles?: (File | null)[]) => {
+    const updatedPhotoFiles = (spacePhotoFiles || Array.from(Array(items.length)).map(() => null)).slice();
+    const updatedPhotos = items.map((item, index) => {
+      const previousIndex = item.order;
+      const updatedItem = { ...item };
+      if (previousIndex !== index) {
+        // update order
+        updatedItem.order = index;
+        // reorder files
+        const [fileItem] = updatedPhotoFiles.splice(previousIndex, 1);
+        updatedPhotoFiles.splice(index, 0, fileItem);
+      }
+      return updatedItem;
+    }) as SpacePhoto[];
+    return {
+      spacePhotos: updatedPhotos,
+      spacePhotoFiles: updatedPhotoFiles,
+    };
+  }
+
+  onPhotoItemsChange = (spacePhotos: Photo[], files?: (File | null)[]) => {
+    const { spacePhotoFiles } = this.state;
+    const {
+      spacePhotos: updatedItems, spacePhotoFiles: updatedPhotoFiles,
+    } = this.reorderPhotosAndFiles(spacePhotos, spacePhotoFiles);
+    // eslint-disable-next-line no-console
+    console.log('reordered items', {
+      spacePhotos: updatedItems, spacePhotoFiles: files || updatedPhotoFiles,
+    });
+    this.setMountedState({
+      spacePhotos: updatedItems,
+      spacePhotoFiles: files || updatedPhotoFiles,
+    });
   }
 
   // render
@@ -305,6 +383,61 @@ class SpaceForm extends React.Component<Props, State> {
     );
   }
 
+  renderImageField = (disabled: boolean) => {
+    const { spaceProfile, spacePhotos, spacePhotoFiles } = this.state;
+    return (
+      <div className="space-form-photo">
+        <div className="space-form-photo-label">
+          {this.renderLabel(i18n.t('Photos'))}
+        </div>
+        <PhotoList
+          items={spacePhotos.map((spacePhoto) => {
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const { spaceId, ...photo } = spacePhoto;
+            return photo;
+          })}
+          files={spacePhotoFiles}
+          disabled={disabled}
+          onAdd={() => {
+            const updatedItems = spacePhotos.slice();
+            const updatedFiles = spacePhotoFiles.slice();
+            updatedItems.push({
+              ...defaultSpacePhoto,
+              order: updatedItems.length,
+            });
+            updatedFiles.push(null);
+            this.onPhotoItemsChange(updatedItems, updatedFiles);
+          }}
+          onDelete={(index: number) => {
+            const updatedItems = spacePhotos.slice();
+            const updatedFiles = spacePhotoFiles.slice();
+            updatedItems.splice(index, 1);
+            updatedFiles.splice(index, 1);
+            this.onPhotoItemsChange(updatedItems, updatedFiles);
+          }}
+          onOrderChange={this.onPhotoItemsChange}
+          onChange={(item: Photo, index: number) => {
+            const updatedItems = spacePhotos.slice();
+            updatedItems[index] = {
+              ...item,
+              spaceId: spaceProfile.id,
+            } as SpacePhoto;
+            this.onPhotoItemsChange(updatedItems);
+          }}
+          onFileChange={(file: File | null, index: number) => {
+            const updatedFiles = spacePhotoFiles.slice();
+            updatedFiles[index] = file;
+            // eslint-disable-next-line no-console
+            console.log('will update files', updatedFiles, index);
+            this.setMountedState({
+              spacePhotoFiles: updatedFiles,
+            });
+          }}
+        />
+      </div>
+    );
+  }
+
   renderFields = (disabled: boolean) => {
     const { studioProfile } = this.props;
     const { spaceProfile } = this.state;
@@ -333,6 +466,9 @@ class SpaceForm extends React.Component<Props, State> {
             label: i18n.t('Description'),
             disabled,
           })}
+        </IonItem>
+        <IonItem>
+          {this.renderImageField(disabled)}
         </IonItem>
       </IonList>
     );
