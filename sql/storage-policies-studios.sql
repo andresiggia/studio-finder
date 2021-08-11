@@ -1,11 +1,11 @@
 -- studios bucket (for studio photos - public)
 
 -- READ
--- all users can access all files
+-- All users can read all files
 (bucket_id = 'studios':: text)
 
 -- INSERT/UPDATE/DELETE
--- users with "update" permission in their roles regarding that studio can manipulate any files
+-- Studio Users with "update" permission can write
 (
   (bucket_id = 'studios':: text)
   AND (

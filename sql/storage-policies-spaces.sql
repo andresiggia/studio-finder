@@ -1,11 +1,11 @@
 -- spaces bucket (for space photos - public)
 
 -- READ
--- all users can access all files
+-- All users can read all files
 (bucket_id = 'spaces':: text)
 
 -- INSERT/UPDATE/DELETE
--- users with "update" permission in their roles regarding that space can manipulate any files
+-- Space Users with "update" permission can write
 (
   (bucket_id = 'spaces':: text)
   AND (
