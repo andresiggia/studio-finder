@@ -18,7 +18,9 @@ import { deepEqual, sortByKey } from '../../services/helpers/misc';
 import {
   defaultStudioProfile, getStudio, upsertStudio, StudioProfile, studioRequiredFields,
 } from '../../services/api/studios';
-import { defaultStudioPhoto, getStudioPhotos, StudioPhoto } from '../../services/api/studioPhotos';
+import {
+  defaultStudioPhoto, getStudioPhotos, StudioPhoto, upsertStudioPhoto,
+} from '../../services/api/studioPhotos';
 import { Photo } from '../../services/api/photos';
 
 // components
@@ -165,7 +167,7 @@ class StudioForm extends React.Component<Props, State> {
     }, async () => {
       try {
         const { onSave } = this.props;
-        const { studioProfile, studioPhotos } = this.state;
+        const { studioProfile, studioPhotos, studioPhotoFiles } = this.state;
         if (this.hasProfileChanges()) {
           // eslint-disable-next-line no-console
           console.log('will insert/update studio', studioProfile);
@@ -176,7 +178,13 @@ class StudioForm extends React.Component<Props, State> {
         if (this.hasPhotoChanges()) {
           // eslint-disable-next-line no-console
           console.log('will insert/update studio photos', studioPhotos);
-          // TO DO
+          await Promise.all(studioPhotos.map((studioPhoto, index) => {
+            // eslint-disable-next-line no-console
+            console.log('will insert/update studio photo', studioPhoto);
+            return upsertStudioPhoto(this.context, {
+              studioPhoto, studioId: studioProfile.id, file: studioPhotoFiles[index],
+            });
+          }));
         }
         this.setMountedState({
           isLoading: false,
