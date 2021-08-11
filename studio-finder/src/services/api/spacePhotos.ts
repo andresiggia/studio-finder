@@ -2,6 +2,9 @@ import { AppContextValue } from '../../context/AppContext';
 
 import { updateObjectKeysToCamelCase, updateObjectKeysToUnderscoreCase } from './helpers';
 import { Photo } from './photos';
+import {
+  deleteFile, getFileUrl, StorageBucket, uploadFile,
+} from './storage';
 import { TableName } from './tables';
 
 export enum SpacePhotoError {
@@ -46,18 +49,61 @@ export const getSpacePhotos = async (context: AppContextValue, props: {
   return spacePhotos;
 };
 
-export const upsertSpacePhoto = async (context: AppContextValue, spacePhoto: SpacePhoto) => {
+export const upsertSpacePhoto = async (context: AppContextValue, {
+  spacePhoto, spaceId, file,
+}: {
+    spacePhoto: SpacePhoto, spaceId: number, file?: File | null
+}) => {
   const { supabase } = context;
   const isEditing = !!spacePhoto.id;
   const itemObj: any = { ...spacePhoto };
   if (!isEditing) { // inserting new row
+    if (!spaceId) {
+      throw SpacePhotoError.missingSpaceId;
+    }
+    itemObj.spaceId = spaceId; // injecting space id provided
     delete itemObj.id; // id should be created by back-end
+  }
+  const filePath = `${itemObj.spaceId}/${file?.name || ''}`;
+  if (file) {
+    // eslint-disable-next-line no-console
+    console.log('will upload file', file, 'to', filePath);
+    const { data: fileUploaded, error: fileUploadError } = await uploadFile(context, {
+      filePath, fileBody: file, bucketName: StorageBucket.spaces,
+    });
+    if (fileUploadError) {
+      throw fileUploadError;
+    }
+    // eslint-disable-next-line no-console
+    console.log('file uploaded', fileUploaded);
+    const { publicURL: photoUrl = '', error: urlError } = getFileUrl(context, {
+      filePath, bucketName: StorageBucket.spaces,
+    });
+    if (urlError) {
+      throw urlError;
+    }
+    itemObj.photoUrl = photoUrl;
   }
   const itemData = updateObjectKeysToUnderscoreCase(itemObj);
   const { data, error } = await supabase
     .from(TableName.spacePhotos)
     .upsert([itemData]);
   if (error) {
+    if (file) {
+      // revert operation if update failed
+      // eslint-disable-next-line no-console
+      console.log('will delete file', file, 'from', filePath);
+      const { data: fileDeleted, error: fileDeleteError } = await deleteFile(context, {
+        filePath, bucketName: StorageBucket.spaces,
+      });
+      if (fileDeleteError) {
+        // eslint-disable-next-line no-console
+        console.warn('error when deleting file (optional)', fileDeleteError);
+      } else {
+        // eslint-disable-next-line no-console
+        console.log('file deleted', fileDeleted);
+      }
+    }
     throw error;
   }
   if (!data) {
