@@ -443,7 +443,7 @@ class SpaceForm extends React.Component<Props, State> {
     const { spaceProfile } = this.state;
     return (
       <IonList className="space-form-list">
-        <IonItem>
+        <IonItem className="space-form-list-item">
           {this.renderTextInput({
             value: studioProfile.title,
             fieldName: 'studio',
@@ -451,7 +451,7 @@ class SpaceForm extends React.Component<Props, State> {
             disabled: true,
           })}
         </IonItem>
-        <IonItem>
+        <IonItem className="space-form-list-item">
           {this.renderTextInput({
             value: spaceProfile.title,
             fieldName: 'title',
@@ -459,7 +459,7 @@ class SpaceForm extends React.Component<Props, State> {
             disabled,
           })}
         </IonItem>
-        <IonItem>
+        <IonItem className="space-form-list-item-full">
           {this.renderTextareaInput({
             value: spaceProfile.description,
             fieldName: 'description',
@@ -467,7 +467,7 @@ class SpaceForm extends React.Component<Props, State> {
             disabled,
           })}
         </IonItem>
-        <IonItem>
+        <IonItem className="space-form-list-item-full">
           {this.renderImageField(disabled)}
         </IonItem>
       </IonList>
