@@ -98,9 +98,9 @@ export const getSpace = async (context: AppContextValue, spaceId: number) => {
 };
 
 export const upsertSpace = async (context: AppContextValue, {
-  spaceProfile, studioProfile,
+  spaceProfile, studioId,
 }: {
-  spaceProfile: SpaceProfile, studioProfile: StudioProfile,
+  spaceProfile: SpaceProfile, studioId: number,
 }) => {
   const { supabase, state } = context;
   const { roles } = state;
@@ -118,11 +118,14 @@ export const upsertSpace = async (context: AppContextValue, {
     modifiedAt: new Date(), // modifiedAt to be updated to current date/time
   };
   if (!isEditing) { // inserting new row
-    profile.studioId = studioProfile.id; // injecting studio id provided
+    if (!studioId) {
+      throw SpaceError.missingStudioId;
+    }
+    profile.studioId = studioId; // injecting studio id provided
     delete profile.createdAt; // createdAt should be created by back-end
     delete profile.id; // id should be created by back-end
-  } else if (profile.studioId !== studioProfile.id) { // only when editing
-    // studio id must match studioProfile provided
+  } else if (profile.studioId !== studioId) { // only when editing
+    // studio id must match studioId provided
     throw new Error(SpaceError.editingSpaceOfWrongStudio);
   }
   const spaceProfileData = updateObjectKeysToUnderscoreCase(profile);

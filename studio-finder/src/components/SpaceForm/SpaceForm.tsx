@@ -140,7 +140,9 @@ class SpaceForm extends React.Component<Props, State> {
         const { spaceProfile } = this.state;
         // eslint-disable-next-line no-console
         console.log('will insert new space', spaceProfile, 'in studio', studioProfile);
-        const data = await upsertSpace(this.context, { spaceProfile, studioProfile });
+        const data = await upsertSpace(this.context, {
+          spaceProfile, studioId: studioProfile.id,
+        });
         // eslint-disable-next-line no-console
         console.log('got new space data', data);
         this.setMountedState({
