@@ -176,6 +176,7 @@ class SpaceList extends React.Component<Props, State> {
     const { showModal, modalSelectedId } = this.state;
     return (
       <IonModal
+        cssClass="space-list-modal"
         isOpen={showModal}
         onWillDismiss={() => this.onModalClose()}
       >

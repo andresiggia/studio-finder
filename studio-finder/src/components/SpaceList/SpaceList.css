@@ -20,3 +20,9 @@
 .space-list-item-toolbar {
   margin-left: .5rem;
 }
+
+@media only screen and (min-width: 820px) {
+  .space-list-modal {
+    --min-width: 800px;
+  }
+}
