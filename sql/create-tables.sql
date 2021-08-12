@@ -127,6 +127,7 @@ CREATE TABLE "bookings" (
   "act_id" int,
   "created_by" varchar,
   "modified_by" varchar,
+  "notes" varchar,
   "created_at" timestamp DEFAULT (now()),
   "modified_at" timestamp DEFAULT (now())
 );
@@ -151,6 +152,7 @@ CREATE TABLE "booking_items" (
   "service_price" money,
   "start_at" timestamp,
   "end_at" timestamp,
+  "notes" varchar,
   "quantity" int
 );
 

@@ -103,9 +103,9 @@ class BookingForm extends React.Component<Props, State> {
       ...defaultBookingWithUser,
       studioId: studioProfile.id,
       studioTitle: studioProfile.title,
-      userId: state.user.id,
-      userName: state.profile.name,
-      userSurname: state.profile.surname,
+      createdBy: state.user.id,
+      createdByName: state.profile.name,
+      createdBySurname: state.profile.surname,
       actTitle: '',
     };
   }

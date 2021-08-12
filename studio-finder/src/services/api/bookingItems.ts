@@ -21,6 +21,7 @@ export interface BookingItem {
   serviceTitle: string,
   servicePrice: number,
   quantity: number,
+  notes: string,
   startAt: Date | null,
   endAt: Date | null,
 }
@@ -32,6 +33,7 @@ export const defaultBookingItem: BookingItem = {
   serviceTitle: '',
   servicePrice: 0,
   quantity: 0,
+  notes: '',
   startAt: null,
   endAt: null,
 };

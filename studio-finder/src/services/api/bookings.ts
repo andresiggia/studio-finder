@@ -19,6 +19,7 @@ export interface Booking {
   actId: number | null,
   createdBy: string,
   modifiedBy: string,
+  notes: string,
   createdAt: Date | null,
   modifiedAt: Date | null,
 }
@@ -29,6 +30,7 @@ export const defaultBooking: Booking = {
   actId: null,
   createdBy: '',
   modifiedBy: '',
+  notes: '',
   createdAt: null,
   modifiedAt: null,
 };
