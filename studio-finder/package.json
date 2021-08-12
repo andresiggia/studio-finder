@@ -3,6 +3,7 @@
   "description": "StudioFinder",
   "version": "0.0.1",
   "private": true,
+  "homepage": "https://titan.dcs.bbk.ac.uk/~asiggi01/studio-finder/",
   "dependencies": {
     "@capacitor/core": "3.0.0",
     "@ionic/react": "^5.5.0",
