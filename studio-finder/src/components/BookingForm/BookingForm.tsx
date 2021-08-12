@@ -219,36 +219,38 @@ class BookingForm extends React.Component<Props, State> {
           console.log('got new booking data', data);
           bookingId = data.id;
         }
-        // handle removed items
-        const deleted = await Promise.all((bookingItemsOriginal || []).map((bookingItem) => {
-          const existingItem = bookingItems?.find((item) => item.id === bookingItem.id);
-          if (existingItem) {
-            // still there
-            return Promise.resolve(null);
-          }
-          // deleted
-          return deleteBookingItem(this.context, bookingItem.id);
-        }));
-        // eslint-disable-next-line no-console
-        console.log('deleted items', deleted);
-        // handle new/updated items
-        const upserted = await Promise.all((bookingItems || []).map((bookingItemWithBooking, i) => {
-          if (!this.hasChangesToBookingItem(bookingItemWithBooking, i)) {
-            return Promise.resolve(null);
-          }
-          // extract items to transform BookingWithUser into Booking type
-          const {
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            studioId, userId, actId, studioTitle, userName, userSurname, actTitle, ...bookingItem
-          } = bookingItemWithBooking;
+        if (this.hasChangesToBookingItems()) {
+          // handle removed items
+          const deleted = await Promise.all((bookingItemsOriginal || []).map((bookingItem) => {
+            const existingItem = bookingItems?.find((item) => item.id === bookingItem.id);
+            if (existingItem) {
+              // still there
+              return Promise.resolve(null);
+            }
+            // deleted
+            return deleteBookingItem(this.context, bookingItem.id);
+          }));
           // eslint-disable-next-line no-console
-          console.log('will insert/update booking item #', i, bookingItem);
-          return upsertBookingItem(this.context, {
-            bookingItem, bookingId,
-          });
-        }));
-        // eslint-disable-next-line no-console
-        console.log('inserted/updated items', upserted);
+          console.log('deleted items', deleted);
+          // handle new/updated items
+          const upserted = await Promise.all((bookingItems || []).map((bookingItemWithBooking, i) => {
+            if (!this.hasChangesToBookingItem(bookingItemWithBooking, i)) {
+              return Promise.resolve(null);
+            }
+            // extract items to transform BookingWithUser into Booking type
+            const {
+              // eslint-disable-next-line @typescript-eslint/no-unused-vars
+              studioId, userId, actId, studioTitle, userName, userSurname, actTitle, ...bookingItem
+            } = bookingItemWithBooking;
+            // eslint-disable-next-line no-console
+            console.log('will insert/update booking item #', i, bookingItem);
+            return upsertBookingItem(this.context, {
+              bookingItem, bookingId,
+            });
+          }));
+          // eslint-disable-next-line no-console
+          console.log('inserted/updated items', upserted);
+        }
         this.setMountedState({
           isLoading: false,
         }, () => onSave());
