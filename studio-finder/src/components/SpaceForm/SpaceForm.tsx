@@ -18,7 +18,7 @@ import {
 } from '../../services/api/spaces';
 import { StudioProfile } from '../../services/api/studios';
 import {
-  defaultSpacePhoto, getSpacePhotos, SpacePhoto, upsertSpacePhoto,
+  defaultSpacePhoto, deleteSpacePhoto, getSpacePhotos, SpacePhoto, upsertSpacePhoto,
 } from '../../services/api/spacePhotos';
 import { Photo } from '../../services/api/photos';
 
@@ -167,7 +167,9 @@ class SpaceForm extends React.Component<Props, State> {
     }, async () => {
       try {
         const { onSave, studioProfile } = this.props;
-        const { spaceProfile, spacePhotos, spacePhotoFiles } = this.state;
+        const {
+          spaceProfile, spacePhotos, spacePhotoFiles, spacePhotosOriginal,
+        } = this.state;
         if (this.hasProfileChanges()) {
         // eslint-disable-next-line no-console
           console.log('will insert/update space', spaceProfile, 'in studio', studioProfile);
@@ -178,6 +180,19 @@ class SpaceForm extends React.Component<Props, State> {
           console.log('got space data', data);
         }
         if (this.hasPhotoChanges()) {
+          // handle removed items
+          const deleted = await Promise.all(spacePhotosOriginal.map((spacePhoto) => {
+            const existingItem = spacePhotos?.find((item) => item.id === spacePhoto.id);
+            if (existingItem) {
+              // still there
+              return Promise.resolve(null);
+            }
+            // deleted
+            return deleteSpacePhoto(this.context, spacePhoto.id);
+          }));
+          // eslint-disable-next-line no-console
+          console.log('deleted items', deleted);
+          // handle new/updated items
           // eslint-disable-next-line no-console
           console.log('will insert/update space photos', spacePhotos);
           await Promise.all(spacePhotos.map((spacePhoto, index) => {
