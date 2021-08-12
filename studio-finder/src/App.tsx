@@ -1,6 +1,5 @@
-import { Redirect, Route } from 'react-router-dom';
+import { HashRouter, Redirect, Route } from 'react-router-dom';
 import { IonApp, IonContent, IonSpinner } from '@ionic/react';
-import { IonReactRouter } from '@ionic/react-router';
 import React from 'react';
 import { Switch } from 'react-router';
 
@@ -95,7 +94,7 @@ class App extends React.Component<any, State> {
   }
 
   renderRouter = () => (
-    <IonReactRouter>
+    <HashRouter>
       <Switch>
         {routes.map((route) => {
           const {
@@ -121,7 +120,7 @@ class App extends React.Component<any, State> {
           </Route>
         )}
       </Switch>
-    </IonReactRouter>
+    </HashRouter>
   )
 
   renderView = () => {
