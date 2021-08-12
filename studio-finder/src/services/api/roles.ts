@@ -57,7 +57,7 @@ export const getDefaultStudioRoleName = (context: AppContextValue) => {
   const { state } = context;
   const setting = state.settings?.find((item) => item.key === SettingKey.defaultStudioRoleName);
   if (!setting || !setting.value) {
-    throw RoleError.noDefaultStudioRole;
+    throw new Error(RoleError.noDefaultStudioRole);
   }
   return setting.value;
 };
@@ -66,7 +66,7 @@ export const getDefaultSpaceRoleName = (context: AppContextValue) => {
   const { state } = context;
   const setting = state.settings?.find((item) => item.key === SettingKey.defaultSpaceRoleName);
   if (!setting || !setting.value) {
-    throw RoleError.noDefaultSpaceRole;
+    throw new Error(RoleError.noDefaultSpaceRole);
   }
   return setting.value;
 };

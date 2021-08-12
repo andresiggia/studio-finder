@@ -31,7 +31,7 @@ export const getStudioPhotos = async (context: AppContextValue, props: {
     studioId, start = 0, limit = 100,
   } = props;
   if (!studioId) {
-    throw StudioPhotoError.missingStudioId;
+    throw new Error(StudioPhotoError.missingStudioId);
   }
   const { supabase } = context;
   const { data, error } = await supabase
@@ -59,7 +59,7 @@ export const upsertStudioPhoto = async (context: AppContextValue, {
   const itemObj: any = { ...studioPhoto };
   if (!isEditing) { // inserting new row
     if (!studioId) {
-      throw StudioPhotoError.missingStudioId;
+      throw new Error(StudioPhotoError.missingStudioId);
     }
     itemObj.studioId = studioId; // injecting studio id provided
     delete itemObj.id; // id should be created by back-end
@@ -107,7 +107,7 @@ export const upsertStudioPhoto = async (context: AppContextValue, {
     throw error;
   }
   if (!data) {
-    throw StudioPhotoError.invalidResponse;
+    throw new Error(StudioPhotoError.invalidResponse);
   }
   const [newRow] = data;
   // eslint-disable-next-line no-console
@@ -125,7 +125,7 @@ export const deleteStudioPhoto = async (context: AppContextValue, id: number) =>
     throw error;
   }
   if (!data) {
-    throw StudioPhotoError.invalidResponse;
+    throw new Error(StudioPhotoError.invalidResponse);
   }
   return data;
 };

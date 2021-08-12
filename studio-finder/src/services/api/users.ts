@@ -49,7 +49,7 @@ export const getUserProfile = async (context: AppContextValue) => {
   const { supabase, state } = context;
   const id = state.user?.id;
   if (!id) {
-    throw UserError.notLoggedIn;
+    throw new Error(UserError.notLoggedIn);
   }
   const { data, error } = await supabase
     .from(TableName.users)
@@ -74,7 +74,7 @@ export const setUserProfile = async (context: AppContextValue, {
   const { supabase, state } = context;
   const userId = state.user?.id;
   if (!userId) {
-    throw UserError.notLoggedIn;
+    throw new Error(UserError.notLoggedIn);
   }
   const itemObj: any = {
     ...userProfile,

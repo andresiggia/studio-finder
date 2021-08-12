@@ -31,7 +31,7 @@ export const getSpacePhotos = async (context: AppContextValue, props: {
     spaceId, start = 0, limit = 100,
   } = props;
   if (!spaceId) {
-    throw SpacePhotoError.missingSpaceId;
+    throw new Error(SpacePhotoError.missingSpaceId);
   }
   const { supabase } = context;
   const { data, error } = await supabase
@@ -59,7 +59,7 @@ export const upsertSpacePhoto = async (context: AppContextValue, {
   const itemObj: any = { ...spacePhoto };
   if (!isEditing) { // inserting new row
     if (!spaceId) {
-      throw SpacePhotoError.missingSpaceId;
+      throw new Error(SpacePhotoError.missingSpaceId);
     }
     itemObj.spaceId = spaceId; // injecting space id provided
     delete itemObj.id; // id should be created by back-end
@@ -107,7 +107,7 @@ export const upsertSpacePhoto = async (context: AppContextValue, {
     throw error;
   }
   if (!data) {
-    throw SpacePhotoError.invalidResponse;
+    throw new Error(SpacePhotoError.invalidResponse);
   }
   const [newRow] = data;
   // eslint-disable-next-line no-console
@@ -125,7 +125,7 @@ export const deleteSpacePhoto = async (context: AppContextValue, id: number) => 
     throw error;
   }
   if (!data) {
-    throw SpacePhotoError.invalidResponse;
+    throw new Error(SpacePhotoError.invalidResponse);
   }
   return data;
 };

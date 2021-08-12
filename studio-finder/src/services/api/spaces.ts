@@ -50,12 +50,12 @@ export const getSpaces = async (context: AppContextValue, props: {
     studioId, start = 0, limit = 100, inactive = false,
   } = props || {};
   if (!studioId) {
-    throw SpaceError.missingStudioId;
+    throw new Error(SpaceError.missingStudioId);
   }
   const { supabase, state } = context;
   const userId = state.user?.id;
   if (!userId) {
-    throw SpaceError.notLoggedIn;
+    throw new Error(SpaceError.notLoggedIn);
   }
   const { data, error } = await supabase
     .from(ViewName.spacesWithUserId)
@@ -106,11 +106,11 @@ export const upsertSpace = async (context: AppContextValue, {
   const { roles } = state;
   const defaultSpaceRoleName = getDefaultSpaceRoleName(context);
   if (!roles || !roles.some((item: Role) => item.type === RoleType.space && item.name === defaultSpaceRoleName)) {
-    throw SpaceError.missingSpaceRoles;
+    throw new Error(SpaceError.missingSpaceRoles);
   }
   const userId = state.user?.id;
   if (!userId) {
-    throw SpaceError.notLoggedIn;
+    throw new Error(SpaceError.notLoggedIn);
   }
   const isEditing = !!spaceProfile.id;
   const profile: any = {
@@ -119,7 +119,7 @@ export const upsertSpace = async (context: AppContextValue, {
   };
   if (!isEditing) { // inserting new row
     if (!studioId) {
-      throw SpaceError.missingStudioId;
+      throw new Error(SpaceError.missingStudioId);
     }
     profile.studioId = studioId; // injecting studio id provided
     delete profile.createdAt; // createdAt should be created by back-end
@@ -136,7 +136,7 @@ export const upsertSpace = async (context: AppContextValue, {
     throw error;
   }
   if (!data) {
-    throw SpaceError.invalidResponse;
+    throw new Error(SpaceError.invalidResponse);
   }
   const [newRow] = data;
   // eslint-disable-next-line no-console

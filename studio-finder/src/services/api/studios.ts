@@ -57,7 +57,7 @@ export const getStudios = async (context: AppContextValue, props?: {
   const { supabase, state } = context;
   const userId = state.user?.id;
   if (!userId) {
-    throw StudioError.notLoggedIn;
+    throw new Error(StudioError.notLoggedIn);
   }
   const { data, error } = await supabase
     .from(ViewName.studiosWithUserId)
@@ -103,11 +103,11 @@ export const upsertStudio = async (context: AppContextValue, studioProfile: Stud
   const { roles } = state;
   const defaultStudioRoleName = getDefaultStudioRoleName(context);
   if (!roles || !roles.some((item: Role) => item.type === RoleType.studio && item.name === defaultStudioRoleName)) {
-    throw StudioError.missingStudioRoles;
+    throw new Error(StudioError.missingStudioRoles);
   }
   const userId = state.user?.id;
   if (!userId) {
-    throw StudioError.notLoggedIn;
+    throw new Error(StudioError.notLoggedIn);
   }
   const isEditing = !!studioProfile.id;
   const profile: any = {
@@ -126,7 +126,7 @@ export const upsertStudio = async (context: AppContextValue, studioProfile: Stud
     throw error;
   }
   if (!data) {
-    throw StudioError.invalidResponse;
+    throw new Error(StudioError.invalidResponse);
   }
   const [newRow] = data;
   // eslint-disable-next-line no-console
@@ -177,7 +177,7 @@ export const deleteStudio = async (context: AppContextValue, id: number) => {
     throw error;
   }
   if (!data) {
-    throw StudioError.invalidResponse;
+    throw new Error(StudioError.invalidResponse);
   }
   return data;
 };

@@ -62,7 +62,7 @@ export const getBookingItems = async (context: AppContextValue, props: {
     spaceId, bookingId, start = 0, limit = 100, includeBookingAndUser,
   } = props;
   if (!spaceId && !bookingId) { // at least one param is required
-    throw BookingItemError.missingSpaceId;
+    throw new Error(BookingItemError.missingSpaceId);
   }
   const { supabase } = context;
   const filterName = spaceId
@@ -94,7 +94,7 @@ export const upsertBookingItem = async (context: AppContextValue, {
   const { supabase, state } = context;
   const userId = state.user?.id;
   if (!userId) {
-    throw BookingItemError.notLoggedIn;
+    throw new Error(BookingItemError.notLoggedIn);
   }
   const isEditing = !!bookingItem.id;
   const itemObj: any = {
@@ -103,7 +103,7 @@ export const upsertBookingItem = async (context: AppContextValue, {
   };
   if (!isEditing) { // inserting new row
     if (!bookingId) {
-      throw BookingItemError.missingBookingId;
+      throw new Error(BookingItemError.missingBookingId);
     }
     itemObj.bookingId = bookingId; // inject bookingId for new items
     delete itemObj.id; // id should be created by back-end
@@ -116,7 +116,7 @@ export const upsertBookingItem = async (context: AppContextValue, {
     throw error;
   }
   if (!data) {
-    throw BookingItemError.invalidResponse;
+    throw new Error(BookingItemError.invalidResponse);
   }
   const [newRow] = data;
   // eslint-disable-next-line no-console
@@ -134,7 +134,7 @@ export const deleteBookingItem = async (context: AppContextValue, id: number) =>
     throw error;
   }
   if (!data) {
-    throw BookingItemError.invalidResponse;
+    throw new Error(BookingItemError.invalidResponse);
   }
   return data;
 };

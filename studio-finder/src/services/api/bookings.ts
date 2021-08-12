@@ -64,7 +64,7 @@ export const getBookings = async (context: AppContextValue, props: {
     studioId, start = 0, limit = 100, includeUser,
   } = props || {};
   if (!studioId) {
-    throw BookingError.missingStudioId;
+    throw new Error(BookingError.missingStudioId);
   }
   const { supabase } = context;
   const { data, error } = await supabase
@@ -110,7 +110,7 @@ export const upsertBooking = async (context: AppContextValue, booking: Booking) 
   const { supabase, state } = context;
   const userId = state.user?.id;
   if (!userId) {
-    throw BookingError.notLoggedIn;
+    throw new Error(BookingError.notLoggedIn);
   }
   const isEditing = !!booking.id;
   const bookingObj: any = {
@@ -132,7 +132,7 @@ export const upsertBooking = async (context: AppContextValue, booking: Booking) 
     throw error;
   }
   if (!data) {
-    throw BookingError.invalidResponse;
+    throw new Error(BookingError.invalidResponse);
   }
   const [newRow] = data;
   // eslint-disable-next-line no-console
