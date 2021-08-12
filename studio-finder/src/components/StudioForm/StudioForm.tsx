@@ -17,7 +17,7 @@ import {
   defaultStudioProfile, getStudio, upsertStudio, StudioProfile, studioRequiredFields,
 } from '../../services/api/studios';
 import {
-  defaultStudioPhoto, getStudioPhotos, StudioPhoto, upsertStudioPhoto,
+  defaultStudioPhoto, deleteStudioPhoto, getStudioPhotos, StudioPhoto, upsertStudioPhoto,
 } from '../../services/api/studioPhotos';
 import { Photo } from '../../services/api/photos';
 
@@ -165,7 +165,9 @@ class StudioForm extends React.Component<Props, State> {
     }, async () => {
       try {
         const { onSave } = this.props;
-        const { studioProfile, studioPhotos, studioPhotoFiles } = this.state;
+        const {
+          studioProfile, studioPhotos, studioPhotoFiles, studioPhotosOriginal,
+        } = this.state;
         if (this.hasProfileChanges()) {
           // eslint-disable-next-line no-console
           console.log('will insert/update studio', studioProfile);
@@ -174,6 +176,19 @@ class StudioForm extends React.Component<Props, State> {
           console.log('got studio data', data);
         }
         if (this.hasPhotoChanges()) {
+          // handle removed items
+          const deleted = await Promise.all(studioPhotosOriginal.map((studioPhoto) => {
+            const existingItem = studioPhotos?.find((item) => item.id === studioPhoto.id);
+            if (existingItem) {
+              // still there
+              return Promise.resolve(null);
+            }
+            // deleted
+            return deleteStudioPhoto(this.context, studioPhoto.id);
+          }));
+          // eslint-disable-next-line no-console
+          console.log('deleted items', deleted);
+          // handle new/updated items
           // eslint-disable-next-line no-console
           console.log('will insert/update studio photos', studioPhotos);
           await Promise.all(studioPhotos.map((studioPhoto, index) => {
