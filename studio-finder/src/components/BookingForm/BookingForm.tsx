@@ -202,11 +202,11 @@ class BookingForm extends React.Component<Props, State> {
       try {
         const { onSave } = this.props;
         const { booking: bookingWithUser, bookingItems, bookingItemsOriginal } = this.state;
-        let { id: bookingId = 0 } = bookingWithUser || {};
+        if (!bookingWithUser) {
+          throw new Error(i18n.t('Invalid booking'));
+        }
+        let { id: bookingId = 0 } = bookingWithUser;
         if (this.hasChangesToBooking()) {
-          if (!bookingWithUser) {
-            throw new Error(i18n.t('Invalid booking'));
-          }
           // extract items to transform BookingWithUser into Booking type
           const {
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -241,11 +241,11 @@ class BookingForm extends React.Component<Props, State> {
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             studioId, userId, actId, studioTitle, userName, userSurname, actTitle, ...bookingItem
           } = bookingItemWithBooking;
-          // update booking id of all items to match
-          bookingItem.bookingId = bookingId;
           // eslint-disable-next-line no-console
           console.log('will insert/update booking item #', i, bookingItem);
-          return upsertBookingItem(this.context, bookingItem);
+          return upsertBookingItem(this.context, {
+            bookingItem, bookingId,
+          });
         }));
         // eslint-disable-next-line no-console
         console.log('inserted/updated items', upserted);

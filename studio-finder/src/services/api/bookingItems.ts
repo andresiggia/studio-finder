@@ -6,6 +6,7 @@ import { ViewName } from './views';
 
 export enum BookingItemError {
   notLoggedIn = 'notLoggedIn',
+  missingBookingId = 'missingBookingId',
   missingStudioId = 'missingStudioId',
   missingSpaceId = 'missingSpaceId',
   invalidResponse = 'invalidResponse',
@@ -85,21 +86,29 @@ export const getBookingItems = async (context: AppContextValue, props: {
   return bookingItems;
 };
 
-export const upsertBookingItem = async (context: AppContextValue, bookingItem: BookingItem) => {
+export const upsertBookingItem = async (context: AppContextValue, {
+  bookingItem, bookingId,
+}: {
+  bookingItem: BookingItem, bookingId: number,
+}) => {
   const { supabase, state } = context;
   const userId = state.user?.id;
   if (!userId) {
     throw BookingItemError.notLoggedIn;
   }
   const isEditing = !!bookingItem.id;
-  const bookingObj: any = {
+  const itemObj: any = {
     ...bookingItem,
     modifiedAt: new Date(), // modifiedAt to be updated to current date/time
   };
   if (!isEditing) { // inserting new row
-    delete bookingObj.id; // id should be created by back-end
+    if (!bookingId) {
+      throw BookingItemError.missingBookingId;
+    }
+    itemObj.bookingId = bookingId; // inject bookingId for new items
+    delete itemObj.id; // id should be created by back-end
   }
-  const bookingData = updateObjectKeysToUnderscoreCase(bookingObj);
+  const bookingData = updateObjectKeysToUnderscoreCase(itemObj);
   const { data, error } = await supabase
     .from(TableName.bookings)
     .upsert([bookingData]);
