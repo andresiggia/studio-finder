@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  IonLabel, IonIcon, IonSpinner, IonButton, IonGrid, IonRow, IonCol, IonList, IonInput, IonItem, IonSelect, IonSelectOption,
+  IonLabel, IonIcon, IonSpinner, IonButton, IonGrid, IonRow, IonCol, IonList, IonInput, IonItem, IonSelect, IonSelectOption, IonTextarea,
 } from '@ionic/react';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import {
@@ -335,6 +335,16 @@ class BookingForm extends React.Component<Props, State> {
     });
   }
 
+  onChange = (value: any, fieldName: string, callback?: any) => {
+    const { booking } = this.state;
+    this.setMountedState({
+      booking: {
+        ...booking,
+        [fieldName]: value,
+      },
+    }, callback);
+  }
+
   // render
 
   renderLabel = (label: string, required = false) => (
@@ -462,25 +472,36 @@ class BookingForm extends React.Component<Props, State> {
           type="text"
           required={isRequired}
           disabled={disabled}
-          onIonChange={(e: any) => {
-            const { booking } = this.state;
-            this.setMountedState({
-              booking: {
-                ...booking,
-                [fieldName]: e.detail.value || '',
-              },
-            });
-          }}
+          onIonChange={(e: any) => this.onChange(e.detail.value || '', fieldName)}
+        />
+      </>
+    );
+  }
+
+  renderTextareaInput = ({
+    value, disabled = false, required = false, label, fieldName,
+  }: {
+    value: string, disabled?: boolean, required?: boolean, label: string, fieldName: string,
+  }) => {
+    const isRequired = required || bookingItemRequiredFields.includes(fieldName as keyof BookingItem);
+    return (
+      <>
+        {this.renderLabel(label, isRequired)}
+        <IonTextarea
+          value={value}
+          required={isRequired}
+          disabled={disabled}
+          onIonChange={(e: any) => this.onChange(e.detail.value || '', fieldName)}
         />
       </>
     );
   }
 
   renderSelectInput = ({
-    value, disabled = false, required = false, label, fieldName, options, onChange,
+    value, disabled = false, required = false, label, fieldName, options,
   }: {
     value: any, disabled?: boolean, required?: boolean, label: string, fieldName: string,
-    options: { value: any, label: string }[], onChange?: (value: any) => void,
+    options: { value: any, label: string }[],
   }) => {
     const isRequired = required || bookingRequiredFields.includes(fieldName as keyof Booking);
     return (
@@ -490,18 +511,7 @@ class BookingForm extends React.Component<Props, State> {
           value={value}
           // required={isRequired}
           disabled={disabled}
-          onIonChange={(e: any) => {
-            const newValue = e.detail.value || '';
-            const { booking } = this.state;
-            this.setMountedState({
-              booking: {
-                ...booking,
-                [fieldName]: newValue,
-              },
-            }, () => (typeof onChange === 'function'
-              ? onChange(newValue)
-              : null));
-          }}
+          onIonChange={(e: any) => this.onChange(e.detail.value || '', fieldName)}
         >
           {options.map((item) => (
             <IonSelectOption key={item.value} value={item.value}>
@@ -573,7 +583,15 @@ class BookingForm extends React.Component<Props, State> {
             })}
           </IonItem>
         )}
-        <div className="booking-form-list-items">
+        <IonItem className="booking-form-list-item-full">
+          {this.renderTextareaInput({
+            value: booking.notes,
+            fieldName: 'notes',
+            label: i18n.t('Notes'),
+            disabled,
+          })}
+        </IonItem>
+        <div className="booking-form-list-item-full">
           <BookingItemList
             items={bookingItems}
             disabled={disabled}

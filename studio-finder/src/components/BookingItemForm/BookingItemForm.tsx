@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  IonLabel, IonList, IonInput, IonItem, IonTextarea, IonSelectOption, IonSelect, IonButton, IonButtons, IonIcon,
+  IonLabel, IonList, IonItem, IonTextarea, IonSelectOption, IonSelect, IonButton, IonButtons, IonIcon,
   IonToolbar, IonTitle, IonDatetime, IonSpinner,
 } from '@ionic/react';
 // eslint-disable-next-line import/no-extraneous-dependencies
@@ -126,26 +126,6 @@ class BookingItemForm extends React.Component<Props, State> {
         : ''}`}
     </IonLabel>
   )
-
-  renderTextInput = ({
-    value, disabled = false, required = false, label, fieldName,
-  }: {
-    value: string, disabled?: boolean, required?: boolean, label: string, fieldName: string,
-  }) => {
-    const isRequired = required || bookingItemRequiredFields.includes(fieldName as keyof BookingItem);
-    return (
-      <>
-        {this.renderLabel(label, isRequired)}
-        <IonInput
-          value={value}
-          type="text"
-          required={isRequired}
-          disabled={disabled}
-          onIonChange={(e: any) => this.onChange(e.detail.value, fieldName)}
-        />
-      </>
-    );
-  }
 
   renderDateTimeInput = ({
     value, disabled = false, required = false, label, fieldName,
@@ -273,6 +253,14 @@ class BookingItemForm extends React.Component<Props, State> {
             value: item.endAt,
             fieldName: 'endAt',
             label: i18n.t('End At'),
+            disabled,
+          })}
+        </IonItem>
+        <IonItem className="booking-item-form-list-item-full">
+          {this.renderTextareaInput({
+            value: item.notes,
+            fieldName: 'notes',
+            label: i18n.t('Notes'),
             disabled,
           })}
         </IonItem>

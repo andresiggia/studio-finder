@@ -59,7 +59,7 @@
   .booking-form-list-item:nth-child(even) {
     margin-left: 1rem;
   }
-  .booking-form-list-items {
+  .booking-form-list-item-full {
     width: 100%;
   }
 }
