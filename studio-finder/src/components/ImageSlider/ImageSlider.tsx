@@ -1,5 +1,7 @@
 import React from 'react';
-import { IonImg, IonSlide, IonSlides } from '@ionic/react';
+import {
+  IonSlide, IonSlides,
+} from '@ionic/react';
 
 // services
 import i18n from '../../services/i18n/i18n';
