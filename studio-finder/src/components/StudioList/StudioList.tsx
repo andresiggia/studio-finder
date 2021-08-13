@@ -1,10 +1,6 @@
 import React from 'react';
 import {
-  IonCard,
-  IonCardContent,
-  IonCardHeader,
-  IonCardTitle,
-  IonCol, IonGrid, IonIcon, IonRow, IonSpinner,
+  IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonCol, IonGrid, IonIcon, IonRow, IonSpinner,
 } from '@ionic/react';
 import {
   withRouter, RouteComponentProps, generatePath,
