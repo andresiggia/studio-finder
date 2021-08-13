@@ -35,7 +35,7 @@ export const defaultBooking: Booking = {
   modifiedAt: null,
 };
 const bookingDateFields: (keyof Booking)[] = ['createdAt', 'modifiedAt'];
-export const bookingRequiredFields: (keyof Booking)[] = ['studioId', 'userId'];
+export const bookingRequiredFields: (keyof Booking)[] = ['studioId'];
 
 export interface BookingWithUser extends Booking {
   studioTitle: string,
