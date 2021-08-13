@@ -218,5 +218,5 @@ export const upsertSpace = async (context: AppContextValue, {
     // eslint-disable-next-line no-console
     console.log('added join', newJoinRow);
   }
-  return data;
+  return newRow;
 };

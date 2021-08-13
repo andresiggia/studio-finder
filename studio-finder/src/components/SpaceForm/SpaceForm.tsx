@@ -172,6 +172,7 @@ class SpaceForm extends React.Component<Props, State> {
         const {
           spaceProfile, spacePhotos, spacePhotoFiles, spacePhotosOriginal,
         } = this.state;
+        let { id: spaceId = 0 } = spaceProfile;
         if (this.hasProfileChanges() || !this.isEditing()) {
         // eslint-disable-next-line no-console
           console.log('will insert/update space', spaceProfile, 'in studio', studioProfile);
@@ -180,6 +181,7 @@ class SpaceForm extends React.Component<Props, State> {
           });
           // eslint-disable-next-line no-console
           console.log('got space data', data);
+          spaceId = data.id;
         }
         if (this.hasPhotoChanges()) {
           // handle removed items
@@ -201,7 +203,7 @@ class SpaceForm extends React.Component<Props, State> {
             // eslint-disable-next-line no-console
             console.log('will insert/update space photo', spacePhoto);
             return upsertSpacePhoto(this.context, {
-              spacePhoto, spaceId: spaceProfile.id, file: spacePhotoFiles[index],
+              spacePhoto, spaceId, file: spacePhotoFiles[index],
             });
           }));
         }
