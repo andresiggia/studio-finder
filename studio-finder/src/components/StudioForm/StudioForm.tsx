@@ -17,7 +17,7 @@ import {
   defaultStudioProfile, getStudio, upsertStudio, StudioProfile, studioRequiredFields,
 } from '../../services/api/studios';
 import {
-  defaultStudioPhoto, deleteStudioPhoto, getStudioPhotos, StudioPhoto, upsertStudioPhoto,
+  defaultStudioPhoto, deleteStudioPhoto, getStudioPhotos, StudioPhoto, studioPhotoRequiredFields, upsertStudioPhoto,
 } from '../../services/api/studioPhotos';
 import { Photo } from '../../services/api/photos';
 
@@ -223,10 +223,13 @@ class StudioForm extends React.Component<Props, State> {
   }
 
   isValidForm = () => {
-    const { studioProfile } = this.state;
+    const { studioProfile, studioPhotos } = this.state;
     return Object.keys(studioProfile).every((key: string) => (
       !studioRequiredFields.includes(key as keyof StudioProfile) || !!studioProfile[key as keyof StudioProfile]
-    ));
+    ))
+      && studioPhotos.every((studioPhoto) => Object.keys(studioPhoto).every((key: string) => (
+        !studioPhotoRequiredFields.includes(key as keyof StudioPhoto) || !!studioPhoto[key as keyof StudioPhoto]
+      )));
   }
 
   reorderPhotosAndFiles = (items: Photo[], studioPhotoFiles?: (File | null)[]) => {
