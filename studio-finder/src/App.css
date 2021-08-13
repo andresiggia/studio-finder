@@ -10,13 +10,6 @@
   margin: 1rem 0;
 }
 
-/* ion fixes */
-
-/* prevent blocked button from hiding text */
-ion-button.button-block {
-  white-space: normal;
-}
-
 .page-title {
   text-align: center;
   padding: 2rem 1rem;
@@ -25,4 +18,26 @@ ion-button.button-block {
   display: block;
   max-width: 500px;
   margin: 0 auto;
+}
+
+/* ion fixes */
+
+/* prevent blocked button from hiding text */
+ion-button.button-block {
+  white-space: normal;
+}
+
+/* align ion-row with ion-grid and ion-col */
+ion-grid ion-row {
+  margin-left: -5px;
+  margin-right: -5px;
+}
+ion-grid ion-row ion-col {
+  padding-left: 0;
+  padding-right: 0;
+  margin-left: 5px;
+  margin-right: 5px;
+}
+ion-grid ion-row ion-col ion-card {
+  margin-inline: 0;
 }

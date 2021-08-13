@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  IonButton, IonCol, IonIcon, IonItem, IonLabel, IonReorder, IonReorderGroup, IonRow, IonList,
+  IonButton, IonCol, IonIcon, IonItem, IonLabel, IonReorder, IonReorderGroup, IonRow, IonList, IonGrid,
 } from '@ionic/react';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { addOutline, trashOutline } from 'ionicons/icons';
@@ -218,16 +218,18 @@ class PhotoList extends React.Component<Props, State> {
     }
 
     return (
-      <IonRow style={{ width: '100%' }}>
-        <IonCol size="6" size-lg="4">
-          {this.renderItems()}
-        </IonCol>
-        <IonCol size="6" size-lg="8">
-          {selectedIndex > -1 && (
-            this.renderSelectedItem()
-          )}
-        </IonCol>
-      </IonRow>
+      <IonGrid>
+        <IonRow style={{ width: '100%' }}>
+          <IonCol size="6" size-lg="4">
+            {this.renderItems()}
+          </IonCol>
+          <IonCol size="6" size-lg="8">
+            {selectedIndex > -1 && (
+              this.renderSelectedItem()
+            )}
+          </IonCol>
+        </IonRow>
+      </IonGrid>
     );
   }
 }
