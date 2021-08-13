@@ -1,0 +1,8 @@
+.studio-search-form {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 300px;
+  max-width: 100%;
+  margin: 0 auto;
+}

@@ -6,12 +6,14 @@ import StudioLogin from '../../pages/StudioLogin/StudioLogin';
 import Account from '../../pages/Account/Account';
 import StudioAccount from '../../pages/StudioAccount/StudioAccount';
 import ForgotPassword from '../../pages/ForgotPassword/ForgotPassword';
+import Search from '../../pages/Search/Search';
 
 // services
 import i18n from '../i18n/i18n';
 
 export enum RouteName {
   home = 'home',
+  search = 'search',
   about = 'about',
   login = 'login',
   account = 'account',
@@ -57,6 +59,14 @@ const routes: Route[] = [
     strict: false,
     Component: Home,
     getLabel: () => i18n.t('Home'),
+  },
+  {
+    name: RouteName.search,
+    path: '/search/:query',
+    exact: false,
+    strict: false,
+    Component: Search,
+    getLabel: () => i18n.t('Search results'),
   },
   {
     name: RouteName.about,

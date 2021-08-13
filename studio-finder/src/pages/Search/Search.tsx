@@ -11,16 +11,16 @@ import StudioSearch from '../../components/StudioSearch/StudioSearch';
 import i18n from '../../services/i18n/i18n';
 
 // css
-import './Home.css';
+import './Search.css';
 
-class Home extends React.Component {
+class Search extends React.Component {
   render() {
     return (
       <IonPage>
         <IonContent fullscreen>
           <Header />
           <IonText className="page-title">
-            {i18n.t('Book a studio space for rehearsal or recording near you')}
+            {i18n.t('Search results')}
           </IonText>
           <StudioSearch />
         </IonContent>
@@ -29,4 +29,4 @@ class Home extends React.Component {
   }
 }
 
-export default Home;
+export default Search;
