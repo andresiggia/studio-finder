@@ -16,3 +16,13 @@
 ion-button.button-block {
   white-space: normal;
 }
+
+.page-title {
+  text-align: center;
+  padding: 2rem 1rem;
+  font-size: 2rem;
+  font-weight: 500;
+  display: block;
+  max-width: 500px;
+  margin: 0 auto;
+}
