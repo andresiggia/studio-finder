@@ -5,3 +5,8 @@
 .studio-page-spacer {
   margin-top: 1rem;
 }
+
+.studio-page-label {
+  display: block;
+  margin-bottom: .5rem;
+}

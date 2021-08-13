@@ -1,6 +1,7 @@
 import React from 'react';
 import {
-  IonContent, IonGrid, IonLabel, IonPage, IonSpinner, IonText,
+  IonCol,
+  IonContent, IonGrid, IonLabel, IonPage, IonRow, IonSpinner, IonText,
 } from '@ionic/react';
 import {
   withRouter, RouteComponentProps,
@@ -12,6 +13,7 @@ import AppContext from '../../context/AppContext';
 // components
 import Header from '../../components/Header/Header';
 import Notification, { NotificationType } from '../../components/Notification/Notification';
+import ImageSlider from '../../components/ImageSlider/ImageSlider';
 
 // services
 import i18n from '../../services/i18n/i18n';
@@ -100,10 +102,39 @@ class Studio extends React.Component<RouteComponentProps, State> {
     });
   }
 
+  renderAbout = () => {
+    const { studioProfile } = this.state;
+    return (
+      <>
+        <IonLabel className="studio-page-label">
+          {i18n.t('About')}
+        </IonLabel>
+        {studioProfile?.description && (
+          <p>{studioProfile.description}</p>
+        )}
+      </>
+    );
+  }
+
+  renderPhotos = () => {
+    const { studioPhotos } = this.state;
+    return (
+      <>
+        <IonLabel className="studio-page-label">
+          {i18n.t('Photos')}
+        </IonLabel>
+        {studioPhotos.length === 0
+          ? (
+            <p>{i18n.t('No photos available')}</p>
+          ) : (
+            <ImageSlider imageUrls={studioPhotos.map((item) => item.photoUrl)} />
+          )}
+      </>
+    );
+  }
+
   renderView = () => {
-    const {
-      isLoading, error, studioPhotos, studioProfile,
-    } = this.state;
+    const { isLoading, error, studioProfile } = this.state;
     if (isLoading) {
       return (
         <div className="studio-page-loading studio-page-spacer">
@@ -130,11 +161,14 @@ class Studio extends React.Component<RouteComponentProps, State> {
         <IonText className="page-title">
           {studioProfile.title}
         </IonText>
-        <IonGrid>
-          {studioPhotos.length > 0 && (
-            <IonLabel>{i18n.t('Photos')}</IonLabel>
-          )}
-        </IonGrid>
+        <IonRow>
+          <IonCol size="12" size-sm="6" size-md="8">
+            {this.renderPhotos()}
+          </IonCol>
+          <IonCol size="12" size-sm="6" size-md="4">
+            {this.renderAbout()}
+          </IonCol>
+        </IonRow>
       </>
     );
   }
