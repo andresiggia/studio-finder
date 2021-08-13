@@ -146,18 +146,16 @@ class StudioList extends React.Component<any, State> {
       );
     }
     return (
-      <>
+      <IonGrid className="studio-list">
         <p>{i18n.t('Found {{count}} result', { count: items.length })}</p>
-        <IonGrid>
-          <IonRow>
-            {items.map((item) => (
-              <IonCol key={item.id} size="12" size-sm="6" size-md="4" size-lg="3">
-                {this.renderStudio(item)}
-              </IonCol>
-            ))}
-          </IonRow>
-        </IonGrid>
-      </>
+        <IonRow>
+          {items.map((item) => (
+            <IonCol key={item.id} size="12" size-sm="6" size-md="4" size-lg="3">
+              {this.renderStudio(item)}
+            </IonCol>
+          ))}
+        </IonRow>
+      </IonGrid>
     );
   }
 }
