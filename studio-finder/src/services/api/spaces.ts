@@ -2,7 +2,6 @@ import { AppContextValue } from '../../context/AppContext';
 
 import { convertDateFields, updateObjectKeysToCamelCase, updateObjectKeysToUnderscoreCase } from './helpers';
 import { getDefaultSpaceRoleName, Role, RoleType } from './roles';
-import { StudioProfile } from './studios';
 import { TableName } from './tables';
 import { ViewName } from './views';
 
@@ -125,7 +124,7 @@ export const upsertSpace = async (context: AppContextValue, {
     delete profile.createdAt; // createdAt should be created by back-end
     delete profile.id; // id should be created by back-end
   } else if (profile.studioId !== studioId) { // only when editing
-    // studio id must match studioId provided
+    // studioId must match value provided
     throw new Error(SpaceError.editingSpaceOfWrongStudio);
   }
   const spaceProfileData = updateObjectKeysToUnderscoreCase(profile);
