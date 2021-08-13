@@ -20,6 +20,19 @@ CREATE VIEW studios_with_user_id AS (
   WHERE studio_users.studio_id = studios.id
 );
 
+DROP VIEW IF EXISTS studios_list;
+CREATE VIEW studios_list AS (
+  SELECT studios.*, first_studio_photo.photo_url
+  FROM studios
+  LEFT JOIN (
+    SELECT *
+    FROM studio_photos
+    ORDER BY studio_photos.order
+    LIMIT 1
+  ) as first_studio_photo
+  ON studios.id = first_studio_photo.studio_id
+);
+
 DROP VIEW IF EXISTS booking_items_with_booking;
 CREATE VIEW booking_items_with_booking AS (
   SELECT booking_items.*,
