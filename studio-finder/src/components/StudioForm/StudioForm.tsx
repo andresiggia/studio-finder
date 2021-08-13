@@ -170,12 +170,14 @@ class StudioForm extends React.Component<Props, State> {
         const {
           studioProfile, studioPhotos, studioPhotoFiles, studioPhotosOriginal,
         } = this.state;
+        let { id: studioId = 0 } = studioProfile;
         if (this.hasProfileChanges() || !this.isEditing()) {
           // eslint-disable-next-line no-console
           console.log('will insert/update studio', studioProfile);
           const data = await upsertStudio(this.context, studioProfile);
           // eslint-disable-next-line no-console
           console.log('got studio data', data);
+          studioId = data.id;
         }
         if (this.hasPhotoChanges()) {
           // handle removed items
@@ -197,7 +199,7 @@ class StudioForm extends React.Component<Props, State> {
             // eslint-disable-next-line no-console
             console.log('will insert/update studio photo', studioPhoto);
             return upsertStudioPhoto(this.context, {
-              studioPhoto, studioId: studioProfile.id, file: studioPhotoFiles[index],
+              studioPhoto, studioId, file: studioPhotoFiles[index],
             });
           }));
         }

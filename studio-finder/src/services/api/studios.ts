@@ -201,7 +201,7 @@ export const upsertStudio = async (context: AppContextValue, studioProfile: Stud
     // eslint-disable-next-line no-console
     console.log('added join', newJoinRow);
   }
-  return data;
+  return newRow;
 };
 
 export const deleteStudio = async (context: AppContextValue, id: number) => {
