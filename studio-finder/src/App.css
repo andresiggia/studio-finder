@@ -28,15 +28,13 @@ ion-button.button-block {
 }
 
 /* align ion-row with ion-grid and ion-col */
+ion-grid {
+  padding-left: 10px;
+  padding-right: 10px;
+}
 ion-grid ion-row {
   margin-left: -5px;
   margin-right: -5px;
-}
-ion-grid ion-row ion-col {
-  padding-left: 0;
-  padding-right: 0;
-  margin-left: 5px;
-  margin-right: 5px;
 }
 ion-grid ion-row ion-col ion-card {
   margin-inline: 0;
