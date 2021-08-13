@@ -8,6 +8,7 @@ import { ViewName } from './views';
 export enum StudioError {
   notLoggedIn = 'notLoggedIn',
   invalidResponse = 'invalidResponse',
+  missingStudioId = 'missingStudioId',
   missingStudioRoles = 'missingStudioRoles',
 }
 
@@ -116,6 +117,9 @@ export const getStudiosByUser = async (context: AppContextValue, props?: {
 
 export const getStudio = async (context: AppContextValue, studioId: number) => {
   const { supabase } = context;
+  if (!studioId) {
+    throw new Error(StudioError.missingStudioId);
+  }
   const { data, error } = await supabase
     .from(TableName.studios)
     .select()
