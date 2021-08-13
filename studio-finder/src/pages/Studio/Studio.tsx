@@ -25,6 +25,8 @@ import { getStudio, StudioProfile } from '../../services/api/studios';
 import { getStudioPhotos, StudioPhoto } from '../../services/api/studioPhotos';
 import { getSpaces, SpaceProfileDisplay } from '../../services/api/spaces';
 
+import Space from './Space';
+
 // css
 import './Studio.css';
 
@@ -160,11 +162,7 @@ class Studio extends React.Component<RouteComponentProps, State> {
       );
     }
     return (
-      <>
-        <IonLabel className="studio-page-label">
-          {space.title}
-        </IonLabel>
-      </>
+      <Space id={space.id} />
     );
   }
 
