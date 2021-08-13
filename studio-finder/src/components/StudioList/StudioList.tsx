@@ -6,6 +6,9 @@ import {
   IonCardTitle,
   IonCol, IonGrid, IonIcon, IonRow, IonSpinner,
 } from '@ionic/react';
+import {
+  withRouter, RouteComponentProps, generatePath,
+} from 'react-router-dom';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import {
   musicalNotes,
@@ -17,6 +20,7 @@ import AppContext from '../../context/AppContext';
 // services
 import i18n from '../../services/i18n/i18n';
 import { getStudios, StudioProfileDisplay } from '../../services/api/studios';
+import { getRoutesByName, RouteName } from '../../services/routes/routes';
 
 // components
 import Notification, { NotificationType } from '../Notification/Notification';
@@ -38,10 +42,10 @@ interface State {
   items: StudioProfileDisplay[] | null,
 }
 
-class StudioList extends React.Component<any, State> {
+class StudioList extends React.Component<RouteComponentProps, State> {
   mounted = false
 
-  constructor(props: any) {
+  constructor(props: RouteComponentProps) {
     super(props);
     this.state = {
       isLoading: false,
@@ -55,7 +59,7 @@ class StudioList extends React.Component<any, State> {
     this.loadData();
   }
 
-  // componentDidUpdate(prevProps: any) {
+  // componentDidUpdate(prevProps: RouteComponentProps) {
   //   if (this.getSearchParams(prevProps) !== this.getSearchParams(this.props)) {
   //     this.loadData();
   //   }
@@ -98,27 +102,43 @@ class StudioList extends React.Component<any, State> {
     });
   }
 
-  renderStudio = (item: StudioProfileDisplay) => (
-    <IonCard>
-      <div
-        className="studio-list-item-photo"
-        style={{ backgroundImage: `url(${item.photoUrl})` }}
-        title={item.photoUrl ? '' : i18n.t('No image to display')}
+  // render
+
+  renderStudio = (item: StudioProfileDisplay) => {
+    const { history } = this.props;
+    const [route] = getRoutesByName([RouteName.studio]);
+    const path = generatePath(route.path, {
+      id: item.id,
+    });
+    return (
+      <IonCard
+        button
+        href={`#${path}`}
+        onClick={(e: any) => {
+          e.preventDefault();
+          history.push(path);
+        }}
       >
-        {!item.photoUrl && (
-          <IonIcon icon={musicalNotes} color="light" />
-        )}
-      </div>
-      <IonCardHeader>
-        <IonCardTitle>
-          {item.title}
-        </IonCardTitle>
-      </IonCardHeader>
-      <IonCardContent>
-        {item.description}
-      </IonCardContent>
-    </IonCard>
-  )
+        <div
+          className="studio-list-item-photo"
+          style={{ backgroundImage: `url(${item.photoUrl})` }}
+          title={item.photoUrl ? '' : i18n.t('No image to display')}
+        >
+          {!item.photoUrl && (
+            <IonIcon icon={musicalNotes} color="light" />
+          )}
+        </div>
+        <IonCardHeader>
+          <IonCardTitle>
+            {item.title}
+          </IonCardTitle>
+        </IonCardHeader>
+        <IonCardContent>
+          {item.description}
+        </IonCardContent>
+      </IonCard>
+    );
+  }
 
   render() {
     const { isLoading, error, items } = this.state;
@@ -162,4 +182,4 @@ class StudioList extends React.Component<any, State> {
 
 StudioList.contextType = AppContext;
 
-export default StudioList;
+export default withRouter(StudioList);
