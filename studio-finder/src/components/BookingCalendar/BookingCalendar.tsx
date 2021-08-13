@@ -229,22 +229,29 @@ class BookingCalendar extends React.Component<Props, State> {
                     });
                     return (
                       <td key={weekday}>
-                        {relevantItems.map((item) => (
-                          <IonButton
-                            key={item.id}
-                            fill={modalSelectedId === item.id
-                              ? 'solid'
-                              : 'clear'}
-                            color="primary"
-                            size="small"
-                            expand="block"
-                            title={i18n.t('View booking')}
-                            // important: select booking id, not booking item id
-                            onClick={() => this.onModalOpen(item.bookingId)}
-                          >
-                            {`${item.actTitle || `${item.userName} ${item.userSurname}`.trim()} (${item.serviceTitle})`}
-                          </IonButton>
-                        ))}
+                        {relevantItems.map((item) => {
+                          let label = item.serviceTitle;
+                          if (item.userId) {
+                            const userNameSurname = `${item.userName} ${item.userSurname}`.trim();
+                            label = `${userNameSurname} (${label})`;
+                          }
+                          return (
+                            <IonButton
+                              key={item.id}
+                              fill={modalSelectedId === item.id
+                                ? 'solid'
+                                : 'clear'}
+                              color="primary"
+                              size="small"
+                              expand="block"
+                              title={i18n.t('View booking')}
+                              // important: select booking id, not booking item id
+                              onClick={() => this.onModalOpen(item.bookingId)}
+                            >
+                              {label}
+                            </IonButton>
+                          );
+                        })}
                       </td>
                     );
                   })}
