@@ -6,10 +6,13 @@ import { withRouter, RouteComponentProps, matchPath } from 'react-router';
 
 // services
 import i18n from '../../services/i18n/i18n';
+import { getRoutesByName, RouteName } from '../../services/routes/routes';
+
+// components
+import StudioList from '../StudioList/StudioList';
 
 // css
 import './StudioSearch.css';
-import { getRoutesByName, RouteName } from '../../services/routes/routes';
 
 interface State {
   query: string,
@@ -88,23 +91,29 @@ class StudioSearch extends React.Component<RouteComponentProps, State> {
 
   render() {
     const { query } = this.state;
+    const searchParam = this.getSearchParams();
     return (
-      <form onSubmit={this.onSubmit} className="studio-search-form">
-        <IonInput
-          value={query}
-          type="text"
-          name="search"
-          placeholder={i18n.t('Location or post code')}
-          onIonChange={(e: any) => this.setMountedState({ query: e.detail.value })}
-        />
-        <IonButton
-          color="primary"
-          type="submit"
-          disabled={!query}
-        >
-          {i18n.t('Search')}
-        </IonButton>
-      </form>
+      <>
+        <form onSubmit={this.onSubmit} className="studio-search-form">
+          <IonInput
+            value={query}
+            type="text"
+            name="search"
+            placeholder={i18n.t('Location or post code')}
+            onIonChange={(e: any) => this.setMountedState({ query: e.detail.value })}
+          />
+          <IonButton
+            color="primary"
+            type="submit"
+            disabled={!query}
+          >
+            {i18n.t('Search')}
+          </IonButton>
+        </form>
+        {!!searchParam && (
+          <StudioList />
+        )}
+      </>
     );
   }
 }

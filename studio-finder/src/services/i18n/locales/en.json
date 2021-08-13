@@ -1,3 +1,4 @@
 {
-  "Home": "Home"
+  "Found {{count}} result": "Found {{count}} result",
+  "Found {{count}} result_plural": "Found {{count}} results"
 }
