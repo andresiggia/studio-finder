@@ -22,7 +22,7 @@ import SpaceList from '../SpaceList/SpaceList';
 import AppContext from '../../context/AppContext';
 
 // css
-import './StudioList.css';
+import './StudioCard.css';
 
 interface State {
   isLoading: boolean,
@@ -34,7 +34,7 @@ interface State {
   showDeleteAlert: boolean,
 }
 
-class StudioList extends React.Component<any, State> {
+class StudioCard extends React.Component<any, State> {
   mounted = false
 
   constructor(props: any) {
@@ -339,6 +339,6 @@ class StudioList extends React.Component<any, State> {
   }
 }
 
-StudioList.contextType = AppContext;
+StudioCard.contextType = AppContext;
 
-export default StudioList;
+export default StudioCard;

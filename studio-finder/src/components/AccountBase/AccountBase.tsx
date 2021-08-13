@@ -12,7 +12,7 @@ import { UserType } from '../../services/api/users';
 // components
 import ProfileForm from '../ProfileForm/ProfileForm';
 import { UserValidationProps } from '../withUserValidation/withUserValidation';
-import StudioList from '../StudioList/StudioList';
+import StudioCard from '../StudioCard/StudioCard';
 
 class AccountBase extends React.Component<UserValidationProps> {
   renderProfile = (hasProfile: boolean) => {
@@ -30,9 +30,9 @@ class AccountBase extends React.Component<UserValidationProps> {
     );
   }
 
-  renderStudioList = () => (
+  renderStudioCard = () => (
     <IonCol size="12" size-md="6" size-lg="8">
-      <StudioList />
+      <StudioCard />
     </IonCol>
   )
 
@@ -47,7 +47,7 @@ class AccountBase extends React.Component<UserValidationProps> {
           {hasProfile && (
             <>
               {isStudio && (
-                this.renderStudioList()
+                this.renderStudioCard()
               )}
             </>
           )}
