@@ -7,6 +7,7 @@ import Account from '../../pages/Account/Account';
 import StudioAccount from '../../pages/StudioAccount/StudioAccount';
 import ForgotPassword from '../../pages/ForgotPassword/ForgotPassword';
 import Search from '../../pages/Search/Search';
+import Studio from '../../pages/Studio/Studio';
 
 // services
 import i18n from '../i18n/i18n';
@@ -17,6 +18,7 @@ export enum RouteName {
   about = 'about',
   login = 'login',
   account = 'account',
+  studio = 'studio',
   studioLogin = 'studioLogin',
   studioAccount = 'studioAccount',
   forgotPassword = 'forgotPassword',
@@ -84,6 +86,14 @@ const routes: Route[] = [
     strict: false,
     Component: ForgotPassword,
     getLabel: () => i18n.t('Redefine password'),
+  },
+  {
+    name: RouteName.studio,
+    path: '/studio/:id',
+    exact: true,
+    strict: false,
+    Component: Studio,
+    getLabel: () => i18n.t('Search results'),
   },
   {
     name: RouteName.studioLogin,
