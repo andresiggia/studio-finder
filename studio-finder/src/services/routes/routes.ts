@@ -25,7 +25,6 @@ export interface Route {
   path: string;
   exact?: boolean;
   strict?: boolean;
-  isDefault?: boolean;
   Component?: any;
   routes?: Route[],
   getLabel?: () => string;
@@ -55,7 +54,6 @@ const routes: Route[] = [
     path: '/home',
     exact: true,
     strict: false,
-    isDefault: true,
     Component: Home,
     getLabel: () => i18n.t('Home'),
   },
@@ -64,7 +62,6 @@ const routes: Route[] = [
     path: '/about',
     exact: true,
     strict: false,
-    isDefault: false,
     Component: About,
     getLabel: () => i18n.t('About'),
   },
@@ -73,7 +70,6 @@ const routes: Route[] = [
     path: '/forgot-password',
     exact: false,
     strict: false,
-    isDefault: false,
     Component: ForgotPassword,
     getLabel: () => i18n.t('Redefine password'),
   },
@@ -82,7 +78,6 @@ const routes: Route[] = [
     path: '/studio-login',
     exact: false,
     strict: false,
-    isDefault: false,
     Component: StudioLogin,
     getLabel: () => i18n.t('Studio Login'),
     routes: loginRoutes,
@@ -92,7 +87,6 @@ const routes: Route[] = [
     path: '/login',
     exact: false,
     strict: false,
-    isDefault: false,
     Component: Login,
     getLabel: () => i18n.t('Login'),
     routes: loginRoutes,
@@ -102,7 +96,6 @@ const routes: Route[] = [
     path: '/account',
     exact: false,
     strict: false,
-    isDefault: false,
     Component: Account,
     getLabel: () => i18n.t('My Account'),
   },
@@ -111,7 +104,6 @@ const routes: Route[] = [
     path: '/studio-account',
     exact: false,
     strict: false,
-    isDefault: false,
     Component: StudioAccount,
     getLabel: () => i18n.t('Studio Account'),
   },
@@ -122,4 +114,6 @@ export default routes;
 export const getRoutesByName = (names: string[], customRoutes?: Route[]) => (customRoutes || routes)
   .filter((item) => names.includes(item.name));
 
-export const defaultRoute = routes.find((route) => route.isDefault);
+const defaultRouteName = RouteName.home;
+
+export const defaultRoute = routes.find((route) => route.name === defaultRouteName);
