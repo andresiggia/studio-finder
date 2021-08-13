@@ -44,8 +44,9 @@ class PasswordFields extends React.Component<Props> {
           <Notification
             type={NotificationType.danger}
             className={notificationClassName}
-            header={i18n.t('Passwords must have a minimum length of %MIN_PASSWORD_CHARS%')
-              .replace('%MIN_PASSWORD_CHARS%', String(MIN_PASSWORD_CHARS))}
+            header={i18n.t('Passwords must have a minimum length of {{minChars}}', {
+              minChars: String(MIN_PASSWORD_CHARS),
+            })}
             message=""
             preventDismiss
           />
