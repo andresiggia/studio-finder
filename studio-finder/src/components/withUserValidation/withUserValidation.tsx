@@ -1,5 +1,5 @@
 import React, { ComponentClass, FunctionComponent } from 'react';
-import { matchPath, RouteComponentProps, withRouter } from 'react-router';
+import { matchPath, RouteComponentProps, withRouter } from 'react-router-dom';
 
 // context
 import AppContext from '../../context/AppContext';

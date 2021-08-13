@@ -2,7 +2,7 @@ import React from 'react';
 import {
   IonButton, IonInput,
 } from '@ionic/react';
-import { withRouter, RouteComponentProps, matchPath } from 'react-router';
+import { withRouter, RouteComponentProps, matchPath } from 'react-router-dom';
 
 // services
 import i18n from '../../services/i18n/i18n';

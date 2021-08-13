@@ -1,7 +1,8 @@
-import { HashRouter, Redirect, Route } from 'react-router-dom';
-import { IonApp, IonContent, IonSpinner } from '@ionic/react';
 import React from 'react';
-import { Switch } from 'react-router';
+import { IonApp, IonContent, IonSpinner } from '@ionic/react';
+import {
+  HashRouter, Redirect, Route, Switch,
+} from 'react-router-dom';
 
 // services
 import routes, { defaultRoute } from './services/routes/routes';

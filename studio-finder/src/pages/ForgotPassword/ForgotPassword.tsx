@@ -2,7 +2,7 @@ import React from 'react';
 import {
   IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonCol, IonContent, IonGrid, IonPage, IonRow,
 } from '@ionic/react';
-import { RouteComponentProps } from 'react-router';
+import { RouteComponentProps } from 'react-router-dom';
 
 // services
 import i18n from '../../services/i18n/i18n';
