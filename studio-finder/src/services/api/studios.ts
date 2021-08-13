@@ -61,14 +61,14 @@ export const defaultStudioProfileDisplay: StudioProfileDisplay = {
 };
 
 export const getStudios = async (context: AppContextValue, props?: {
-  start?: number, limit?: number, inactive?: boolean,
+  start?: number, limit?: number,
 }) => {
-  const { start = 0, limit = 100, inactive = false } = props || {};
+  const { start = 0, limit = 100 } = props || {};
   const { supabase } = context;
   const { data, error } = await supabase
     .from(ViewName.studiosList)
     .select()
-    .eq('inactive', inactive)
+    .eq('inactive', false)
     .order('title', { ascending: true })
     .range(start, start + limit - 1);
   if (error) {
