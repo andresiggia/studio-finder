@@ -136,10 +136,16 @@ class StudioForm extends React.Component<Props, State> {
     });
   }
 
+  hasFileChanges = () => {
+    const { studioPhotoFiles } = this.state;
+    return studioPhotoFiles.some((file) => !!file);
+  }
+
   hasPhotoChanges = () => {
     const { studioPhotos, studioPhotosOriginal } = this.state;
     return studioPhotos.length !== studioPhotosOriginal.length
-      || studioPhotos.some((studioPhoto, index) => !deepEqual(studioPhoto, studioPhotosOriginal[index]));
+      || studioPhotos.some((studioPhoto, index) => !deepEqual(studioPhoto, studioPhotosOriginal[index]))
+      || this.hasFileChanges();
   }
 
   hasProfileChanges = () => {
@@ -223,12 +229,14 @@ class StudioForm extends React.Component<Props, State> {
   }
 
   isValidForm = () => {
-    const { studioProfile, studioPhotos } = this.state;
+    const { studioProfile, studioPhotos, studioPhotoFiles } = this.state;
     return Object.keys(studioProfile).every((key: string) => (
       !studioRequiredFields.includes(key as keyof StudioProfile) || !!studioProfile[key as keyof StudioProfile]
     ))
-      && studioPhotos.every((studioPhoto) => Object.keys(studioPhoto).every((key: string) => (
-        !studioPhotoRequiredFields.includes(key as keyof StudioPhoto) || !!studioPhoto[key as keyof StudioPhoto]
+      && studioPhotos.every((studioPhoto, index) => Object.keys(studioPhoto).every((key: string) => (
+        !studioPhotoRequiredFields.includes(key as keyof StudioPhoto)
+          || !!studioPhoto[key as keyof StudioPhoto]
+          || !!studioPhotoFiles[index]
       )));
   }
 

@@ -138,10 +138,16 @@ class SpaceForm extends React.Component<Props, State> {
     });
   }
 
+  hasFileChanges = () => {
+    const { spacePhotoFiles } = this.state;
+    return spacePhotoFiles.some((file) => !!file);
+  }
+
   hasPhotoChanges = () => {
     const { spacePhotos, spacePhotosOriginal } = this.state;
     return spacePhotos.length !== spacePhotosOriginal.length
-      || spacePhotos.some((spacePhoto, index) => !deepEqual(spacePhoto, spacePhotosOriginal[index]));
+      || spacePhotos.some((spacePhoto, index) => !deepEqual(spacePhoto, spacePhotosOriginal[index]))
+      || this.hasFileChanges();
   }
 
   hasProfileChanges = () => {
@@ -227,12 +233,14 @@ class SpaceForm extends React.Component<Props, State> {
   }
 
   isValidForm = () => {
-    const { spaceProfile, spacePhotos } = this.state;
+    const { spaceProfile, spacePhotos, spacePhotoFiles } = this.state;
     return Object.keys(spaceProfile).every((key: string) => (
       !spaceRequiredFields.includes(key as keyof SpaceProfile) || !!spaceProfile[key as keyof SpaceProfile]
     ))
-      && spacePhotos.every((spacePhoto) => Object.keys(spacePhoto).every((key: string) => (
-        !spacePhotoRequiredFields.includes(key as keyof SpacePhoto) || !!spacePhoto[key as keyof SpacePhoto]
+      && spacePhotos.every((spacePhoto, index) => Object.keys(spacePhoto).every((key: string) => (
+        !spacePhotoRequiredFields.includes(key as keyof SpacePhoto)
+          || !!spacePhoto[key as keyof SpacePhoto]
+          || !!spacePhotoFiles[index]
       )));
   }
 
