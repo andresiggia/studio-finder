@@ -539,15 +539,17 @@ class ProfileForm extends React.Component<Props, State> {
             </IonCardTitle>
           </IonCardHeader>
           <IonCardContent>
-            <form className="profile-form" onSubmit={this.onSubmit}>
-              <fieldset className="profile-form-fieldset" disabled={disabled}>
-                {(!state.user.user_metadata?.type || !state.profile) && (
-                  this.renderUserType(disabled)
-                )}
-                {this.renderFields(disabled, showRequired)}
-                {this.renderFooter(showRequired)}
-              </fieldset>
-            </form>
+            <IonGrid>
+              <form className="profile-form" onSubmit={this.onSubmit}>
+                <fieldset className="profile-form-fieldset" disabled={disabled}>
+                  {(!state.user.user_metadata?.type || !state.profile) && (
+                    this.renderUserType(disabled)
+                  )}
+                  {this.renderFields(disabled, showRequired)}
+                  {this.renderFooter(showRequired)}
+                </fieldset>
+              </form>
+            </IonGrid>
           </IonCardContent>
         </IonCard>
         {this.renderModal()}

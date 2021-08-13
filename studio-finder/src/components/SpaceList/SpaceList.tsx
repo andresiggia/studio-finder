@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  IonButton, IonButtons, IonContent, IonIcon, IonLabel, IonModal, IonSegment, IonSegmentButton,
+  IonButton, IonButtons, IonContent, IonGrid, IonIcon, IonLabel, IonModal, IonSegment, IonSegmentButton,
   IonSpinner, IonTitle, IonToolbar,
 } from '@ionic/react';
 // eslint-disable-next-line import/no-extraneous-dependencies
@@ -197,15 +197,17 @@ class SpaceList extends React.Component<Props, State> {
         </IonToolbar>
         <IonContent>
           {showModal && (
-            <SpaceForm
-              id={modalSelectedId}
-              studioProfile={studioProfile}
-              onCancel={() => this.onModalClose()}
-              onSave={() => {
-                this.onModalClose();
-                this.loadItems();
-              }}
-            />
+            <IonGrid>
+              <SpaceForm
+                id={modalSelectedId}
+                studioProfile={studioProfile}
+                onCancel={() => this.onModalClose()}
+                onSave={() => {
+                  this.onModalClose();
+                  this.loadItems();
+                }}
+              />
+            </IonGrid>
           )}
         </IonContent>
       </IonModal>

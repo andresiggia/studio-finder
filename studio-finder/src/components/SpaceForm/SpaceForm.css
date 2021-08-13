@@ -48,6 +48,10 @@
   padding: 1rem;
 }
 
+.space-form-photo {
+  width: 100%;
+}
+
 @media only screen and (min-width: 820px) {
   .space-form-list {
     display: flex;

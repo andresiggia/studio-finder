@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  IonButton, IonButtons, IonContent, IonIcon, IonModal, IonSpinner, IonTitle, IonToolbar,
+  IonButton, IonButtons, IonContent, IonIcon, IonModal, IonSpinner, IonTitle, IonToolbar, IonGrid,
 } from '@ionic/react';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import {
@@ -153,16 +153,18 @@ class BookingCalendar extends React.Component<Props, State> {
         </IonToolbar>
         <IonContent>
           {showModal && (
-            <BookingForm
-              id={modalSelectedId}
-              spaceProfile={spaceProfile}
-              studioProfile={studioProfile}
-              onCancel={() => this.onModalClose()}
-              onSave={() => {
-                this.onModalClose();
-                this.loadItems();
-              }}
-            />
+            <IonGrid>
+              <BookingForm
+                id={modalSelectedId}
+                spaceProfile={spaceProfile}
+                studioProfile={studioProfile}
+                onCancel={() => this.onModalClose()}
+                onSave={() => {
+                  this.onModalClose();
+                  this.loadItems();
+                }}
+              />
+            </IonGrid>
           )}
         </IonContent>
       </IonModal>

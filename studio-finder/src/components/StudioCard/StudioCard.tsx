@@ -1,7 +1,7 @@
 import React from 'react';
 import {
   IonAlert,
-  IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonContent, IonIcon, IonModal,
+  IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonContent, IonGrid, IonIcon, IonModal,
   IonSelect, IonSelectOption, IonSpinner, IonTitle, IonToolbar,
 } from '@ionic/react';
 // eslint-disable-next-line import/no-extraneous-dependencies
@@ -330,7 +330,9 @@ class StudioCard extends React.Component<any, State> {
             </div>
           </IonCardHeader>
           <IonCardContent>
-            {this.renderContent()}
+            <IonGrid>
+              {this.renderContent()}
+            </IonGrid>
           </IonCardContent>
         </IonCard>
         {this.renderModalStudio()}
