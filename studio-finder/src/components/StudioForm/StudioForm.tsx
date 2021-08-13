@@ -168,7 +168,7 @@ class StudioForm extends React.Component<Props, State> {
         const {
           studioProfile, studioPhotos, studioPhotoFiles, studioPhotosOriginal,
         } = this.state;
-        if (this.hasProfileChanges()) {
+        if (this.hasProfileChanges() || !this.isEditing()) {
           // eslint-disable-next-line no-console
           console.log('will insert/update studio', studioProfile);
           const data = await upsertStudio(this.context, studioProfile);

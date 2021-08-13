@@ -206,7 +206,7 @@ class BookingForm extends React.Component<Props, State> {
           throw new Error(i18n.t('Invalid booking'));
         }
         let { id: bookingId = 0 } = bookingWithUser;
-        if (this.hasChangesToBooking()) {
+        if (this.hasChangesToBooking() || !this.isEditing()) {
           // extract items to transform BookingWithUser into Booking type
           const {
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -272,15 +272,15 @@ class BookingForm extends React.Component<Props, State> {
 
   isValidForm = () => {
     const { booking, bookingItems } = this.state;
-    return !!booking
-      // required fields for booking
-      && Object.keys(booking).every((key: string) => (
-        !bookingRequiredFields.includes(key as keyof Booking) || !!booking[key as keyof Booking]
-      ))
-      // required fields for every booking item
-      && (!bookingItems || bookingItems.every((bookingItem) => Object.keys(bookingItem).every((key: string) => (
+    const isValidBooking = !!booking && Object.keys(booking).every((key: string) => (
+      !bookingRequiredFields.includes(key as keyof Booking) || !!booking[key as keyof Booking]
+    ));
+    // at least one booking item is required
+    const isValidBookingItems = !!bookingItems && bookingItems?.length > 0
+      && bookingItems.every((bookingItem) => Object.keys(bookingItem).every((key: string) => (
         !bookingItemRequiredFields.includes(key as keyof BookingItem) || !!bookingItem[key as keyof BookingItem]
-      ))));
+      )));
+    return isValidBooking && isValidBookingItems;
   }
 
   onItemAdd = () => {

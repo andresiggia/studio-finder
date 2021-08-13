@@ -174,7 +174,7 @@ class ProfileForm extends React.Component<Props, State> {
           // eslint-disable-next-line no-console
           console.log('user type updated', user);
         }
-        if (this.profileHasChanges()) {
+        if (this.profileHasChanges() || !this.isEditing()) {
           await updateProfile(userProfile, file);
         }
         this.setMountedState({

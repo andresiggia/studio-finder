@@ -170,7 +170,7 @@ class SpaceForm extends React.Component<Props, State> {
         const {
           spaceProfile, spacePhotos, spacePhotoFiles, spacePhotosOriginal,
         } = this.state;
-        if (this.hasProfileChanges()) {
+        if (this.hasProfileChanges() || !this.isEditing()) {
         // eslint-disable-next-line no-console
           console.log('will insert/update space', spaceProfile, 'in studio', studioProfile);
           const data = await upsertSpace(this.context, {
