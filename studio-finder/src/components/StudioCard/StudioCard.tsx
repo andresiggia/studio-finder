@@ -143,7 +143,7 @@ class StudioCard extends React.Component<any, State> {
       return (
         <Notification
           type={NotificationType.danger}
-          className="studio-list-spacer"
+          className="studio-card-spacer"
           header={i18n.t('Not found')}
           message={i18n.t('Invalid selected studio')}
           onDismiss={() => this.setMountedState({ selectedId: 0 })}
@@ -151,7 +151,7 @@ class StudioCard extends React.Component<any, State> {
       );
     }
     return (
-      <div className="studio-list-spacer">
+      <div className="studio-card-spacer">
         <SpaceList studioProfile={studioProfile} />
       </div>
     );
@@ -164,14 +164,14 @@ class StudioCard extends React.Component<any, State> {
     return (
       <>
         {isLoading && (
-          <div className="studio-list-loading studio-list-spacer">
+          <div className="studio-card-loading studio-card-spacer">
             <IonSpinner name="bubbles" />
           </div>
         )}
         {!!error && (
           <Notification
             type={NotificationType.danger}
-            className="studio-list-spacer"
+            className="studio-card-spacer"
             header={i18n.t('Error')}
             message={error?.message || i18n.t('An error occurred, please try again later')}
             onDismiss={() => this.setMountedState({ error: null })}
@@ -179,7 +179,7 @@ class StudioCard extends React.Component<any, State> {
         )}
         {!items || items.length === 0
           ? (
-            <div className="studio-list-spacer">
+            <div className="studio-card-spacer">
               <p>{i18n.t('No studios found.')}</p>
               <IonButton
                 type="button"
@@ -203,7 +203,7 @@ class StudioCard extends React.Component<any, State> {
     const { showModal, modalSelectedId } = this.state;
     return (
       <IonModal
-        cssClass="studio-list-modal"
+        cssClass="studio-card-modal"
         isOpen={showModal}
         onWillDismiss={() => this.onModalClose()}
       >
@@ -249,11 +249,11 @@ class StudioCard extends React.Component<any, State> {
     return (
       <>
         <IonCard>
-          <IonCardHeader className="studio-list-header">
+          <IonCardHeader className="studio-card-header">
             <IonCardTitle>
               {i18n.t('My Studios')}
             </IonCardTitle>
-            <div className="studio-list-header-toolbar">
+            <div className="studio-card-header-toolbar">
               {(!!items && items.length > 0) && (
                 <>
                   <IonSelect
@@ -261,7 +261,7 @@ class StudioCard extends React.Component<any, State> {
                     value={selectedId}
                     placeholder={i18n.t('Select Studio')}
                     title={i18n.t('Select Studio')}
-                    className="studio-list-header-toolbar-select"
+                    className="studio-card-header-toolbar-select"
                     interfaceOptions={{
                       header: i18n.t('Select Studio'),
                     }}
@@ -274,7 +274,7 @@ class StudioCard extends React.Component<any, State> {
                       </IonSelectOption>
                     ))}
                   </IonSelect>
-                  <IonButtons className="studio-list-header-toolbar-buttons">
+                  <IonButtons className="studio-card-header-toolbar-buttons">
                     {!!selectedId && (
                       <>
                         <IonButton

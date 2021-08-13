@@ -1,35 +1,35 @@
 
-.studio-list-loading {
+.studio-card-loading {
   text-align: center;
 }
 
-.studio-list-spacer {
+.studio-card-spacer {
   margin-top: 1rem;
 }
 
-.studio-list-header {
+.studio-card-header {
   display: flex;
   justify-content: space-between;
 }
 
-.studio-list-header-toolbar {
+.studio-card-header-toolbar {
   margin: 0 0 0 1rem;
   display: flex;
   justify-content: flex-end;
 }
 
-.studio-list-header-toolbar-select {
+.studio-card-header-toolbar-select {
   font-size: 1rem;
   padding: .425rem 0 .5rem;
   margin-left: 1rem;
 }
 
-.studio-list-header-toolbar-buttons {
+.studio-card-header-toolbar-buttons {
   margin-left: .5rem;
 }
 
 @media only screen and (min-width: 820px) {
-  .studio-list-modal {
+  .studio-card-modal {
     --min-width: 800px;
   }
 }
