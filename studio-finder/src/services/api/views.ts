@@ -5,4 +5,5 @@ export enum ViewName {
   bookingItemsWithBooking = 'booking_items_with_booking',
   bookingsWithUser = 'bookings_with_user',
   studiosList = 'studios_list',
+  spacesList = 'spaces_list',
 }

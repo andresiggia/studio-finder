@@ -43,6 +43,15 @@ export const defaultSpaceProfile: SpaceProfile = {
   modifiedAt: null,
 };
 
+export interface SpaceProfileDisplay extends SpaceProfile {
+  photoUrl: string,
+}
+
+export const defaultSpaceProfileDisplay: SpaceProfileDisplay = {
+  ...defaultSpaceProfile,
+  photoUrl: '',
+};
+
 export const getSpaces = async (context: AppContextValue, props: {
   studioId: number, start?: number, limit?: number,
 }) => {
@@ -54,7 +63,7 @@ export const getSpaces = async (context: AppContextValue, props: {
   }
   const { supabase } = context;
   const { data, error } = await supabase
-    .from(TableName.spaces)
+    .from(ViewName.spacesList)
     .select()
     .eq('studio_id', studioId)
     .eq('inactive', false)
@@ -63,7 +72,7 @@ export const getSpaces = async (context: AppContextValue, props: {
   if (error) {
     throw error;
   }
-  let spaces: SpaceProfile[] = [];
+  let spaces: SpaceProfileDisplay[] = [];
   if (data && Array.isArray(data) && data.length > 0) {
     spaces = data.map((spaceDataWithUserId: any) => {
       // extract userId from spaceDataWithUserId before saving
