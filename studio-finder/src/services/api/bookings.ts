@@ -15,10 +15,10 @@ export enum BookingError {
 export interface Booking {
   id: number,
   studioId: number,
-  userId: string,
+  userId: string | null,
   actId: number | null,
-  createdBy: string,
-  modifiedBy: string,
+  createdBy: string | null,
+  modifiedBy: string | null,
   notes: string,
   createdAt: Date | null,
   modifiedAt: Date | null,
@@ -26,10 +26,10 @@ export interface Booking {
 export const defaultBooking: Booking = {
   id: 0,
   studioId: 0,
-  userId: '',
+  userId: null,
   actId: null,
-  createdBy: '',
-  modifiedBy: '',
+  createdBy: null,
+  modifiedBy: null,
   notes: '',
   createdAt: null,
   modifiedAt: null,
@@ -115,21 +115,19 @@ export const upsertBooking = async (context: AppContextValue, booking: Booking) 
     throw new Error(BookingError.notLoggedIn);
   }
   const isEditing = !!booking.id;
-  const bookingObj: any = {
-    ...booking,
-    modifiedAt: new Date(), // modifiedAt to be updated to current date/time
-  };
+  const itemObj: any = { ...booking };
   if (!isEditing) { // inserting new row
-    bookingObj.createdBy = userId; // injecting user id provided
-    delete bookingObj.createdAt; // createdAt should be created by back-end
-    delete bookingObj.id; // id should be created by back-end
+    itemObj.createdBy = userId; // injecting user id provided
+    delete itemObj.createdAt; // createdAt should be created by back-end
+    delete itemObj.id; // id should be created by back-end
   } else {
-    bookingObj.modifiedBy = userId; // injecting user id provided
+    itemObj.modifiedBy = userId; // injecting user id provided
+    itemObj.modifiedAt = new Date(); // modifiedAt to be updated to current date/time
   }
-  const bookingData = updateObjectKeysToUnderscoreCase(bookingObj);
+  const itemData = updateObjectKeysToUnderscoreCase(itemObj);
   const { data, error } = await supabase
     .from(TableName.bookings)
-    .upsert([bookingData]);
+    .upsert([itemData]);
   if (error) {
     throw error;
   }
