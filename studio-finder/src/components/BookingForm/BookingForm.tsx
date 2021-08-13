@@ -244,7 +244,7 @@ class BookingForm extends React.Component<Props, State> {
               studioId, userId, actId, studioTitle, userName, userSurname, actTitle, ...bookingItem
             } = bookingItemWithBooking;
             // eslint-disable-next-line no-console
-            console.log('will insert/update booking item #', i, bookingItem);
+            console.log('will insert/update booking item #', i, bookingItem, bookingId);
             return upsertBookingItem(this.context, {
               bookingItem, bookingId,
             });

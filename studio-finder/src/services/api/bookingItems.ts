@@ -11,6 +11,7 @@ export enum BookingItemError {
   missingSpaceId = 'missingSpaceId',
   invalidResponse = 'invalidResponse',
   missingBookingRoles = 'missingBookingRoles',
+  editingItemOfWrongBooking = 'editingItemOfWrongBooking',
 }
 
 export interface BookingItem {
@@ -93,27 +94,27 @@ export const upsertBookingItem = async (context: AppContextValue, {
 }: {
   bookingItem: BookingItem, bookingId: number,
 }) => {
-  const { supabase, state } = context;
-  const userId = state.user?.id;
-  if (!userId) {
-    throw new Error(BookingItemError.notLoggedIn);
+  if (!bookingId) {
+    throw new Error(BookingItemError.missingBookingId);
   }
   const isEditing = !!bookingItem.id;
   const itemObj: any = {
     ...bookingItem,
-    modifiedAt: new Date(), // modifiedAt to be updated to current date/time
   };
   if (!isEditing) { // inserting new row
-    if (!bookingId) {
-      throw new Error(BookingItemError.missingBookingId);
-    }
     itemObj.bookingId = bookingId; // inject bookingId for new items
     delete itemObj.id; // id should be created by back-end
+  } else if (itemObj.bookingId !== bookingId) { // only when editing
+    // bookingId must match value provided
+    throw new Error(BookingItemError.editingItemOfWrongBooking);
   }
-  const bookingData = updateObjectKeysToUnderscoreCase(itemObj);
+  const itemData = updateObjectKeysToUnderscoreCase(itemObj);
+  // eslint-disable-next-line no-console
+  console.log('will upsert bookingItem', itemData);
+  const { supabase } = context;
   const { data, error } = await supabase
-    .from(TableName.bookings)
-    .upsert([bookingData]);
+    .from(TableName.bookingItems)
+    .upsert([itemData]);
   if (error) {
     throw error;
   }
@@ -129,7 +130,7 @@ export const upsertBookingItem = async (context: AppContextValue, {
 export const deleteBookingItem = async (context: AppContextValue, id: number) => {
   const { supabase } = context;
   const { data, error } = await supabase
-    .from(TableName.bookings)
+    .from(TableName.bookingItems)
     .delete()
     .match({ id });
   if (error) {
