@@ -50,21 +50,30 @@ export const defaultStudioProfile: StudioProfile = {
   modifiedAt: null,
 };
 
+export interface StudioProfileDisplay extends StudioProfile {
+  photoUrl: string,
+}
+
+export const defaultStudioProfileDisplay: StudioProfileDisplay = {
+  ...defaultStudioProfile,
+  photoUrl: '',
+};
+
 export const getStudios = async (context: AppContextValue, props?: {
   start?: number, limit?: number, inactive?: boolean,
 }) => {
   const { start = 0, limit = 100, inactive = false } = props || {};
   const { supabase } = context;
   const { data, error } = await supabase
-    .from(TableName.studios)
+    .from(ViewName.studiosList)
     .select()
-    .eq('inactive', inactive)
+    // .eq('inactive', inactive)
     .order('title', { ascending: true })
     .range(start, start + limit - 1);
   if (error) {
     throw error;
   }
-  let studios: StudioProfile[] = [];
+  let studios: StudioProfileDisplay[] = [];
   if (data && Array.isArray(data) && data.length > 0) {
     studios = data.map((studioData: any) => {
       const studio = updateObjectKeysToCamelCase(studioData);
@@ -93,7 +102,7 @@ export const getStudiosByUser = async (context: AppContextValue, props?: {
   if (error) {
     throw error;
   }
-  let studios: StudioProfile[] = [];
+  let studios: StudioProfileDisplay[] = [];
   if (data && Array.isArray(data) && data.length > 0) {
     studios = data.map((studioDataWithUserId: any) => {
       // extract userId from studioDataWithUserId before saving

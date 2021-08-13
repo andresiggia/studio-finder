@@ -1,14 +1,22 @@
 import React from 'react';
 import {
-  IonCol, IonGrid, IonRow, IonSpinner,
+  IonCard,
+  IonCardContent,
+  IonCardHeader,
+  IonCardTitle,
+  IonCol, IonGrid, IonIcon, IonRow, IonSpinner,
 } from '@ionic/react';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import {
+  musicalNotes,
+} from 'ionicons/icons';
 
 // context
 import AppContext from '../../context/AppContext';
 
 // services
 import i18n from '../../services/i18n/i18n';
-import { getStudios, StudioProfile } from '../../services/api/studios';
+import { getStudios, StudioProfileDisplay } from '../../services/api/studios';
 
 // components
 import Notification, { NotificationType } from '../Notification/Notification';
@@ -27,7 +35,7 @@ import './StudioList.css';
 interface State {
   isLoading: boolean,
   error: Error | null,
-  items: StudioProfile[] | null,
+  items: StudioProfileDisplay[] | null,
 }
 
 class StudioList extends React.Component<any, State> {
@@ -90,6 +98,28 @@ class StudioList extends React.Component<any, State> {
     });
   }
 
+  renderStudio = (item: StudioProfileDisplay) => (
+    <IonCard>
+      <div
+        className="studio-list-item-photo"
+        style={{ backgroundImage: `url(${item.photoUrl})` }}
+        title={item.photoUrl ? '' : i18n.t('No image to display')}
+      >
+        {!item.photoUrl && (
+          <IonIcon icon={musicalNotes} color="light" />
+        )}
+      </div>
+      <IonCardHeader>
+        <IonCardTitle>
+          {item.title}
+        </IonCardTitle>
+      </IonCardHeader>
+      <IonCardContent>
+        {item.description}
+      </IonCardContent>
+    </IonCard>
+  )
+
   render() {
     const { isLoading, error, items } = this.state;
     if (isLoading) {
@@ -122,7 +152,7 @@ class StudioList extends React.Component<any, State> {
           <IonRow>
             {items.map((item) => (
               <IonCol key={item.id} size="12" size-sm="6" size-md="4" size-lg="3">
-                {item.title}
+                {this.renderStudio(item)}
               </IonCol>
             ))}
           </IonRow>

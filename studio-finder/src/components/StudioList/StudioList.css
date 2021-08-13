@@ -1,0 +1,12 @@
+.studio-list-item-photo {
+  height: 100px;
+  overflow: hidden;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center center;
+  background-color: var(--ion-color-secondary);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 4rem;
+}
