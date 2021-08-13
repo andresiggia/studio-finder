@@ -210,7 +210,8 @@ class BookingForm extends React.Component<Props, State> {
           // extract items to transform BookingWithUser into Booking type
           const {
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            studioTitle, userName, userSurname, actTitle, ...booking
+            studioTitle, userName, userSurname, actTitle, createdByName, createdBySurname, modifiedByName, modifiedBySurname,
+            ...booking
           } = bookingWithUser;
           // eslint-disable-next-line no-console
           console.log('will insert/update booking', booking);
@@ -270,6 +271,15 @@ class BookingForm extends React.Component<Props, State> {
     return !!id;
   }
 
+  isValidEndDate = (item: BookingItemWithBooking) => {
+    const { startAt, endAt } = item;
+    if ((!startAt || !(startAt instanceof Date))
+      || (!endAt || !(endAt instanceof Date))) {
+      return true; // ignore when dates are not set
+    }
+    return startAt.getTime() < endAt.getTime();
+  }
+
   isValidForm = () => {
     const { booking, bookingItems } = this.state;
     const isValidBooking = !!booking && Object.keys(booking).every((key: string) => (
@@ -279,7 +289,7 @@ class BookingForm extends React.Component<Props, State> {
     const isValidBookingItems = !!bookingItems && bookingItems?.length > 0
       && bookingItems.every((bookingItem) => Object.keys(bookingItem).every((key: string) => (
         !bookingItemRequiredFields.includes(key as keyof BookingItem) || !!bookingItem[key as keyof BookingItem]
-      )));
+      )) && this.isValidEndDate(bookingItem));
     return isValidBooking && isValidBookingItems;
   }
 
@@ -601,6 +611,7 @@ class BookingForm extends React.Component<Props, State> {
             onAdd={this.onItemAdd}
             onDelete={this.onItemDelete}
             onChange={this.onItemChange}
+            isValidEndDate={this.isValidEndDate}
           />
         </div>
       </IonList>

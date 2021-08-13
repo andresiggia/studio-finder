@@ -34,6 +34,7 @@ interface Props {
   onDelete: (index: number) => void,
   onChange: (item: BookingItemWithBooking, index: number) => void,
   onAdd: () => void,
+  isValidEndDate: (item: BookingItemWithBooking) => boolean,
 }
 
 class BookingItemList extends React.Component<Props, State> {
@@ -90,7 +91,7 @@ class BookingItemList extends React.Component<Props, State> {
 
   renderSelectedItem = () => {
     const {
-      items, studioProfile, disabled, onDelete, onChange,
+      items, studioProfile, disabled, onDelete, onChange, isValidEndDate,
     } = this.props;
     const { selectedIndex } = this.state;
     return (
@@ -101,6 +102,7 @@ class BookingItemList extends React.Component<Props, State> {
         disabled={disabled}
         onDelete={() => onDelete(selectedIndex)}
         onChange={(item: BookingItemWithBooking) => onChange(item, selectedIndex)}
+        isValidEndDate={isValidEndDate}
       />
     );
   }

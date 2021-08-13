@@ -30,6 +30,7 @@ interface Props {
   studioId: number,
   onDelete: () => void,
   onChange: (item: BookingItemWithBooking) => void,
+  isValidEndDate: (item: BookingItemWithBooking) => boolean,
 }
 
 interface State {
@@ -128,9 +129,10 @@ class BookingItemForm extends React.Component<Props, State> {
   )
 
   renderDateTimeInput = ({
-    value, disabled = false, required = false, label, fieldName,
+    value, disabled = false, required = false, label, fieldName, minDate, maxDate,
   }: {
-    value: Date | null, disabled?: boolean, required?: boolean, label: string, fieldName: string,
+      value: Date | null, disabled?: boolean, required?: boolean, label: string, fieldName: string,
+      minDate?: Date | null, maxDate?: Date | null,
   }) => {
     const isRequired = required || bookingItemRequiredFields.includes(fieldName as keyof BookingItem);
     return (
@@ -141,6 +143,13 @@ class BookingItemForm extends React.Component<Props, State> {
             ? value.toISOString()
             : ''}
           displayFormat="D MMM YYYY, HH:mm"
+          min={(!!minDate && minDate instanceof Date)
+            ? minDate.toISOString()
+            : undefined}
+          max={(!!maxDate && maxDate instanceof Date)
+            ? maxDate.toISOString()
+            : undefined}
+          placeholder={i18n.t('Select')}
           // required={isRequired}
           disabled={disabled}
           onIonChange={(e: any) => this.onChange(new Date(e.detail.value), fieldName)}
@@ -197,7 +206,7 @@ class BookingItemForm extends React.Component<Props, State> {
   }
 
   renderFields = (disabled: boolean) => {
-    const { item } = this.props;
+    const { item, isValidEndDate } = this.props;
     const { state } = this.context;
     const { spaces } = this.state;
     const serviceTypeOptions = (state.services || []).map((service: Service) => ({
@@ -245,6 +254,7 @@ class BookingItemForm extends React.Component<Props, State> {
             value: item.startAt,
             fieldName: 'startAt',
             label: i18n.t('Start At'),
+            maxDate: item.endAt,
             disabled,
           })}
         </IonItem>
@@ -253,9 +263,19 @@ class BookingItemForm extends React.Component<Props, State> {
             value: item.endAt,
             fieldName: 'endAt',
             label: i18n.t('End At'),
+            minDate: item.startAt,
             disabled,
           })}
         </IonItem>
+        {!isValidEndDate(item) && (
+          <Notification
+            type={NotificationType.danger}
+            className="booking-item-form-notification booking-item-form-spacer"
+            header={i18n.t('Invalid end date')}
+            message={i18n.t('End date/time must be after start date/time')}
+            preventDismiss
+          />
+        )}
         <IonItem className="booking-item-form-list-item-full">
           {this.renderTextareaInput({
             value: item.notes,
