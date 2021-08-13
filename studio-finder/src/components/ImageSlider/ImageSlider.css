@@ -1,0 +1,20 @@
+.image-slider-slide {
+  overflow: hidden;
+  position: relative;
+}
+
+.image-slider-slide-16by9 {
+  padding-top: 56.25%
+}
+
+.image-slider-item {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background-color: var(--ion-color-light-tint);
+  background-position: center center;
+  background-size: contain;
+  background-repeat: no-repeat;
+}
