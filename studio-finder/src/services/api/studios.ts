@@ -54,6 +54,30 @@ export const getStudios = async (context: AppContextValue, props?: {
   start?: number, limit?: number, inactive?: boolean,
 }) => {
   const { start = 0, limit = 100, inactive = false } = props || {};
+  const { supabase } = context;
+  const { data, error } = await supabase
+    .from(TableName.studios)
+    .select()
+    .eq('inactive', inactive)
+    .order('title', { ascending: true })
+    .range(start, start + limit - 1);
+  if (error) {
+    throw error;
+  }
+  let studios: StudioProfile[] = [];
+  if (data && Array.isArray(data) && data.length > 0) {
+    studios = data.map((studioData: any) => {
+      const studio = updateObjectKeysToCamelCase(studioData);
+      return convertDateFields(studio, studioDateFields);
+    });
+  }
+  return studios;
+};
+
+export const getStudiosByUser = async (context: AppContextValue, props?: {
+  start?: number, limit?: number, inactive?: boolean,
+}) => {
+  const { start = 0, limit = 100, inactive = false } = props || {};
   const { supabase, state } = context;
   const userId = state.user?.id;
   if (!userId) {

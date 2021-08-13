@@ -21,7 +21,7 @@ import {
 import {
   BookingItemWithBooking, getBookingItems, upsertBookingItem, deleteBookingItem, defaultBookingItem, BookingItem, bookingItemRequiredFields,
 } from '../../services/api/bookingItems';
-import { getStudios, StudioProfile } from '../../services/api/studios';
+import { getStudiosByUser, StudioProfile } from '../../services/api/studios';
 import { SpaceProfile } from '../../services/api/spaces';
 
 // components
@@ -132,7 +132,7 @@ class BookingForm extends React.Component<Props, State> {
         }
         // eslint-disable-next-line no-console
         console.log('loading studios...');
-        const studios = await getStudios(this.context);
+        const studios = await getStudiosByUser(this.context);
         const defaultItem = this.getDefaultBookingWithUser();
         this.setMountedState({
           isLoading: false,

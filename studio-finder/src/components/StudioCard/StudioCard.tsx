@@ -10,7 +10,7 @@ import {
 } from 'ionicons/icons';
 
 // services
-import { deleteStudio, getStudios, StudioProfile } from '../../services/api/studios';
+import { deleteStudio, getStudiosByUser, StudioProfile } from '../../services/api/studios';
 import i18n from '../../services/i18n/i18n';
 
 // components
@@ -79,7 +79,7 @@ class StudioCard extends React.Component<any, State> {
       isLoading: true,
     }, async () => {
       try {
-        const items = await getStudios(this.context);
+        const items = await getStudiosByUser(this.context);
         // eslint-disable-next-line no-console
         console.log('got studios', items);
         let selectedId = 0;
