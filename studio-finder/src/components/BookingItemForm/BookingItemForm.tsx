@@ -14,7 +14,7 @@ import i18n from '../../services/i18n/i18n';
 
 // constants
 import { BookingItem, bookingItemRequiredFields, BookingItemWithBooking } from '../../services/api/bookingItems';
-import { getSpaces, SpaceProfile } from '../../services/api/spaces';
+import { getSpacesByUser, SpaceProfile } from '../../services/api/spaces';
 import { Service } from '../../services/api/services';
 
 // components
@@ -92,7 +92,7 @@ class BookingItemForm extends React.Component<Props, State> {
         const { studioId } = this.props;
         // eslint-disable-next-line no-console
         console.log('loading spaces...');
-        const spaces = await getSpaces(this.context, {
+        const spaces = await getSpacesByUser(this.context, {
           studioId,
         });
         this.setMountedState({

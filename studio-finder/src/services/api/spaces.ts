@@ -8,6 +8,7 @@ import { ViewName } from './views';
 export enum SpaceError {
   notLoggedIn = 'notLoggedIn',
   missingStudioId = 'missingStudioId',
+  missingSpaceId = 'missingSpaceId',
   invalidResponse = 'invalidResponse',
   missingSpaceRoles = 'missingSpaceRoles',
   editingSpaceOfWrongStudio = 'editingSpaceOfWrongStudio',
@@ -43,6 +44,38 @@ export const defaultSpaceProfile: SpaceProfile = {
 };
 
 export const getSpaces = async (context: AppContextValue, props: {
+  studioId: number, start?: number, limit?: number,
+}) => {
+  const {
+    studioId, start = 0, limit = 100,
+  } = props || {};
+  if (!studioId) {
+    throw new Error(SpaceError.missingStudioId);
+  }
+  const { supabase } = context;
+  const { data, error } = await supabase
+    .from(TableName.spaces)
+    .select()
+    .eq('studio_id', studioId)
+    .eq('inactive', false)
+    .order('title', { ascending: true })
+    .range(start, start + limit - 1);
+  if (error) {
+    throw error;
+  }
+  let spaces: SpaceProfile[] = [];
+  if (data && Array.isArray(data) && data.length > 0) {
+    spaces = data.map((spaceDataWithUserId: any) => {
+      // extract userId from spaceDataWithUserId before saving
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { userId: _userId, ...spaceData } = updateObjectKeysToCamelCase(spaceDataWithUserId);
+      return convertDateFields(spaceData, spaceDateFields);
+    });
+  }
+  return spaces;
+};
+
+export const getSpacesByUser = async (context: AppContextValue, props: {
   studioId: number, start?: number, limit?: number, inactive?: boolean,
 }) => {
   const {
@@ -81,6 +114,9 @@ export const getSpaces = async (context: AppContextValue, props: {
 
 export const getSpace = async (context: AppContextValue, spaceId: number) => {
   const { supabase } = context;
+  if (!spaceId) {
+    throw new Error(SpaceError.missingSpaceId);
+  }
   const { data, error } = await supabase
     .from(TableName.spaces)
     .select()

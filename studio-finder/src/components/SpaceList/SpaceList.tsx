@@ -9,7 +9,7 @@ import { addOutline, closeOutline, createOutline } from 'ionicons/icons';
 // services
 import { StudioProfile } from '../../services/api/studios';
 import i18n from '../../services/i18n/i18n';
-import { getSpaces } from '../../services/api/spaces';
+import { getSpacesByUser } from '../../services/api/spaces';
 
 // components
 import Notification, { NotificationType } from '../Notification/Notification';
@@ -89,7 +89,7 @@ class SpaceList extends React.Component<Props, State> {
         const { studioProfile } = this.props;
         // eslint-disable-next-line no-console
         console.log('will load spaces for studio', studioProfile);
-        const items = await getSpaces(this.context, {
+        const items = await getSpacesByUser(this.context, {
           studioId: studioProfile.id,
         });
         // eslint-disable-next-line no-console
