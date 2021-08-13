@@ -18,10 +18,14 @@ interface State {
   query: string,
 }
 
-class StudioSearch extends React.Component<RouteComponentProps, State> {
+interface Props extends RouteComponentProps {
+  showResults?: boolean,
+}
+
+class StudioSearch extends React.Component<Props, State> {
   mounted = false
 
-  constructor(props: RouteComponentProps) {
+  constructor(props: Props) {
     super(props);
     this.state = {
       query: '',
@@ -33,7 +37,7 @@ class StudioSearch extends React.Component<RouteComponentProps, State> {
     this.updateState();
   }
 
-  componentDidUpdate(prevProps: RouteComponentProps) {
+  componentDidUpdate(prevProps: Props) {
     if (this.getSearchParams(prevProps) !== this.getSearchParams(this.props)) {
       this.updateState();
     }
@@ -59,7 +63,7 @@ class StudioSearch extends React.Component<RouteComponentProps, State> {
     const { match } = props;
     const [route] = getRoutesByName([RouteName.search]);
     const isSearchPage = matchPath(match.path, {
-      path: route.path,
+      path: route.otherPaths ? [route.path, ...route.otherPaths] : route.path,
       exact: route.exact,
       strict: route.strict,
     });
@@ -81,17 +85,17 @@ class StudioSearch extends React.Component<RouteComponentProps, State> {
     const { history } = this.props;
     const { query } = this.state;
     e.preventDefault(); // prevent form submission
-    if (query) {
-      const [route] = getRoutesByName([RouteName.search]);
-      history.push(route.path.replace(':query', encodeURIComponent(query)));
-    }
+    // if (query) {
+    const [route] = getRoutesByName([RouteName.search]);
+    history.push(`${route.path}/${encodeURIComponent(query)}`);
+    // }
   }
 
   // render
 
   render() {
+    const { showResults } = this.props;
     const { query } = this.state;
-    const searchParam = this.getSearchParams();
     return (
       <>
         <form onSubmit={this.onSubmit} className="studio-search-form">
@@ -105,12 +109,11 @@ class StudioSearch extends React.Component<RouteComponentProps, State> {
           <IonButton
             color="primary"
             type="submit"
-            disabled={!query}
           >
             {i18n.t('Search')}
           </IonButton>
         </form>
-        {!!searchParam && (
+        {showResults && (
           <StudioList />
         )}
       </>

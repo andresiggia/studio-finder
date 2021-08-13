@@ -22,7 +22,7 @@ class Search extends React.Component {
           <IonText className="page-title">
             {i18n.t('Search results')}
           </IonText>
-          <StudioSearch />
+          <StudioSearch showResults />
         </IonContent>
       </IonPage>
     );

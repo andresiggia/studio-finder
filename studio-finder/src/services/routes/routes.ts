@@ -62,8 +62,9 @@ const routes: Route[] = [
   },
   {
     name: RouteName.search,
-    path: '/search/:query',
-    exact: false,
+    path: '/search',
+    otherPaths: ['/search/:query'],
+    exact: true,
     strict: false,
     Component: Search,
     getLabel: () => i18n.t('Search results'),
