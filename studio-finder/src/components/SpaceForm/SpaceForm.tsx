@@ -18,7 +18,7 @@ import {
 } from '../../services/api/spaces';
 import { StudioProfile } from '../../services/api/studios';
 import {
-  defaultSpacePhoto, deleteSpacePhoto, getSpacePhotos, SpacePhoto, upsertSpacePhoto,
+  defaultSpacePhoto, deleteSpacePhoto, getSpacePhotos, SpacePhoto, spacePhotoRequiredFields, upsertSpacePhoto,
 } from '../../services/api/spacePhotos';
 import { Photo } from '../../services/api/photos';
 
@@ -227,10 +227,13 @@ class SpaceForm extends React.Component<Props, State> {
   }
 
   isValidForm = () => {
-    const { spaceProfile } = this.state;
+    const { spaceProfile, spacePhotos } = this.state;
     return Object.keys(spaceProfile).every((key: string) => (
       !spaceRequiredFields.includes(key as keyof SpaceProfile) || !!spaceProfile[key as keyof SpaceProfile]
-    ));
+    ))
+      && spacePhotos.every((spacePhoto) => Object.keys(spacePhoto).every((key: string) => (
+        !spacePhotoRequiredFields.includes(key as keyof SpacePhoto) || !!spacePhoto[key as keyof SpacePhoto]
+      )));
   }
 
   reorderPhotosAndFiles = (items: Photo[], spacePhotoFiles?: (File | null)[]) => {

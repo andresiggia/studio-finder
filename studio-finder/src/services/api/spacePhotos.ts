@@ -22,7 +22,7 @@ export const defaultSpacePhoto: SpacePhoto = {
   photoUrl: '',
   order: 0,
 };
-export const spacePhotoRequiredFields: (keyof SpacePhoto)[] = ['spaceId', 'photoUrl', 'order'];
+export const spacePhotoRequiredFields: (keyof SpacePhoto)[] = ['photoUrl', 'order'];
 
 export const getSpacePhotos = async (context: AppContextValue, props: {
   spaceId?: number, start?: number, limit?: number,
