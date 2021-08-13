@@ -9,4 +9,27 @@
 .studio-page-label {
   display: block;
   margin-bottom: .5rem;
+  font-weight: 500;
+}
+
+.studio-page-space {
+  border: 2px solid transparent;
+}
+
+.studio-page-space:hover,
+.studio-page-space-selected {
+  border-color: var(--ion-color-primary);
+}
+
+.studio-page-space-photo {
+  height: 100px;
+  overflow: hidden;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center center;
+  background-color: var(--ion-color-tertiary);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 4rem;
 }

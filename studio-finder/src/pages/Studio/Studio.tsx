@@ -1,11 +1,15 @@
 import React from 'react';
 import {
-  IonCol,
-  IonContent, IonGrid, IonLabel, IonPage, IonRow, IonSpinner, IonText,
+  IonCard, IonCardContent, IonCardHeader, IonCol, IonContent, IonGrid, IonLabel, IonPage, IonRow, IonSpinner,
+  IonText, IonCardTitle, IonIcon,
 } from '@ionic/react';
 import {
   withRouter, RouteComponentProps,
 } from 'react-router-dom';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import {
+  musicalNote,
+} from 'ionicons/icons';
 
 // context
 import AppContext from '../../context/AppContext';
@@ -19,6 +23,7 @@ import ImageSlider from '../../components/ImageSlider/ImageSlider';
 import i18n from '../../services/i18n/i18n';
 import { getStudio, StudioProfile } from '../../services/api/studios';
 import { getStudioPhotos, StudioPhoto } from '../../services/api/studioPhotos';
+import { getSpaces, SpaceProfile } from '../../services/api/spaces';
 
 // css
 import './Studio.css';
@@ -28,6 +33,8 @@ interface State {
   error: Error | null,
   studioProfile: StudioProfile | null,
   studioPhotos: StudioPhoto[],
+  spaces: SpaceProfile[],
+  selectedSpaceId: number,
 }
 
 class Studio extends React.Component<RouteComponentProps, State> {
@@ -40,6 +47,8 @@ class Studio extends React.Component<RouteComponentProps, State> {
       error: null,
       studioProfile: null,
       studioPhotos: [],
+      spaces: [],
+      selectedSpaceId: 0,
     };
   }
 
@@ -86,10 +95,19 @@ class Studio extends React.Component<RouteComponentProps, State> {
         console.log('loading studio data...', id);
         const studioProfile = await getStudio(this.context, id);
         const studioPhotos = await getStudioPhotos(this.context, { studioId: id });
+        const spaces = await getSpaces(this.context, {
+          studioId: id,
+        });
+        let selectedSpaceId = 0;
+        if (spaces.length > 0) {
+          selectedSpaceId = spaces[0].id;
+        }
         this.setMountedState({
           isLoading: false,
           studioProfile,
           studioPhotos,
+          spaces,
+          selectedSpaceId,
         });
       } catch (error) {
         // eslint-disable-next-line no-console
@@ -133,6 +151,77 @@ class Studio extends React.Component<RouteComponentProps, State> {
     );
   }
 
+  renderSelectedSpace = () => {
+    const { spaces, selectedSpaceId } = this.state;
+    const space = spaces.find((item) => item.id === selectedSpaceId);
+    if ((!selectedSpaceId || !space)) {
+      return (
+        <IonLabel>{`(${i18n.t('No space selected')})`}</IonLabel>
+      );
+    }
+    return (
+      <>
+        <IonLabel className="studio-page-label">
+          {space.title}
+        </IonLabel>
+      </>
+    );
+  }
+
+  renderSpaces = () => {
+    const { spaces, selectedSpaceId } = this.state;
+    return (
+      <>
+        <IonText className="page-subtitle">
+          {i18n.t('Spaces')}
+        </IonText>
+        {spaces.length === 0
+          ? (
+            <p>{i18n.t('No spaces available')}</p>
+          ) : (
+            <IonRow>
+              <IonCol size="12" size-sm="6" size-md="4" size-lg="3">
+                <IonLabel className="studio-page-label">
+                  {i18n.t('Select a space')}
+                </IonLabel>
+                {spaces.map((item) => (
+                  <IonCard
+                    key={item.id}
+                    className={`studio-page-space ${
+                      item.id === selectedSpaceId ? 'studio-page-space-selected' : ''
+                    }`}
+                    button
+                    onClick={() => this.setMountedState({ selectedSpaceId: item.id })}
+                  >
+                    <div
+                      className="studio-page-space-photo"
+                      // style={{ backgroundImage: `url(${item.photoUrl})` }}
+                      // title={item.photoUrl ? '' : i18n.t('No image to display')}
+                    >
+                      {/* {!item.photoUrl && ( */}
+                      <IonIcon icon={musicalNote} color="light" />
+                      {/* )} */}
+                    </div>
+                    <IonCardHeader>
+                      <IonCardTitle>
+                        {item.title}
+                      </IonCardTitle>
+                    </IonCardHeader>
+                    <IonCardContent>
+                      {item.description}
+                    </IonCardContent>
+                  </IonCard>
+                ))}
+              </IonCol>
+              <IonCol size="12" size-sm="6" size-md="8" size-lg="9">
+                {this.renderSelectedSpace()}
+              </IonCol>
+            </IonRow>
+          )}
+      </>
+    );
+  }
+
   renderView = () => {
     const { isLoading, error, studioProfile } = this.state;
     if (isLoading) {
@@ -169,6 +258,8 @@ class Studio extends React.Component<RouteComponentProps, State> {
             {this.renderAbout()}
           </IonCol>
         </IonRow>
+        <hr />
+        {this.renderSpaces()}
       </>
     );
   }
