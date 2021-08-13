@@ -67,7 +67,7 @@ export const getStudios = async (context: AppContextValue, props?: {
   const { data, error } = await supabase
     .from(ViewName.studiosList)
     .select()
-    // .eq('inactive', inactive)
+    .eq('inactive', inactive)
     .order('title', { ascending: true })
     .range(start, start + limit - 1);
   if (error) {
