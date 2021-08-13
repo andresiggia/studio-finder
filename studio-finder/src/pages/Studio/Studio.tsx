@@ -23,7 +23,7 @@ import ImageSlider from '../../components/ImageSlider/ImageSlider';
 import i18n from '../../services/i18n/i18n';
 import { getStudio, StudioProfile } from '../../services/api/studios';
 import { getStudioPhotos, StudioPhoto } from '../../services/api/studioPhotos';
-import { getSpaces, SpaceProfile } from '../../services/api/spaces';
+import { getSpaces, SpaceProfileDisplay } from '../../services/api/spaces';
 
 // css
 import './Studio.css';
@@ -33,7 +33,7 @@ interface State {
   error: Error | null,
   studioProfile: StudioProfile | null,
   studioPhotos: StudioPhoto[],
-  spaces: SpaceProfile[],
+  spaces: SpaceProfileDisplay[],
   selectedSpaceId: number,
 }
 
@@ -195,12 +195,12 @@ class Studio extends React.Component<RouteComponentProps, State> {
                   >
                     <div
                       className="studio-page-space-photo"
-                      // style={{ backgroundImage: `url(${item.photoUrl})` }}
-                      // title={item.photoUrl ? '' : i18n.t('No image to display')}
+                      style={{ backgroundImage: `url(${item.photoUrl})` }}
+                      title={item.photoUrl ? '' : i18n.t('No image to display')}
                     >
-                      {/* {!item.photoUrl && ( */}
-                      <IonIcon icon={musicalNote} color="light" />
-                      {/* )} */}
+                      {!item.photoUrl && (
+                        <IonIcon icon={musicalNote} color="light" />
+                      )}
                     </div>
                     <IonCardHeader>
                       <IonCardTitle>
