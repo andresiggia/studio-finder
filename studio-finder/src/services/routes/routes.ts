@@ -23,6 +23,7 @@ export enum RouteName {
 export interface Route {
   name: string;
   path: string;
+  otherPaths?: string[];
   exact?: boolean;
   strict?: boolean;
   Component?: any;

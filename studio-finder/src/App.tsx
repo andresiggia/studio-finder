@@ -98,16 +98,16 @@ class App extends React.Component<any, State> {
       <Switch>
         {routes.map((route) => {
           const {
-            Component, exact, strict, path, getLabel,
+            Component, exact, strict, path, otherPaths, name, getLabel,
           } = route;
           if (!Component) {
             return null;
           }
           return (
             <PageRoute
-              key={path}
+              key={name}
               title={getLabel ? getLabel() : ''}
-              path={path}
+              path={otherPaths ? [path, ...otherPaths] : path}
               exact={exact}
               strict={strict}
               component={Component}
