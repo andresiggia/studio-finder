@@ -16,7 +16,7 @@ import { deepEqual } from '../../services/helpers/misc';
 
 // constants
 import {
-  defaultBookingWithUser, getBooking, upsertBooking, Booking, BookingWithUser, bookingRequiredFields,
+  defaultBookingWithUser, getBooking, upsertBooking, Booking, BookingWithUser, bookingRequiredFields, defaultBooking,
 } from '../../services/api/bookings';
 import {
   BookingItemWithBooking, getBookingItems, upsertBookingItem, deleteBookingItem, defaultBookingItem, BookingItem, bookingItemRequiredFields,
@@ -133,13 +133,13 @@ class BookingForm extends React.Component<Props, State> {
         // eslint-disable-next-line no-console
         console.log('loading studios...');
         const studios = await getStudios(this.context);
-        const defaultBooking = this.getDefaultBookingWithUser();
+        const defaultItem = this.getDefaultBookingWithUser();
         this.setMountedState({
           isLoading: false,
           allowEdit: !isEditing, // if creating new, skip allowEdit
           studios,
-          booking: booking || defaultBooking,
-          bookingOriginal: booking || defaultBooking,
+          booking: booking || defaultItem,
+          bookingOriginal: booking || defaultItem,
           bookingItems,
           bookingItemsOriginal: bookingItems.slice(),
         });
@@ -207,12 +207,11 @@ class BookingForm extends React.Component<Props, State> {
         }
         let { id: bookingId = 0 } = bookingWithUser;
         if (this.hasChangesToBooking() || !this.isEditing()) {
-          // extract items to transform BookingWithUser into Booking type
-          const {
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            studioTitle, userName, userSurname, actTitle, createdByName, createdBySurname, modifiedByName, modifiedBySurname,
-            ...booking
-          } = bookingWithUser;
+          // remove extra fields to convert BookingWithUser to Booking
+          const booking: any = {};
+          Object.keys(defaultBooking).forEach((key: string) => {
+            booking[key] = bookingWithUser[key as keyof BookingWithUser];
+          });
           // eslint-disable-next-line no-console
           console.log('will insert/update booking', booking);
           const data = await upsertBooking(this.context, booking);
@@ -238,11 +237,11 @@ class BookingForm extends React.Component<Props, State> {
             if (!this.hasChangesToBookingItem(bookingItemWithBooking, i)) {
               return Promise.resolve(null);
             }
-            // extract items to transform BookingWithUser into Booking type
-            const {
-              // eslint-disable-next-line @typescript-eslint/no-unused-vars
-              studioId, userId, actId, studioTitle, userName, userSurname, actTitle, ...bookingItem
-            } = bookingItemWithBooking;
+            // remove extra fields to convert BookingItemWithBooking to BookingItem
+            const bookingItem: any = {};
+            Object.keys(defaultBookingItem).forEach((key: string) => {
+              bookingItem[key] = bookingItemWithBooking[key as keyof BookingItemWithBooking];
+            });
             // eslint-disable-next-line no-console
             console.log('will insert/update booking item #', i, bookingItem, bookingId);
             return upsertBookingItem(this.context, {
