@@ -38,6 +38,7 @@ export const getSpacePhotos = async (context: AppContextValue, props: {
     .from(TableName.spacePhotos)
     .select()
     .eq('space_id', spaceId)
+    .order('order', { ascending: true })
     .range(start, start + limit - 1);
   if (error) {
     throw error;

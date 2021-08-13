@@ -12,7 +12,7 @@ import AppContext from '../../context/AppContext';
 
 // services
 import i18n from '../../services/i18n/i18n';
-import { deepEqual, sortByKey } from '../../services/helpers/misc';
+import { deepEqual } from '../../services/helpers/misc';
 import {
   defaultSpaceProfile, getSpace, upsertSpace, SpaceProfile, spaceRequiredFields,
 } from '../../services/api/spaces';
@@ -105,7 +105,6 @@ class SpaceForm extends React.Component<Props, State> {
           console.log('loading space data...', id);
           spaceProfile = await getSpace(this.context, id);
           spacePhotos = await getSpacePhotos(this.context, { spaceId: id });
-          spacePhotos = sortByKey(spacePhotos, 'order');
           const {
             spacePhotos: updatedPhotos, spacePhotoFiles: updatedPhotoFiles,
           } = this.reorderPhotosAndFiles(spacePhotos);
@@ -123,7 +122,10 @@ class SpaceForm extends React.Component<Props, State> {
       } catch (error) {
         // eslint-disable-next-line no-console
         console.warn('error - loadData', error);
-        throw error;
+        this.setMountedState({
+          isLoading: false,
+          error,
+        });
       }
     });
   }

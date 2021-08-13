@@ -12,7 +12,7 @@ import AppContext from '../../context/AppContext';
 
 // services
 import i18n from '../../services/i18n/i18n';
-import { deepEqual, sortByKey } from '../../services/helpers/misc';
+import { deepEqual } from '../../services/helpers/misc';
 import {
   defaultStudioProfile, getStudio, upsertStudio, StudioProfile, studioRequiredFields,
 } from '../../services/api/studios';
@@ -103,7 +103,6 @@ class StudioForm extends React.Component<Props, State> {
           console.log('loading studio data...', id);
           studioProfile = await getStudio(this.context, id);
           studioPhotos = await getStudioPhotos(this.context, { studioId: id });
-          studioPhotos = sortByKey(studioPhotos, 'order');
           const {
             studioPhotos: updatedPhotos, studioPhotoFiles: updatedPhotoFiles,
           } = this.reorderPhotosAndFiles(studioPhotos);
@@ -121,7 +120,10 @@ class StudioForm extends React.Component<Props, State> {
       } catch (error) {
         // eslint-disable-next-line no-console
         console.warn('error - loadData', error);
-        throw error;
+        this.setMountedState({
+          isLoading: false,
+          error,
+        });
       }
     });
   }

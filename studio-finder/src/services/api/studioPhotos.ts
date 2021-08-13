@@ -38,6 +38,7 @@ export const getStudioPhotos = async (context: AppContextValue, props: {
     .from(TableName.studioPhotos)
     .select()
     .eq('studio_id', studioId)
+    .order('order', { ascending: true })
     .range(start, start + limit - 1);
   if (error) {
     throw error;
