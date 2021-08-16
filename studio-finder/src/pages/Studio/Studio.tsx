@@ -45,6 +45,8 @@ interface State {
 class Studio extends React.Component<RouteComponentProps, State> {
   mounted = false
 
+  elementRef = React.createRef<HTMLDivElement>()
+
   constructor(props: RouteComponentProps) {
     super(props);
     this.state = {
@@ -300,6 +302,7 @@ class Studio extends React.Component<RouteComponentProps, State> {
             studioProfile={studioProfile}
             spaces={spaces}
             bookingDates={bookingDates}
+            scrollIntoView={() => this.elementRef.current?.scrollIntoView({ behavior: 'smooth' })}
             onSubmit={(bookingItems: BookingItem[]) => {
               // to do
               // eslint-disable-next-line no-console
@@ -326,6 +329,7 @@ class Studio extends React.Component<RouteComponentProps, State> {
             }}
           />
         )}
+        <div ref={this.elementRef} />
       </>
     );
   }

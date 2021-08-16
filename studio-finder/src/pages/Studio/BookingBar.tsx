@@ -1,8 +1,6 @@
 import React from 'react';
 import {
-  IonButton,
-  IonButtons,
-  IonCol, IonGrid, IonIcon, IonItem, IonLabel, IonList, IonRow, IonText,
+  IonButton, IonCol, IonGrid, IonIcon, IonItem, IonLabel, IonList, IonRow, IonText,
 } from '@ionic/react';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import {
@@ -30,9 +28,15 @@ interface Props {
   onRemove: (bookingItem: BookingItem) => void,
   onClear: () => void,
   onSubmit: (bookingItems: BookingItem[]) => void,
+  scrollIntoView: () => void,
 }
 
 class BookingBar extends React.Component<Props> {
+  componentDidMount() {
+    const { scrollIntoView } = this.props;
+    scrollIntoView();
+  }
+
   getBookingItems = () => {
     const { bookingDates } = this.props;
     const sortedItems = sortByKey(bookingDates.map((item) => ({
