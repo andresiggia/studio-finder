@@ -27,6 +27,7 @@ import { getSpaces, SpaceProfileDisplay } from '../../services/api/spaces';
 import { BookingDate } from '../../services/api/bookingItems';
 
 import Space from './Space';
+import BookingBar from './BookingBar';
 
 // css
 import './Studio.css';
@@ -259,7 +260,9 @@ class Studio extends React.Component<RouteComponentProps, State> {
   }
 
   renderView = () => {
-    const { isLoading, error, studioProfile } = this.state;
+    const {
+      isLoading, error, studioProfile, spaces, bookingDates,
+    } = this.state;
     if (isLoading) {
       return (
         <div className="studio-page-loading studio-page-spacer">
@@ -296,6 +299,20 @@ class Studio extends React.Component<RouteComponentProps, State> {
         </IonRow>
         <hr />
         {this.renderSpaces()}
+        {bookingDates.length > 0 && (
+          <BookingBar
+            studioProfile={studioProfile}
+            spaces={spaces}
+            bookingDates={bookingDates}
+            onRemove={(index: number) => {
+              const updatedItems = bookingDates.slice();
+              updatedItems.splice(index, 1);
+              this.setMountedState({
+                bookingDates: updatedItems,
+              });
+            }}
+          />
+        )}
       </>
     );
   }
