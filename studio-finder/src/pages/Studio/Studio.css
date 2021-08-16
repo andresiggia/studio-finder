@@ -12,6 +12,12 @@
   font-weight: 500;
 }
 
+.studio-page-spaces-list {
+  height: 660px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
 .studio-page-space {
   border: 2px solid transparent;
 }

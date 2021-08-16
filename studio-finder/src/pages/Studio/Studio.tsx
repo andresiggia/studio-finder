@@ -218,34 +218,36 @@ class Studio extends React.Component<RouteComponentProps, State> {
                 <IonLabel className="studio-page-label">
                   {i18n.t('Select a space')}
                 </IonLabel>
-                {spaces.map((item) => (
-                  <IonCard
-                    key={item.id}
-                    className={`studio-page-space ${
-                      item.id === selectedSpaceId ? 'studio-page-space-selected' : ''
-                    }`}
-                    button
-                    onClick={() => this.setMountedState({ selectedSpaceId: item.id })}
-                  >
-                    <div
-                      className="studio-page-space-photo"
-                      style={{ backgroundImage: `url(${item.photoUrl})` }}
-                      title={item.photoUrl ? '' : i18n.t('No image to display')}
+                <div className="studio-page-spaces-list">
+                  {spaces.map((item) => (
+                    <IonCard
+                      key={item.id}
+                      className={`studio-page-space ${
+                        item.id === selectedSpaceId ? 'studio-page-space-selected' : ''
+                      }`}
+                      button
+                      onClick={() => this.setMountedState({ selectedSpaceId: item.id })}
                     >
-                      {!item.photoUrl && (
-                        <IonIcon icon={musicalNote} color="light" />
-                      )}
-                    </div>
-                    <IonCardHeader>
-                      <IonCardTitle>
-                        {item.title}
-                      </IonCardTitle>
-                    </IonCardHeader>
-                    <IonCardContent>
-                      {item.description}
-                    </IonCardContent>
-                  </IonCard>
-                ))}
+                      <div
+                        className="studio-page-space-photo"
+                        style={{ backgroundImage: `url(${item.photoUrl})` }}
+                        title={item.photoUrl ? '' : i18n.t('No image to display')}
+                      >
+                        {!item.photoUrl && (
+                          <IonIcon icon={musicalNote} color="light" />
+                        )}
+                      </div>
+                      <IonCardHeader>
+                        <IonCardTitle>
+                          {item.title}
+                        </IonCardTitle>
+                      </IonCardHeader>
+                      <IonCardContent>
+                        {item.description}
+                      </IonCardContent>
+                    </IonCard>
+                  ))}
+                </div>
               </IonCol>
               <IonCol size="12" size-sm="6" size-md="8" size-lg="9">
                 {this.renderSelectedSpace()}
