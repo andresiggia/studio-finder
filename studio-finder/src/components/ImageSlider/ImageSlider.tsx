@@ -17,7 +17,7 @@ class ImageSlider extends React.Component<Props> {
     const slideOptions = {
       initialSlide: 0,
       slidesPerView: 1,
-      autoplay: true,
+      autoplay: false,
     };
     const { imageUrls } = this.props;
     return (
