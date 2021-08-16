@@ -190,6 +190,13 @@ class BookingCalendar extends React.Component<Props, State> {
     const halfTimes = Array.from(Array(24 * 2)).map((_item, index) => index / 2);
     const today = new Date();
     today.setHours(0, 0, 0, 0);
+    const weekdayDateTime = new Intl.DateTimeFormat(i18n.languages, {
+      weekday: 'short',
+    });
+    const longDateTime = new Intl.DateTimeFormat(i18n.languages, {
+      dateStyle: 'long',
+      timeStyle: 'long',
+    });
     return (
       <div className="booking-calendar-container">
         <table className="booking-calendar">
@@ -208,14 +215,11 @@ class BookingCalendar extends React.Component<Props, State> {
                     className={date.getTime() === today.getTime()
                       ? 'booking-calendar-item-header-active'
                       : ''}
-                    title={`${date.toLocaleDateString()} ${
+                    title={`${longDateTime.format(date)} ${
                       date.getTime() === today.getTime() ? `(${i18n.t('Today')})` : ''
                     }`}
                   >
-                    {new Intl.DateTimeFormat(i18n.languages, {
-                      weekday: 'short',
-                      // timeStyle: 'long',
-                    }).format(date)}
+                    {weekdayDateTime.format(date)}
                   </td>
                 );
               })}
