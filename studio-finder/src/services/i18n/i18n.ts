@@ -12,7 +12,7 @@ export const i18nInit = () => {
           translation: en,
         },
       },
-      lng: 'en',
+      lng: 'en-GB',
       fallbackLng: 'en',
       interpolation: {
         escapeValue: false,
