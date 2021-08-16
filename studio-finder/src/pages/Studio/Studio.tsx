@@ -306,9 +306,20 @@ class Studio extends React.Component<RouteComponentProps, State> {
               console.log('submit booking', bookingItems);
             }}
             onClear={() => this.setMountedState({ bookingDates: [] })}
-            onRemove={(index: number) => {
+            onRemove={(bookingItem: BookingItem) => {
               const updatedItems = bookingDates.slice();
-              updatedItems.splice(index, 1);
+              // remove items from back to front to keep same index
+              bookingDates.reverse().forEach((item, index) => {
+                const reverseIndex = bookingDates.length - index - 1;
+                if (item.spaceId === bookingItem.spaceId
+                  && item.serviceType === bookingItem.serviceType
+                  && !!bookingItem.startAt
+                  && item.date.getTime() >= bookingItem.startAt.getTime()
+                  && !!bookingItem.endAt
+                  && item.date.getTime() <= bookingItem.endAt.getTime()) {
+                  updatedItems.splice(reverseIndex, 1);
+                }
+              });
               this.setMountedState({
                 bookingDates: updatedItems,
               });

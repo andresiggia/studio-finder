@@ -27,7 +27,7 @@ interface Props {
   studioProfile: StudioProfile,
   spaces: SpaceProfile[],
   bookingDates: BookingDate[],
-  onRemove: (index: number) => void,
+  onRemove: (bookingItem: BookingItem) => void,
   onClear: () => void,
   onSubmit: (bookingItems: BookingItem[]) => void,
 }
@@ -127,7 +127,7 @@ class BookingBar extends React.Component<Props> {
                         icon={closeCircle}
                         color="danger"
                         slot="end"
-                        onClick={() => onRemove(index)}
+                        onClick={() => onRemove(bookingItem)}
                         style={{ cursor: 'pointer' }}
                       />
                     </IonItem>
