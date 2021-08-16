@@ -22,26 +22,40 @@ CREATE VIEW studios_with_user_id AS (
 
 DROP VIEW IF EXISTS studios_list;
 CREATE VIEW studios_list AS (
-  SELECT studios.*, first_studio_photo.photo_url
+  SELECT studios.*, first_studio_photo.first_photo_url as photo_url
   FROM studios
   LEFT JOIN (
-    SELECT *
-    FROM studio_photos
-    ORDER BY studio_photos.order
-    LIMIT 1
+    SELECT studio_id, first_photo_url
+    FROM (
+      SELECT studio_id,
+      FIRST_VALUE(photo_url)
+      OVER(
+        PARTITION BY studio_id
+        ORDER BY "order", "id"
+      ) first_photo_url
+      FROM studio_photos
+    ) as first_studio_photo
+    GROUP BY studio_id, first_photo_url
   ) as first_studio_photo
   ON studios.id = first_studio_photo.studio_id
 );
 
 DROP VIEW IF EXISTS spaces_list;
 CREATE VIEW spaces_list AS (
-  SELECT spaces.*, first_space_photo.photo_url
+  SELECT spaces.*, first_space_photo.first_photo_url as photo_url
   FROM spaces
   LEFT JOIN (
-    SELECT *
-    FROM space_photos
-    ORDER BY space_photos.order
-    LIMIT 1
+    SELECT space_id, first_photo_url
+    FROM (
+      SELECT space_id,
+      FIRST_VALUE(photo_url)
+      OVER(
+        PARTITION BY space_id
+        ORDER BY "order", "id"
+      ) first_photo_url
+      FROM space_photos
+    ) as first_space_photo
+    GROUP BY space_id, first_photo_url
   ) as first_space_photo
   ON spaces.id = first_space_photo.space_id
 );
