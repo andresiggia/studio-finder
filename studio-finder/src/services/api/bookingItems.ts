@@ -60,7 +60,7 @@ export interface BookingItemWithBooking extends BookingItem {
 
 export interface BookingDate {
   spaceId: number,
-  // serviceType: string,
+  serviceType: string,
   date: Date,
 }
 

@@ -1,33 +1,40 @@
 
-.booking-calendar-list-loading {
+.booking-calendar-loading {
   text-align: center;
 }
 
-.booking-calendar-list-spacer {
+.booking-calendar-spacer {
   margin-top: 1rem;
 }
 
-.booking-calendar-list-title {
+.booking-calendar-title {
   font-size: 1rem;
   font-weight: bold;
-  padding: 0 0 0 .5rem;
-}
-
-.booking-calendar-list-items {
   padding: 0;
 }
 
-.booking-calendar-list-item-container {
+.booking-calendar-service {
+  display: flex;
+  align-items: center;
+  background-color: var(--ion-color-primary);
+  color: var(--ion-color-light);
+}
+
+.booking-calendar-items {
+  padding: 0;
+}
+
+.booking-calendar-item-container {
   padding: .5rem;
   border: 1px solid var(--ion-color-light-shade);
 }
 
-.booking-calendar-list-item-title {
+.booking-calendar-item-title {
   padding: 0 0 .5rem 0;
   font-size: 1rem;
 }
 
-.booking-calendar-list-item-toolbar {
+.booking-calendar-item-toolbar {
   margin-left: .5rem;
 }
 

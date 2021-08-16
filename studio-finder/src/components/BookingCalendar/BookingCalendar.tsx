@@ -1,10 +1,11 @@
 import React from 'react';
 import {
   IonButton, IonButtons, IonContent, IonIcon, IonModal, IonSpinner, IonTitle, IonToolbar, IonGrid, IonChip,
+  IonSelect, IonSelectOption,
 } from '@ionic/react';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import {
-  addOutline, chevronBackOutline, chevronForwardOutline, closeOutline, checkmark,
+  addOutline, chevronBackOutline, chevronForwardOutline, closeOutline, closeCircle,
 } from 'ionicons/icons';
 
 // services
@@ -23,6 +24,7 @@ import AppContext from '../../context/AppContext';
 
 // css
 import './BookingCalendar.css';
+import { Service } from '../../services/api/services';
 
 interface State {
   isLoading: boolean,
@@ -41,7 +43,7 @@ interface Props {
   showBookingDetails?: boolean,
   maxHeight?: number,
   bookingDates?: BookingDate[],
-  onSelectionToggle?: (date: Date) => void,
+  onSelectionChange?: (index: number, item?: BookingDate) => void,
 }
 
 class BookingCalendar extends React.Component<Props, State> {
@@ -117,6 +119,11 @@ class BookingCalendar extends React.Component<Props, State> {
     });
   }
 
+  allowSelection = () => {
+    const { bookingDates, onSelectionChange } = this.props;
+    return !!bookingDates && typeof onSelectionChange === 'function';
+  }
+
   onModalOpen = (modalSelectedId = 0) => {
     this.setMountedState({
       showModal: true,
@@ -177,10 +184,72 @@ class BookingCalendar extends React.Component<Props, State> {
     );
   }
 
+  renderDateSelection = (relevantItems: BookingItemWithBooking[], date: Date) => {
+    const { bookingDates, spaceProfile, onSelectionChange } = this.props;
+    const { state } = this.context;
+    let defaultServiceType = '';
+    if (bookingDates && bookingDates.length > 0) {
+      // use last item value
+      defaultServiceType = bookingDates[bookingDates.length - 1].serviceType;
+    } else if (state.services?.length > 0) {
+      // use first option available
+      defaultServiceType = state.services[0].type;
+    }
+    if (!this.allowSelection()
+      || typeof onSelectionChange !== 'function'
+      || !state.services
+      || !defaultServiceType
+      || relevantItems.length > 0
+      || date.getTime() < (new Date()).getTime()) {
+      return null;
+    }
+    const index = bookingDates ? bookingDates.findIndex((item) => item.date.getTime() === date.getTime()) : -1;
+    const isSelected = this.allowSelection() && index > -1;
+    if (bookingDates && isSelected) {
+      const bookingDate = bookingDates[index];
+      return (
+        <div className="booking-calendar-service">
+          <IonSelect
+            color="primary"
+            value={bookingDate.serviceType}
+            onIonChange={(e: any) => onSelectionChange(index, {
+              ...bookingDate,
+              serviceType: e.detail.value,
+            })}
+          >
+            {state.services.map((item: Service) => (
+              <IonSelectOption key={item.type} value={item.type}>
+                {item.title}
+              </IonSelectOption>
+            ))}
+          </IonSelect>
+          <IonIcon
+            icon={closeCircle}
+            color="light"
+            style={{ cursor: 'pointer' }}
+            onClick={() => onSelectionChange(index)}
+          />
+        </div>
+      );
+    }
+    return (
+      <IonButton
+        fill="clear"
+        color="medium"
+        size="small"
+        expand="block"
+        title={i18n.t('Click to select')}
+        onClick={() => onSelectionChange(index, {
+          spaceId: spaceProfile.id, date, serviceType: defaultServiceType,
+        })}
+      >
+        {i18n.t('Available')}
+      </IonButton>
+    );
+  }
+
   renderCalendar = () => {
-    const {
-      maxHeight = 200, showBookingDetails, bookingDates, onSelectionToggle,
-    } = this.props;
+    const { maxHeight = 200, showBookingDetails } = this.props;
     const { items, modalSelectedId, weekOffset } = this.state;
     const weekdays = Array.from(Array(7)).map((_item, index) => index);
     const now = new Date();
@@ -248,12 +317,11 @@ class BookingCalendar extends React.Component<Props, State> {
                       const endAtTimestamp = item.endAt.getTime();
                       return startAtTimestamp <= currentTimestamp && endAtTimestamp > currentTimestamp;
                     });
-                    const isSelected = bookingDates && bookingDates.some((item) => item.date.getTime() === date.getTime());
                     return (
                       <td key={weekday}>
                         {showBookingDetails
                           ? (
-                            <td key={weekday}>
+                            <>
                               {relevantItems.length > 1 && (
                                 <IonChip color="danger">{i18n.t('Overbooking')}</IonChip>
                               )}
@@ -266,9 +334,7 @@ class BookingCalendar extends React.Component<Props, State> {
                                 return (
                                   <IonButton
                                     key={item.id}
-                                    fill={(modalSelectedId === item.id)
-                                      ? 'solid'
-                                      : 'clear'}
+                                    fill={(modalSelectedId === item.id) ? 'solid' : 'clear'}
                                     color="primary"
                                     size="small"
                                     expand="block"
@@ -280,25 +346,9 @@ class BookingCalendar extends React.Component<Props, State> {
                                   </IonButton>
                                 );
                               })}
-                            </td>
-                          ) : (typeof onSelectionToggle === 'function'
-                            && relevantItems.length === 0 && date.getTime() >= (new Date()).getTime()) && (
-                            <IonButton
-                              fill={isSelected
-                                ? 'solid'
-                                : 'clear'}
-                              color={isSelected
-                                ? 'primary'
-                                : 'medium'}
-                              size="small"
-                              expand="block"
-                              title={isSelected ? i18n.t('Click to remove selection') : i18n.t('Click to select')}
-                              onClick={() => onSelectionToggle(date)}
-                            >
-                              {!isSelected ? i18n.t('Available') : (
-                                <IonIcon icon={checkmark} />
-                              )}
-                            </IonButton>
+                            </>
+                          ) : (
+                            this.renderDateSelection(relevantItems, date)
                           )}
                       </td>
                     );
@@ -317,7 +367,7 @@ class BookingCalendar extends React.Component<Props, State> {
 
     if (isLoading) {
       return (
-        <div className="booking-calendar-list-loading booking-calendar-list-spacer">
+        <div className="booking-calendar-loading booking-calendar-spacer">
           <IonSpinner name="bubbles" />
         </div>
       );
@@ -327,7 +377,7 @@ class BookingCalendar extends React.Component<Props, State> {
       return (
         <Notification
           type={NotificationType.danger}
-          className="booking-calendar-list-spacer"
+          className="booking-calendar-spacer"
           header={i18n.t('Error')}
           message={error?.message || i18n.t('An error occurred, please try again later')}
           onDismiss={() => this.setMountedState({ error: null })}
@@ -344,7 +394,7 @@ class BookingCalendar extends React.Component<Props, State> {
     return (
       <>
         <IonToolbar>
-          <IonTitle size="small" className="booking-calendar-list-title">
+          <IonTitle size="small" className="booking-calendar-title">
             {i18n.t('Booking Calendar - Weekly')}
           </IonTitle>
           <IonButtons slot="end">

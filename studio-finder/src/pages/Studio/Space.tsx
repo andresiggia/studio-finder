@@ -35,7 +35,7 @@ interface Props extends RouteComponentProps {
   id: number,
   studioProfile: StudioProfile,
   bookingDates: BookingDate[],
-  onSelectionToggle: (date: Date) => void,
+  onSelectionChange: (index: number, item?: BookingDate) => void,
 }
 
 class Space extends React.Component<Props, State> {
@@ -130,7 +130,7 @@ class Space extends React.Component<Props, State> {
 
   render() {
     const { isLoading, error, spaceProfile } = this.state;
-    const { studioProfile, bookingDates, onSelectionToggle } = this.props;
+    const { studioProfile, bookingDates, onSelectionChange } = this.props;
     if (isLoading) {
       return (
         <div className="studio-page-loading studio-page-spacer">
@@ -170,7 +170,7 @@ class Space extends React.Component<Props, State> {
           studioProfile={studioProfile}
           maxHeight={300}
           bookingDates={bookingDates}
-          onSelectionToggle={onSelectionToggle}
+          onSelectionChange={onSelectionChange}
         />
       </>
     );

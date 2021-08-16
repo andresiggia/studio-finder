@@ -161,19 +161,15 @@ class Studio extends React.Component<RouteComponentProps, State> {
     );
   }
 
-  onDateSelectionToggle = (spaceId: number, date: Date) => {
+  onBookingDateChange = (index: number, item?: BookingDate) => {
     const { bookingDates: _bookingDates } = this.state;
     const bookingDates = _bookingDates.slice();
-    let index = bookingDates.findIndex((item) => item.spaceId === spaceId
-      && item.date.getTime() === date.getTime());
-    if (index > -1) {
+    if (!item) {
       bookingDates.splice(index, 1);
+    } else if (index === -1) {
+      bookingDates.push(item);
     } else {
-      index = bookingDates.length;
-      bookingDates.push({
-        spaceId,
-        date,
-      });
+      bookingDates[index] = item;
     }
     this.setMountedState({
       bookingDates,
@@ -198,7 +194,7 @@ class Studio extends React.Component<RouteComponentProps, State> {
         id={space.id}
         studioProfile={studioProfile}
         bookingDates={bookingDates.filter((item) => item.spaceId === space.id)}
-        onSelectionToggle={(date: Date) => this.onDateSelectionToggle(space.id, date)}
+        onSelectionChange={this.onBookingDateChange}
       />
     );
   }
