@@ -158,15 +158,18 @@ class Studio extends React.Component<RouteComponentProps, State> {
   }
 
   renderSelectedSpace = () => {
-    const { spaces, selectedSpaceId } = this.state;
+    const { spaces, selectedSpaceId, studioProfile } = this.state;
     const space = spaces.find((item) => item.id === selectedSpaceId);
-    if ((!selectedSpaceId || !space)) {
+    if (!selectedSpaceId || !space) {
       return (
         <IonLabel>{`(${i18n.t('No space selected')})`}</IonLabel>
       );
     }
+    if (!studioProfile) {
+      return null;
+    }
     return (
-      <Space id={space.id} />
+      <Space id={space.id} studioProfile={studioProfile} />
     );
   }
 
