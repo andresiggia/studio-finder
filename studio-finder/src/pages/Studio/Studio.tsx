@@ -24,7 +24,7 @@ import i18n from '../../services/i18n/i18n';
 import { getStudio, StudioProfile } from '../../services/api/studios';
 import { getStudioPhotos, StudioPhoto } from '../../services/api/studioPhotos';
 import { getSpaces, SpaceProfileDisplay } from '../../services/api/spaces';
-import { BookingDate } from '../../services/api/bookingItems';
+import { BookingDate, BookingItem } from '../../services/api/bookingItems';
 
 import Space from './Space';
 import BookingBar from './BookingBar';
@@ -300,6 +300,12 @@ class Studio extends React.Component<RouteComponentProps, State> {
             studioProfile={studioProfile}
             spaces={spaces}
             bookingDates={bookingDates}
+            onSubmit={(bookingItems: BookingItem[]) => {
+              // to do
+              // eslint-disable-next-line no-console
+              console.log('submit booking', bookingItems);
+            }}
+            onClear={() => this.setMountedState({ bookingDates: [] })}
             onRemove={(index: number) => {
               const updatedItems = bookingDates.slice();
               updatedItems.splice(index, 1);

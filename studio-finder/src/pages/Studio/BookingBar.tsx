@@ -1,5 +1,7 @@
 import React from 'react';
 import {
+  IonButton,
+  IonButtons,
   IonCol, IonGrid, IonIcon, IonItem, IonLabel, IonList, IonRow, IonText,
 } from '@ionic/react';
 // eslint-disable-next-line import/no-extraneous-dependencies
@@ -26,21 +28,13 @@ interface Props {
   spaces: SpaceProfile[],
   bookingDates: BookingDate[],
   onRemove: (index: number) => void,
+  onClear: () => void,
+  onSubmit: (bookingItems: BookingItem[]) => void,
 }
 
 class BookingBar extends React.Component<Props> {
-  render() {
-    const { bookingDates, spaces, onRemove } = this.props;
-    const { state } = this.context;
-    const weekdayFormat = new Intl.DateTimeFormat(i18n.languages, {
-      weekday: 'short',
-    });
-    const dateFormat = new Intl.DateTimeFormat(i18n.languages, {
-      dateStyle: 'long',
-    });
-    const timeFormat = new Intl.DateTimeFormat(i18n.languages, {
-      timeStyle: 'short',
-    });
+  getBookingItems = () => {
+    const { bookingDates } = this.props;
     const sortedItems = sortByKey(bookingDates.map((item) => ({
       ...item,
       timestamp: item.date.getTime(),
@@ -50,8 +44,8 @@ class BookingBar extends React.Component<Props> {
     sortedItems.forEach((item) => {
       const index = bookingItems.findIndex((bItem) => (
         item.spaceId === bItem.spaceId
-          && item.serviceType === bItem.serviceType
-          && bItem.endAt?.getTime() === item.date.getTime()
+        && item.serviceType === bItem.serviceType
+        && bItem.endAt?.getTime() === item.date.getTime()
       ));
       const endAt = new Date(item.date.getTime() + DEFAULT_PERIOD_MODULE_MS);
       if (index === -1) {
@@ -69,6 +63,24 @@ class BookingBar extends React.Component<Props> {
         };
       }
     });
+    return bookingItems;
+  }
+
+  render() {
+    const {
+      spaces, onRemove, onClear, onSubmit,
+    } = this.props;
+    const { state } = this.context;
+    const weekdayFormat = new Intl.DateTimeFormat(i18n.languages, {
+      weekday: 'short',
+    });
+    const dateFormat = new Intl.DateTimeFormat(i18n.languages, {
+      dateStyle: 'long',
+    });
+    const timeFormat = new Intl.DateTimeFormat(i18n.languages, {
+      timeStyle: 'short',
+    });
+    const bookingItems = this.getBookingItems();
     return (
       <div className="booking-bar">
         <IonGrid className="booking-bar-container">
@@ -122,6 +134,33 @@ class BookingBar extends React.Component<Props> {
                   );
                 })}
               </IonList>
+            </IonCol>
+            <IonCol size="12" size-md="6" size-lg="4">
+              <IonLabel className="booking-bar-label">
+                {i18n.t('Total')}
+              </IonLabel>
+              <IonRow>
+                <IonCol size="12" size-md="6">
+                  <IonButton
+                    color="light"
+                    fill="outline"
+                    expand="block"
+                    onClick={() => onClear()}
+                  >
+                    {i18n.t('Reset')}
+                  </IonButton>
+                </IonCol>
+                <IonCol size="12" size-md="6">
+                  <IonButton
+                    color="primary"
+                    fill="solid"
+                    expand="block"
+                    onClick={() => onSubmit(bookingItems)}
+                  >
+                    {i18n.t('Book')}
+                  </IonButton>
+                </IonCol>
+              </IonRow>
             </IonCol>
           </IonRow>
         </IonGrid>
