@@ -15,10 +15,11 @@ import i18n from '../../services/i18n/i18n';
 import { SpaceProfile } from '../../services/api/spaces';
 import { StudioProfile } from '../../services/api/studios';
 import { BookingDate } from '../../services/api/bookingItems';
+import { sortByKey } from '../../services/helpers/misc';
+import { Service } from '../../services/api/services';
 
 // css
 import './BookingBar.css';
-import { sortByKey } from '../../services/helpers/misc';
 
 interface Props {
   studioProfile: StudioProfile,
@@ -30,14 +31,22 @@ interface Props {
 class BookingBar extends React.Component<Props> {
   render() {
     const { bookingDates, spaces, onRemove } = this.props;
+    const { state } = this.context;
+    const weekdayFormat = new Intl.DateTimeFormat(i18n.languages, {
+      weekday: 'short',
+    });
     const dateTimeFormat = new Intl.DateTimeFormat(i18n.languages, {
-      dateStyle: 'short',
+      dateStyle: 'medium',
       timeStyle: 'short',
     });
     const sortedItems = sortByKey(bookingDates.map((item) => ({
       ...item,
       timestamp: item.date.getTime(),
     })), 'timestamp');
+    // let bookingItems = [];
+    // sortedItems.forEach((item) => {
+
+    // });
     return (
       <div className="booking-bar">
         <IonGrid className="booking-bar-container">
@@ -50,15 +59,18 @@ class BookingBar extends React.Component<Props> {
                 {/* eslint-disable-next-line @typescript-eslint/no-unused-vars */}
                 {sortedItems.map(({ timestamp, ...item }, index) => {
                   const space = spaces.find((spaceItem) => spaceItem.id === item.spaceId);
+                  const service = state.services?.find((serviceItem: Service) => serviceItem.type === item.serviceType);
                   return (
                     // eslint-disable-next-line react/no-array-index-key
                     <IonItem key={index}>
                       <strong>
-                        {space?.title || `${i18n.t('Space')} ${item.spaceId}`}
+                        {`${
+                          service?.title || `${i18n.t('Service')} ${item.serviceType}`
+                        } @${space?.title || `${i18n.t('Space')} ${item.spaceId}`}`}
                       </strong>
-                      <span>&nbsp; | &nbsp;</span>
+                      <span>&nbsp;|&nbsp;</span>
                       <span>
-                        {dateTimeFormat.format(item.date)}
+                        {`(${weekdayFormat.format(item.date)}) ${dateTimeFormat.format(item.date)}`}
                       </span>
                       <IonIcon
                         icon={closeCircle}
