@@ -11,6 +11,7 @@ export enum SpacePhotoError {
   notLoggedIn = 'notLoggedIn',
   missingSpaceId = 'missingSpaceId',
   invalidResponse = 'invalidResponse',
+  editingPhotoOfWrongSpace = 'editingPhotoOfWrongSpace',
 }
 
 export interface SpacePhoto extends Photo {
@@ -64,6 +65,8 @@ export const upsertSpacePhoto = async (context: AppContextValue, {
     }
     itemObj.spaceId = spaceId; // injecting space id provided
     delete itemObj.id; // id should be created by back-end
+  } else if (itemObj.spaceId === spaceId) {
+    throw new Error(SpacePhotoError.editingPhotoOfWrongSpace);
   }
   const filePath = `${itemObj.spaceId}/${file?.name || ''}`;
   if (file) {
