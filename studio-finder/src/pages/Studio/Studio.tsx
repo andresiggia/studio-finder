@@ -100,6 +100,10 @@ class Studio extends React.Component<RouteComponentProps, State> {
         const spaces = await getSpaces(this.context, {
           studioId: id,
         });
+        // eslint-disable-next-line no-console
+        console.log('got studio data', {
+          studioProfile, studioPhotos, spaces,
+        });
         let selectedSpaceId = 0;
         if (spaces.length > 0) {
           selectedSpaceId = spaces[0].id;
