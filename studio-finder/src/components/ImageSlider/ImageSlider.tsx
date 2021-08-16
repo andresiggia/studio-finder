@@ -21,7 +21,7 @@ class ImageSlider extends React.Component<Props> {
     };
     const { imageUrls } = this.props;
     return (
-      <IonSlides options={slideOptions} pager className="image-slider">
+      <IonSlides options={slideOptions} pager={imageUrls.length > 1} className="image-slider">
         {imageUrls.map((item, index) => (
           // eslint-disable-next-line react/no-array-index-key
           <IonSlide key={index} className="image-slider-slide image-slider-slide-16by9">
