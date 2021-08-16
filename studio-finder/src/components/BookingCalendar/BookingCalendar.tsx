@@ -1,16 +1,16 @@
 import React from 'react';
 import {
-  IonButton, IonButtons, IonContent, IonIcon, IonModal, IonSpinner, IonTitle, IonToolbar, IonGrid,
+  IonButton, IonButtons, IonContent, IonIcon, IonModal, IonSpinner, IonTitle, IonToolbar, IonGrid, IonChip,
 } from '@ionic/react';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import {
-  addOutline, chevronBackOutline, chevronForwardOutline, closeOutline,
+  addOutline, chevronBackOutline, chevronForwardOutline, closeOutline, checkmark,
 } from 'ionicons/icons';
 
 // services
 import { SpaceProfile } from '../../services/api/spaces';
 import i18n from '../../services/i18n/i18n';
-import { BookingItemWithBooking, getBookingItems } from '../../services/api/bookingItems';
+import { BookingDate, BookingItemWithBooking, getBookingItems } from '../../services/api/bookingItems';
 import { pad } from '../../services/helpers/misc';
 import { StudioProfile } from '../../services/api/studios';
 
@@ -38,7 +38,10 @@ interface Props {
   studioProfile: StudioProfile,
   showAddButton?: boolean,
   showPastWeeks?: boolean,
+  showBookingDetails?: boolean,
   maxHeight?: number,
+  bookingDates?: BookingDate[],
+  onSelectionToggle?: (date: Date) => void,
 }
 
 class BookingCalendar extends React.Component<Props, State> {
@@ -175,7 +178,9 @@ class BookingCalendar extends React.Component<Props, State> {
   }
 
   renderCalendar = () => {
-    const { maxHeight = 200 } = this.props;
+    const {
+      maxHeight = 200, showBookingDetails, bookingDates, onSelectionToggle,
+    } = this.props;
     const { items, modalSelectedId, weekOffset } = this.state;
     const weekdays = Array.from(Array(7)).map((_item, index) => index);
     const now = new Date();
@@ -239,31 +244,58 @@ class BookingCalendar extends React.Component<Props, State> {
                       const endAtTimestamp = item.endAt.getTime();
                       return startAtTimestamp <= currentTimestamp && endAtTimestamp > currentTimestamp;
                     });
+                    const isSelected = bookingDates && bookingDates.some((item) => item.date.getTime() === date.getTime());
                     return (
                       <td key={weekday}>
-                        {relevantItems.map((item) => {
-                          let label = item.serviceTitle;
-                          if (item.userId) {
-                            const userNameSurname = `${item.userName} ${item.userSurname}`.trim();
-                            label = `${userNameSurname} (${label})`;
-                          }
-                          return (
+                        {showBookingDetails
+                          ? (
+                            <td key={weekday}>
+                              {relevantItems.length > 1 && (
+                                <IonChip color="danger">{i18n.t('Overbooking')}</IonChip>
+                              )}
+                              {relevantItems.map((item) => {
+                                let label = item.serviceTitle;
+                                if (item.userId) {
+                                  const userNameSurname = `${item.userName} ${item.userSurname}`.trim();
+                                  label = `${userNameSurname} (${label})`;
+                                }
+                                return (
+                                  <IonButton
+                                    key={item.id}
+                                    fill={(modalSelectedId === item.id)
+                                      ? 'solid'
+                                      : 'clear'}
+                                    color="primary"
+                                    size="small"
+                                    expand="block"
+                                    title={i18n.t('View booking')}
+                                    // important: select booking id, not booking item id
+                                    onClick={() => this.onModalOpen(item.bookingId)}
+                                  >
+                                    {label}
+                                  </IonButton>
+                                );
+                              })}
+                            </td>
+                          ) : (typeof onSelectionToggle === 'function'
+                            && relevantItems.length === 0 && date.getTime() >= (new Date()).getTime()) && (
                             <IonButton
-                              key={item.id}
-                              fill={modalSelectedId === item.id
+                              fill={isSelected
                                 ? 'solid'
                                 : 'clear'}
-                              color="primary"
+                              color={isSelected
+                                ? 'primary'
+                                : 'medium'}
                               size="small"
                               expand="block"
-                              title={i18n.t('View booking')}
-                              // important: select booking id, not booking item id
-                              onClick={() => this.onModalOpen(item.bookingId)}
+                              title={isSelected ? i18n.t('Click to remove selection') : i18n.t('Click to select')}
+                              onClick={() => onSelectionToggle(date)}
                             >
-                              {label}
+                              {!isSelected ? i18n.t('Available') : (
+                                <IonIcon icon={checkmark} />
+                              )}
                             </IonButton>
-                          );
-                        })}
+                          )}
                       </td>
                     );
                   })}

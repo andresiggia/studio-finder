@@ -24,6 +24,7 @@ import i18n from '../../services/i18n/i18n';
 import { getStudio, StudioProfile } from '../../services/api/studios';
 import { getStudioPhotos, StudioPhoto } from '../../services/api/studioPhotos';
 import { getSpaces, SpaceProfileDisplay } from '../../services/api/spaces';
+import { BookingDate } from '../../services/api/bookingItems';
 
 import Space from './Space';
 
@@ -37,6 +38,7 @@ interface State {
   studioPhotos: StudioPhoto[],
   spaces: SpaceProfileDisplay[],
   selectedSpaceId: number,
+  bookingDates: BookingDate[],
 }
 
 class Studio extends React.Component<RouteComponentProps, State> {
@@ -51,6 +53,7 @@ class Studio extends React.Component<RouteComponentProps, State> {
       studioPhotos: [],
       spaces: [],
       selectedSpaceId: 0,
+      bookingDates: [],
     };
   }
 
@@ -157,8 +160,29 @@ class Studio extends React.Component<RouteComponentProps, State> {
     );
   }
 
+  onDateSelectionToggle = (spaceId: number, date: Date) => {
+    const { bookingDates: _bookingDates } = this.state;
+    const bookingDates = _bookingDates.slice();
+    let index = bookingDates.findIndex((item) => item.spaceId === spaceId
+      && item.date.getTime() === date.getTime());
+    if (index > -1) {
+      bookingDates.splice(index, 1);
+    } else {
+      index = bookingDates.length;
+      bookingDates.push({
+        spaceId,
+        date,
+      });
+    }
+    this.setMountedState({
+      bookingDates,
+    });
+  }
+
   renderSelectedSpace = () => {
-    const { spaces, selectedSpaceId, studioProfile } = this.state;
+    const {
+      spaces, selectedSpaceId, studioProfile, bookingDates,
+    } = this.state;
     const space = spaces.find((item) => item.id === selectedSpaceId);
     if (!selectedSpaceId || !space) {
       return (
@@ -169,7 +193,12 @@ class Studio extends React.Component<RouteComponentProps, State> {
       return null;
     }
     return (
-      <Space id={space.id} studioProfile={studioProfile} />
+      <Space
+        id={space.id}
+        studioProfile={studioProfile}
+        bookingDates={bookingDates.filter((item) => item.spaceId === space.id)}
+        onSelectionToggle={(date: Date) => this.onDateSelectionToggle(space.id, date)}
+      />
     );
   }
 

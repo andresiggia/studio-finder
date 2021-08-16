@@ -19,6 +19,7 @@ import i18n from '../../services/i18n/i18n';
 import { getSpace, SpaceProfile } from '../../services/api/spaces';
 import { getSpacePhotos, SpacePhoto } from '../../services/api/spacePhotos';
 import { StudioProfile } from '../../services/api/studios';
+import { BookingDate } from '../../services/api/bookingItems';
 
 // css
 import './Space.css';
@@ -33,6 +34,8 @@ interface State {
 interface Props extends RouteComponentProps {
   id: number,
   studioProfile: StudioProfile,
+  bookingDates: BookingDate[],
+  onSelectionToggle: (date: Date) => void,
 }
 
 class Space extends React.Component<Props, State> {
@@ -127,7 +130,7 @@ class Space extends React.Component<Props, State> {
 
   render() {
     const { isLoading, error, spaceProfile } = this.state;
-    const { studioProfile } = this.props;
+    const { studioProfile, bookingDates, onSelectionToggle } = this.props;
     if (isLoading) {
       return (
         <div className="studio-page-loading studio-page-spacer">
@@ -166,6 +169,8 @@ class Space extends React.Component<Props, State> {
           spaceProfile={spaceProfile}
           studioProfile={studioProfile}
           maxHeight={300}
+          bookingDates={bookingDates}
+          onSelectionToggle={onSelectionToggle}
         />
       </>
     );

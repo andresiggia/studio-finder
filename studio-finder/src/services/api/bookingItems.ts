@@ -58,6 +58,12 @@ export interface BookingItemWithBooking extends BookingItem {
   spaceTitle: string,
 }
 
+export interface BookingDate {
+  spaceId: number,
+  // serviceType: string,
+  date: Date,
+}
+
 export const getBookingItems = async (context: AppContextValue, props: {
   spaceId?: number, bookingId?: number, start?: number, limit?: number, includeBookingAndUser?: boolean
 }) => {

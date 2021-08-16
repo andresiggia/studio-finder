@@ -168,6 +168,7 @@ class SpaceList extends React.Component<Props, State> {
           studioProfile={studioProfile}
           showAddButton
           showPastWeeks
+          showBookingDetails
         />
       </>
     );
