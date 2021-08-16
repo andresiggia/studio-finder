@@ -99,6 +99,8 @@ class Space extends React.Component<Props, State> {
     });
   }
 
+  // render
+
   renderAbout = () => {
     const { spaceProfile } = this.state;
     return (
@@ -120,7 +122,7 @@ class Space extends React.Component<Props, State> {
       );
   }
 
-  renderView = () => {
+  render() {
     const { isLoading, error, spaceProfile } = this.state;
     if (isLoading) {
       return (
