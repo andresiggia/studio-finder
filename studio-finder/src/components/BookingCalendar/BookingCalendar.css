@@ -56,9 +56,15 @@
 
 /* table header cells */
 .booking-calendar > thead > tr > td {
+  text-transform: uppercase;
   font-weight: bold;
   padding: .25rem;
-  border-bottom: 2px solid var(--ion-color-light-shade);
+  background-color: var(--ion-color-light-shade);
+}
+
+.booking-calendar > thead > tr > td.booking-calendar-item-header-active {
+  background-color: var(--ion-color-primary);
+  color: var(--ion-color-light);
 }
 
 /* table body */
@@ -66,7 +72,6 @@
   display: block;
   width: 100%;
   overflow: auto;
-  height: 200px;
 }
 
 /* table body cells */
@@ -77,11 +82,16 @@
 /* table body - first cell */
 .booking-calendar > tbody > tr > td:first-child {
   padding: .25rem;
+  background-color: var(--ion-color-light-shade);
+  border-bottom-color: var(--ion-color-light-shade);
 }
 
 /* every other table body row */
 .booking-calendar > tbody > tr:nth-child(even) > td {
   border-bottom: 1px solid var(--ion-color-light-shade);
+}
+.booking-calendar > tbody > tr:nth-child(even) > td:first-child {
+  border-bottom-color: var(--ion-color-light);
 }
 
 /* all table cells - text */
@@ -100,8 +110,4 @@
   .booking-calendar-modal {
     --min-width: 800px;
   }
-}
-
-.booking-calendar-item-header-active {
-  color: var(--ion-color-primary);
 }

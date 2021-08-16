@@ -36,6 +36,9 @@ interface State {
 interface Props {
   spaceProfile: SpaceProfile,
   studioProfile: StudioProfile,
+  showAddButton?: boolean,
+  showPastWeeks?: boolean,
+  maxHeight?: number,
 }
 
 class BookingCalendar extends React.Component<Props, State> {
@@ -172,6 +175,7 @@ class BookingCalendar extends React.Component<Props, State> {
   }
 
   renderCalendar = () => {
+    const { maxHeight = 200 } = this.props;
     const { items, modalSelectedId, weekOffset } = this.state;
     const weekdays = Array.from(Array(7)).map((_item, index) => index);
     const now = new Date();
@@ -199,14 +203,20 @@ class BookingCalendar extends React.Component<Props, State> {
                     className={date.getTime() === today.getTime()
                       ? 'booking-calendar-item-header-active'
                       : ''}
+                    title={`${date.toLocaleDateString()} ${
+                      date.getTime() === today.getTime() ? `(${i18n.t('Today')})` : ''
+                    }`}
                   >
-                    {date.toLocaleDateString()}
+                    {new Intl.DateTimeFormat(i18n.languages, {
+                      weekday: 'short',
+                      // timeStyle: 'long',
+                    }).format(date)}
                   </td>
                 );
               })}
             </tr>
           </thead>
-          <tbody>
+          <tbody style={{ maxHeight: `${maxHeight}px` }}>
             {halfTimes.map((time) => {
               const timeArr = String(time).split('.');
               const hours = Number(timeArr[0]);
@@ -293,17 +303,19 @@ class BookingCalendar extends React.Component<Props, State> {
   }
 
   render() {
+    const { showAddButton, showPastWeeks } = this.props;
     const { weekOffset } = this.state;
     return (
       <>
         <IonToolbar>
           <IonTitle size="small" className="booking-calendar-list-title">
-            {i18n.t('Booking Weekly Calendar')}
+            {i18n.t('Booking Calendar - Weekly')}
           </IonTitle>
           <IonButtons slot="end">
             <IonButton
               color="primary"
               fill="clear"
+              disabled={!showPastWeeks && weekOffset === 0}
               onClick={() => this.setMountedState({ weekOffset: weekOffset - 1 })}
             >
               <IonIcon icon={chevronBackOutline} ariaLabel={i18n.t('Previous Week')} />
@@ -323,14 +335,16 @@ class BookingCalendar extends React.Component<Props, State> {
             >
               <IonIcon icon={chevronForwardOutline} ariaLabel={i18n.t('Next Week')} />
             </IonButton>
-            <IonButton
-              color="primary"
-              fill="clear"
-              onClick={() => this.onModalOpen()}
-            >
-              <IonIcon slot="start" icon={addOutline} ariaLabel={i18n.t('Add Booking')} />
-              {i18n.t('Booking')}
-            </IonButton>
+            {showAddButton && (
+              <IonButton
+                color="primary"
+                fill="clear"
+                onClick={() => this.onModalOpen()}
+              >
+                <IonIcon slot="start" icon={addOutline} ariaLabel={i18n.t('Add Booking')} />
+                {i18n.t('Booking')}
+              </IonButton>
+            )}
           </IonButtons>
         </IonToolbar>
         {this.renderContent()}
