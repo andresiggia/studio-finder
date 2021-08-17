@@ -14,7 +14,7 @@ import Notification, { NotificationType } from '../Notification/Notification';
 import AppContext from '../../context/AppContext';
 
 // css
-// import './SpaceServices.css';
+import './SpaceServices.css';
 
 interface State {
   isLoading: boolean,
@@ -122,7 +122,7 @@ class SpaceServices extends React.Component<Props, State> {
     }
 
     return (
-      <div className="space-list-item-services">
+      <div className="space-services">
         {items.map((item) => {
           const price = item.price
             ? `£ ${item.price.toFixed(2)}`

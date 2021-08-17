@@ -15,11 +15,10 @@ import { getSpacesByUser } from '../../services/api/spaces';
 import Notification, { NotificationType } from '../Notification/Notification';
 import SpaceForm from '../SpaceForm/SpaceForm';
 import BookingCalendar from '../BookingCalendar/BookingCalendar';
+import SpaceServices from '../SpaceServices/SpaceServices';
 
 // context
 import AppContext from '../../context/AppContext';
-
-import SpaceServices from './SpaceServices';
 
 // css
 import './SpaceList.css';
