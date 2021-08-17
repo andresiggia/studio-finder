@@ -26,3 +26,8 @@
   overflow-y: auto;
   padding: 0;
 }
+
+.booking-bar-notification,
+.booking-bar-loading {
+  margin: .5rem;
+}

@@ -1,11 +1,7 @@
 import React from 'react';
 import {
-  IonButton, IonCol, IonGrid, IonIcon, IonItem, IonLabel, IonList, IonRow, IonText,
+  IonButton, IonCol, IonGrid, IonLabel, IonList, IonRow,
 } from '@ionic/react';
-// eslint-disable-next-line import/no-extraneous-dependencies
-import {
-  closeCircle,
-} from 'ionicons/icons';
 
 // context
 import AppContext from '../../context/AppContext';
@@ -16,7 +12,8 @@ import { SpaceProfile } from '../../services/api/spaces';
 import { StudioProfile } from '../../services/api/studios';
 import { BookingDate, BookingItem, defaultBookingItem } from '../../services/api/bookingItems';
 import { sortByKey } from '../../services/helpers/misc';
-import { Service } from '../../services/api/services';
+
+import BookingBarItem from './BookingBarItem';
 
 // css
 import './BookingBar.css';
@@ -74,16 +71,6 @@ class BookingBar extends React.Component<Props> {
     const {
       spaces, onRemove, onClear, onSubmit,
     } = this.props;
-    const { state } = this.context;
-    const weekdayFormat = new Intl.DateTimeFormat(i18n.languages, {
-      weekday: 'short',
-    });
-    const dateFormat = new Intl.DateTimeFormat(i18n.languages, {
-      dateStyle: 'long',
-    });
-    const timeFormat = new Intl.DateTimeFormat(i18n.languages, {
-      timeStyle: 'short',
-    });
     const bookingItems = this.getBookingItems();
     return (
       <div className="booking-bar">
@@ -96,45 +83,18 @@ class BookingBar extends React.Component<Props> {
               <IonList className="booking-bar-list">
                 {/* eslint-disable-next-line @typescript-eslint/no-unused-vars */}
                 {bookingItems.map((bookingItem, index) => {
-                  const space = spaces.find((spaceItem) => spaceItem.id === bookingItem.spaceId);
-                  const service = state.services?.find((serviceItem: Service) => serviceItem.type === bookingItem.serviceType);
-                  let dateTimeLabel = '';
-                  let totalHourslabel = '';
-                  if (bookingItem.startAt && bookingItem.endAt) {
-                    const startTimeStr = timeFormat.format(bookingItem.startAt);
-                    const endTimeStr = timeFormat.format(bookingItem.endAt);
-                    const startDateStr = `(${weekdayFormat.format(bookingItem.startAt)}) ${dateFormat.format(bookingItem.startAt)}`;
-                    const endDateStr = `(${weekdayFormat.format(bookingItem.endAt)}) ${dateFormat.format(bookingItem.endAt)}`;
-                    if (startDateStr === endDateStr) { // same date, different times
-                      dateTimeLabel = `${startDateStr} ${startTimeStr} - ${endTimeStr}`;
-                    } else { // different dates and times
-                      dateTimeLabel = `${startDateStr} ${startTimeStr} - ${endDateStr} ${endTimeStr}`;
-                    }
-                    const totalHours = (bookingItem.endAt.getTime() - bookingItem.startAt.getTime()) / (1000 * 60 * 60);
-                    totalHourslabel = `(${i18n.t('{{totalHours}} hours', { totalHours })})`;
+                  const spaceProfile = spaces.find((spaceItem) => spaceItem.id === bookingItem.spaceId);
+                  if (!spaceProfile) {
+                    return null;
                   }
-                  const serviceLabel = `${service?.title || `${i18n.t('Service')} ${bookingItem.serviceType}`}`;
-                  const spaceLabel = `@${space?.title || `${i18n.t('Space')} ${bookingItem.spaceId}`}`;
-                  const mainLabel = `${serviceLabel} ${spaceLabel}`;
                   return (
-                    // eslint-disable-next-line react/no-array-index-key
-                    <IonItem key={index}>
-                      <IonLabel title={`${mainLabel} | ${dateTimeLabel} ${totalHourslabel}`}>
-                        <strong>{mainLabel}</strong>
-                        &nbsp;|&nbsp;
-                        {dateTimeLabel}
-                        <IonText color="medium">
-                          {` ${totalHourslabel}`}
-                        </IonText>
-                      </IonLabel>
-                      <IonIcon
-                        icon={closeCircle}
-                        color="danger"
-                        slot="end"
-                        onClick={() => onRemove(bookingItem)}
-                        style={{ cursor: 'pointer' }}
-                      />
-                    </IonItem>
+                    <BookingBarItem
+                      // eslint-disable-next-line react/no-array-index-key
+                      key={index}
+                      bookingItem={bookingItem}
+                      spaceProfile={spaceProfile}
+                      onRemove={onRemove}
+                    />
                   );
                 })}
               </IonList>
