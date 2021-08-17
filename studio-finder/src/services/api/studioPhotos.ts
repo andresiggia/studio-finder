@@ -23,7 +23,7 @@ export const defaultStudioPhoto: StudioPhoto = {
   photoUrl: '',
   order: 0,
 };
-export const studioPhotoRequiredFields: (keyof StudioPhoto)[] = ['photoUrl', 'order'];
+export const studioPhotoRequiredFields: (keyof StudioPhoto)[] = ['photoUrl'];
 
 export const getStudioPhotos = async (context: AppContextValue, props: {
   studioId?: number, start?: number, limit?: number,
