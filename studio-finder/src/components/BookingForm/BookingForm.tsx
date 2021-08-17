@@ -200,7 +200,7 @@ class BookingForm extends React.Component<Props, State> {
       isLoading: true,
     }, async () => {
       try {
-        const { onSave } = this.props;
+        const { studioProfile, onSave } = this.props;
         const { booking: bookingWithUser, bookingItems, bookingItemsOriginal } = this.state;
         if (!bookingWithUser) {
           throw new Error(i18n.t('Invalid booking'));
@@ -214,7 +214,9 @@ class BookingForm extends React.Component<Props, State> {
           });
           // eslint-disable-next-line no-console
           console.log('will insert/update booking', booking);
-          const data = await upsertBooking(this.context, booking);
+          const data = await upsertBooking(this.context, {
+            booking, studioId: studioProfile.id,
+          });
           // eslint-disable-next-line no-console
           console.log('got new booking data', data);
           bookingId = data.id;

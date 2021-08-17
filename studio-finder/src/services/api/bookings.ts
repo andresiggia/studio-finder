@@ -10,6 +10,7 @@ export enum BookingError {
   missingSpaceId = 'missingSpaceId',
   invalidResponse = 'invalidResponse',
   missingBookingRoles = 'missingBookingRoles',
+  editingBookingOfWrongStudio = 'editingBookingOfWrongStudio',
 }
 
 export interface Booking {
@@ -108,19 +109,30 @@ export const getBooking = async (context: AppContextValue, props: {
   return booking;
 };
 
-export const upsertBooking = async (context: AppContextValue, booking: Booking) => {
+export const upsertBooking = async (context: AppContextValue, {
+  booking, studioId,
+}: {
+  booking: Booking, studioId: number,
+}) => {
   const { supabase, state } = context;
   const userId = state.user?.id;
   if (!userId) {
     throw new Error(BookingError.notLoggedIn);
   }
+  if (!studioId) {
+    throw new Error(BookingError.missingStudioId);
+  }
   const isEditing = !!booking.id;
   const itemObj: any = { ...booking };
   if (!isEditing) { // inserting new row
+    itemObj.studioId = studioId; // injecting studioId provided
     itemObj.createdBy = userId; // injecting user id provided
     delete itemObj.createdAt; // createdAt should be created by back-end
     delete itemObj.id; // id should be created by back-end
   } else {
+    if (studioId !== itemObj.studioId) {
+      throw new Error(BookingError.editingBookingOfWrongStudio);
+    }
     itemObj.modifiedBy = userId; // injecting user id provided
     itemObj.modifiedAt = new Date(); // modifiedAt to be updated to current date/time
   }
