@@ -21,10 +21,14 @@ import {
   defaultSpacePhoto, deleteSpacePhoto, getSpacePhotos, SpacePhoto, spacePhotoRequiredFields, upsertSpacePhoto,
 } from '../../services/api/spacePhotos';
 import { Photo } from '../../services/api/photos';
+import {
+  defaultSpaceService, deleteSpaceService, getSpaceServices, SpaceService, spaceServiceRequiredFields, upsertSpaceService,
+} from '../../services/api/spaceServices';
 
 // components
 import Notification, { NotificationType } from '../Notification/Notification';
 import PhotoList from '../PhotoList/PhotoList';
+import SpaceServiceList from '../SpaceServiceList/SpaceServiceList';
 
 // css
 import './SpaceForm.css';
@@ -42,6 +46,8 @@ interface State {
   // fields
   spaceProfile: SpaceProfile,
   spaceProfileOriginal: SpaceProfile | null,
+  spaceServices: SpaceService[],
+  spaceServicesOriginal: SpaceService[],
   spacePhotos: SpacePhoto[],
   spacePhotosOriginal: SpacePhoto[],
   spacePhotoFiles: (File | null)[],
@@ -60,6 +66,8 @@ class SpaceForm extends React.Component<Props, State> {
       spacePhotos: [],
       spacePhotosOriginal: [],
       spacePhotoFiles: [],
+      spaceServices: [],
+      spaceServicesOriginal: [],
     };
   }
 
@@ -97,6 +105,7 @@ class SpaceForm extends React.Component<Props, State> {
     }, async () => {
       try {
         let spaceProfile = defaultSpaceProfile; // new space
+        let spaceServices: SpaceService[] = [];
         let spacePhotos: SpacePhoto[] = [];
         let spacePhotoFiles: (File | null)[] = [];
         const { id } = this.props;
@@ -104,6 +113,7 @@ class SpaceForm extends React.Component<Props, State> {
           // eslint-disable-next-line no-console
           console.log('loading space data...', id);
           spaceProfile = await getSpace(this.context, id);
+          spaceServices = await getSpaceServices(this.context, { spaceId: id });
           spacePhotos = await getSpacePhotos(this.context, { spaceId: id });
           const {
             spacePhotos: updatedPhotos, spacePhotoFiles: updatedPhotoFiles,
@@ -115,6 +125,8 @@ class SpaceForm extends React.Component<Props, State> {
           isLoading: false,
           spaceProfile,
           spaceProfileOriginal: spaceProfile,
+          spaceServices,
+          spaceServicesOriginal: spaceServices,
           spacePhotos,
           spacePhotosOriginal: spacePhotos,
           spacePhotoFiles,
@@ -131,9 +143,10 @@ class SpaceForm extends React.Component<Props, State> {
   }
 
   onReset = () => {
-    const { spaceProfileOriginal, spacePhotosOriginal } = this.state;
+    const { spaceProfileOriginal, spaceServicesOriginal, spacePhotosOriginal } = this.state;
     this.setMountedState({
       spaceProfile: spaceProfileOriginal,
+      spaceServices: spaceServicesOriginal,
       spacePhotos: spacePhotosOriginal,
     });
   }
@@ -141,6 +154,12 @@ class SpaceForm extends React.Component<Props, State> {
   hasFileChanges = () => {
     const { spacePhotoFiles } = this.state;
     return spacePhotoFiles.some((file) => !!file);
+  }
+
+  hasServiceChanges = () => {
+    const { spaceServices, spaceServicesOriginal } = this.state;
+    return spaceServices.length !== spaceServicesOriginal.length
+      || spaceServices.some((spaceService, index) => !deepEqual(spaceService, spaceServicesOriginal[index]));
   }
 
   hasPhotoChanges = () => {
@@ -155,7 +174,7 @@ class SpaceForm extends React.Component<Props, State> {
     return !deepEqual(spaceProfile, spaceProfileOriginal);
   }
 
-  hasChanges = () => this.hasProfileChanges() || this.hasPhotoChanges()
+  hasChanges = () => this.hasProfileChanges() || this.hasPhotoChanges() || this.hasServiceChanges()
 
   onSubmit = (e: any) => {
     // prevent form from submitting
@@ -176,7 +195,7 @@ class SpaceForm extends React.Component<Props, State> {
       try {
         const { onSave, studioProfile } = this.props;
         const {
-          spaceProfile, spacePhotos, spacePhotoFiles, spacePhotosOriginal,
+          spaceProfile, spacePhotos, spacePhotoFiles, spacePhotosOriginal, spaceServices, spaceServicesOriginal,
         } = this.state;
         let { id: spaceId = 0 } = spaceProfile;
         if (this.hasProfileChanges() || !this.isEditing()) {
@@ -213,6 +232,31 @@ class SpaceForm extends React.Component<Props, State> {
             });
           }));
         }
+        if (this.hasServiceChanges()) {
+          // handle removed items
+          const deleted = await Promise.all(spaceServicesOriginal.map((spaceService) => {
+            const existingItem = spaceServices?.find((item) => item.spaceId === spaceService.spaceId
+              && item.title === spaceService.title);
+            if (existingItem) {
+              // still there
+              return Promise.resolve(null);
+            }
+            // deleted
+            return deleteSpaceService(this.context, spaceService);
+          }));
+          // eslint-disable-next-line no-console
+          console.log('deleted items', deleted);
+          // handle new/updated items
+          // eslint-disable-next-line no-console
+          console.log('will insert/update space service', spaceServices);
+          await Promise.all(spaceServices.map((spaceService) => {
+            // eslint-disable-next-line no-console
+            console.log('will insert/update space service', spaceService);
+            return upsertSpaceService(this.context, {
+              spaceService, spaceId,
+            });
+          }));
+        }
         this.setMountedState({
           isLoading: false,
         }, () => onSave());
@@ -232,17 +276,33 @@ class SpaceForm extends React.Component<Props, State> {
     return !!id;
   }
 
-  isValidForm = () => {
-    const { spaceProfile, spacePhotos, spacePhotoFiles } = this.state;
+  isValidProfile = () => {
+    const { spaceProfile } = this.state;
     return Object.keys(spaceProfile).every((key: string) => (
       !spaceRequiredFields.includes(key as keyof SpaceProfile) || !!spaceProfile[key as keyof SpaceProfile]
-    ))
-      && spacePhotos.every((spacePhoto, index) => Object.keys(spacePhoto).every((key: string) => (
-        !spacePhotoRequiredFields.includes(key as keyof SpacePhoto)
-          || !!spacePhoto[key as keyof SpacePhoto]
-          || !!spacePhotoFiles[index]
+    ));
+  }
+
+  isValidPhotos = () => {
+    const { spacePhotos, spacePhotoFiles } = this.state;
+    return spacePhotos.every((spacePhoto, index) => Object.keys(spacePhoto).every((key: string) => (
+      !spacePhotoRequiredFields.includes(key as keyof SpacePhoto)
+      || !!spacePhoto[key as keyof SpacePhoto]
+      || !!spacePhotoFiles[index]
+    )));
+  }
+
+  isValidServices = () => {
+    const { spaceServices } = this.state;
+    return spaceServices.length > 0 // at least one service is required
+      && spaceServices.every((spaceService, index) => Object.keys(spaceService).every((key: string) => (
+        (!spaceServiceRequiredFields.includes(key as keyof SpaceService)
+          || !!spaceService[key as keyof SpaceService])
+        && this.isUniqueTitle(spaceService, index)
       )));
   }
+
+  isValidForm = () => this.isValidProfile() && this.isValidPhotos() && this.isValidServices()
 
   reorderPhotosAndFiles = (items: Photo[], spacePhotoFiles?: (File | null)[]) => {
     const updatedPhotoFiles = (spacePhotoFiles || Array.from(Array(items.length)).map(() => null)).slice();
@@ -277,6 +337,13 @@ class SpaceForm extends React.Component<Props, State> {
       spacePhotos: updatedItems,
       spacePhotoFiles: files || updatedPhotoFiles,
     });
+  }
+
+  isUniqueTitle = (item: SpaceService, index: number) => {
+    const { spaceServices } = this.state;
+    return spaceServices.every((spaceService, i) => index === i
+      || item.spaceId !== spaceService.spaceId
+      || item.title !== spaceService.title);
   }
 
   // render
@@ -413,7 +480,7 @@ class SpaceForm extends React.Component<Props, State> {
     );
   }
 
-  renderImageField = (disabled: boolean) => {
+  renderPhotos = (disabled: boolean) => {
     const { spaceProfile, spacePhotos, spacePhotoFiles } = this.state;
     return (
       <div className="space-form-photo">
@@ -433,6 +500,7 @@ class SpaceForm extends React.Component<Props, State> {
             const updatedFiles = spacePhotoFiles.slice();
             updatedItems.push({
               ...defaultSpacePhoto,
+              spaceId: spaceProfile.id,
               order: updatedItems.length,
             });
             updatedFiles.push(null);
@@ -468,6 +536,47 @@ class SpaceForm extends React.Component<Props, State> {
     );
   }
 
+  renderServices = (disabled: boolean) => {
+    const { spaceServices, spaceProfile } = this.state;
+    return (
+      <div className="space-form-photo">
+        <div className="space-form-photo-label">
+          {this.renderLabel(i18n.t('Services'), true)}
+        </div>
+        <SpaceServiceList
+          items={spaceServices}
+          disabled={disabled}
+          onAdd={() => {
+            const updatedItems = spaceServices.slice();
+            updatedItems.push({
+              ...defaultSpaceService,
+              spaceId: spaceProfile.id,
+            });
+            this.setMountedState({
+              spaceServices: updatedItems,
+            });
+          }}
+          onDelete={(index: number) => {
+            const updatedItems = spaceServices.slice();
+            updatedItems.splice(index, 1);
+            this.setMountedState({
+              spaceServices: updatedItems,
+            });
+          }}
+          onChange={(item: SpaceService, index: number) => {
+            const updatedItems = spaceServices.slice();
+            updatedItems[index] = item;
+            this.setMountedState({
+              spaceServices: updatedItems,
+            });
+          }}
+          // check whether title is unique for that space id (skip current index)
+          isUniqueTitle={this.isUniqueTitle}
+        />
+      </div>
+    );
+  }
+
   renderFields = (disabled: boolean) => {
     const { studioProfile } = this.props;
     const { spaceProfile } = this.state;
@@ -498,7 +607,10 @@ class SpaceForm extends React.Component<Props, State> {
           })}
         </IonItem>
         <IonItem className="space-form-list-item-full">
-          {this.renderImageField(disabled)}
+          {this.renderServices(disabled)}
+        </IonItem>
+        <IonItem className="space-form-list-item-full">
+          {this.renderPhotos(disabled)}
         </IonItem>
       </IonList>
     );
