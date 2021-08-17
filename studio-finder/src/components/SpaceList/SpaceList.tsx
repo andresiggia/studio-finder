@@ -19,6 +19,8 @@ import BookingCalendar from '../BookingCalendar/BookingCalendar';
 // context
 import AppContext from '../../context/AppContext';
 
+import SpaceServices from './SpaceServices';
+
 // css
 import './SpaceList.css';
 
@@ -148,7 +150,11 @@ class SpaceList extends React.Component<Props, State> {
     return (
       <>
         <IonToolbar>
-          <p slot="start">
+          <p
+            slot="start"
+            className="space-list-item-description"
+            title={spaceProfile.description}
+          >
             {spaceProfile.description || `(${i18n.t('No description')})`}
           </p>
           <IonButtons slot="end" className="space-list-item-toolbar">
@@ -163,6 +169,7 @@ class SpaceList extends React.Component<Props, State> {
             </IonButton>
           </IonButtons>
         </IonToolbar>
+        <SpaceServices spaceId={spaceProfile.id} />
         <BookingCalendar
           spaceProfile={spaceProfile}
           studioProfile={studioProfile}
