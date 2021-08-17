@@ -56,11 +56,13 @@ class BookingBar extends React.Component<Props> {
           serviceType: item.serviceType,
           startAt: item.date,
           endAt,
+          quantity: (endAt.getTime() - item.date.getTime()) / (1000 * 60 * 60),
         });
       } else {
         bookingItems[index] = {
           ...bookingItems[index],
           endAt,
+          quantity: (endAt.getTime() - (bookingItems[index].startAt?.getTime() || 0)) / (1000 * 60 * 60),
         };
       }
     });

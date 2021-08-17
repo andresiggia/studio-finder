@@ -99,7 +99,6 @@ class BookingBarItem extends React.Component<Props, State> {
     const { spaceProfile, bookingItem, onRemove } = this.props;
     const { spaceServices } = this.state;
     let dateTimeLabel = '';
-    let totalHourslabel = '';
     if (bookingItem.startAt && bookingItem.endAt) {
       const weekdayFormat = new Intl.DateTimeFormat(i18n.languages, { weekday: 'short' });
       const dateFormat = new Intl.DateTimeFormat(i18n.languages, { dateStyle: 'long' });
@@ -113,17 +112,17 @@ class BookingBarItem extends React.Component<Props, State> {
       } else { // different dates and times
         dateTimeLabel = `${startDateStr} ${startTimeStr} - ${endDateStr} ${endTimeStr}`;
       }
-      const totalHours = (bookingItem.endAt.getTime() - bookingItem.startAt.getTime()) / (1000 * 60 * 60);
-      totalHourslabel = `(${i18n.t('{{totalHours}} hours', { totalHours })})`;
     }
+    const totalHourslabel = `(${i18n.t('{{count}} hour', { count: bookingItem.quantity })})`;
     const spaceService = spaceServices.find((sItem: SpaceService) => sItem.serviceType === bookingItem.serviceType);
     const serviceLabel = spaceService?.title || `(${i18n.t('Unnamed service')})`;
+    const priceLabel = `£ ${(bookingItem.quantity * (spaceService?.price || 0)).toFixed(2)}`;
     const spaceLabel = `@${spaceProfile?.title || `${i18n.t('Space')} ${bookingItem.spaceId}`}`;
     const mainLabel = `${serviceLabel} ${spaceLabel}`;
     return (
       // eslint-disable-next-line react/no-array-index-key
       <IonItem>
-        <IonLabel title={`${mainLabel} | ${dateTimeLabel} ${totalHourslabel}`}>
+        <IonLabel title={`${mainLabel} | ${dateTimeLabel} ${totalHourslabel} - ${priceLabel}`}>
           <strong>{mainLabel}</strong>
           &nbsp;|&nbsp;
           {dateTimeLabel}
@@ -131,6 +130,9 @@ class BookingBarItem extends React.Component<Props, State> {
             {` ${totalHourslabel}`}
           </IonText>
         </IonLabel>
+        <IonText color="primary" slot="end">
+          {priceLabel}
+        </IonText>
         <IonIcon
           icon={closeCircle}
           color="danger"
