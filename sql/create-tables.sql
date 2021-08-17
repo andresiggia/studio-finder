@@ -113,11 +113,11 @@ CREATE TABLE "studio_services" (
 );
 
 CREATE TABLE "space_services" (
-  "id" SERIAL PRIMARY KEY,
   "space_id" int,
   "service_type" varchar,
   "title" varchar,
-  "price" money
+  "price" money,
+  PRIMARY KEY ("space_id", "title")
 );
 
 CREATE TABLE "bookings" (
