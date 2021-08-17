@@ -604,7 +604,6 @@ class BookingForm extends React.Component<Props, State> {
           <BookingItemList
             items={bookingItems}
             disabled={disabled}
-            spaceProfile={spaceProfile}
             studioProfile={studioProfile}
             booking={booking}
             onAdd={this.onItemAdd}

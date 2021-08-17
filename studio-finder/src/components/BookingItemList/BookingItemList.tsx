@@ -7,7 +7,6 @@ import { addOutline } from 'ionicons/icons';
 
 // services
 import i18n from '../../services/i18n/i18n';
-import { SpaceProfile } from '../../services/api/spaces';
 import { StudioProfile } from '../../services/api/studios';
 import { Booking, BookingWithUser } from '../../services/api/bookings';
 import { BookingItemWithBooking } from '../../services/api/bookingItems';
@@ -29,7 +28,6 @@ interface Props {
   items: BookingItemWithBooking[],
   disabled: boolean,
   booking: Booking | BookingWithUser,
-  spaceProfile: SpaceProfile,
   studioProfile: StudioProfile,
   onDelete: (index: number) => void,
   onChange: (item: BookingItemWithBooking, index: number) => void,
@@ -53,8 +51,8 @@ class BookingItemList extends React.Component<Props, State> {
   }
 
   componentDidUpdate(prevProps: Props) {
-    const { spaceProfile, items } = this.props;
-    if (prevProps.spaceProfile.id !== spaceProfile.id
+    const { studioProfile, items } = this.props;
+    if (prevProps.studioProfile.id !== studioProfile.id
       || prevProps.items.length !== items.length) {
       this.updateState();
     }
