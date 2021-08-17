@@ -1,10 +1,11 @@
 import React from 'react';
 import {
-  IonButton, IonButtons, IonContent, IonGrid, IonIcon, IonLabel, IonModal, IonSegment, IonSegmentButton,
-  IonSpinner, IonTitle, IonToolbar,
+  IonButton, IonButtons, IonContent, IonGrid, IonIcon, IonLabel, IonModal, IonSegment, IonSegmentButton, IonSpinner, IonTitle, IonToolbar,
 } from '@ionic/react';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { addOutline, closeOutline, createOutline } from 'ionicons/icons';
+import {
+  addOutline, closeOutline,
+} from 'ionicons/icons';
 
 // services
 import { StudioProfile } from '../../services/api/studios';
@@ -14,14 +15,14 @@ import { getSpacesByUser } from '../../services/api/spaces';
 // components
 import Notification, { NotificationType } from '../Notification/Notification';
 import SpaceForm from '../SpaceForm/SpaceForm';
-import BookingCalendar from '../BookingCalendar/BookingCalendar';
-import SpaceServices from '../SpaceServices/SpaceServices';
 
 // context
 import AppContext from '../../context/AppContext';
 
 // css
 import './SpaceList.css';
+
+import SpaceListItem from './SpaceListItem';
 
 interface State {
   isLoading: boolean,
@@ -64,9 +65,6 @@ class SpaceList extends React.Component<Props, State> {
   }
 
   componentWillUnmount() {
-    this.setMountedState({
-      showModal: false,
-    });
     this.mounted = false;
   }
 
@@ -147,36 +145,52 @@ class SpaceList extends React.Component<Props, State> {
       );
     }
     return (
-      <>
-        <IonToolbar>
-          <p
-            slot="start"
-            className="space-list-item-description"
-            title={spaceProfile.description}
+      <SpaceListItem
+        spaceProfile={spaceProfile}
+        studioProfile={studioProfile}
+        onModalOpen={this.onModalOpen}
+      />
+    );
+  }
+
+  renderSpaces = () => {
+    const { items, selectedId } = this.state;
+    const options = [
+      ...(items || []),
+      {
+        id: 0,
+        title: i18n.t('Space'),
+        hoverTitle: i18n.t('Add Space'),
+        icon: addOutline,
+      },
+    ];
+    return (
+      <IonSegment
+        value={String(selectedId)}
+        scrollable
+        onIonChange={(e) => {
+          const newValue = Number(e.detail.value);
+          if (!newValue) {
+            this.onModalOpen();
+          }
+          this.setMountedState({
+            selectedId: newValue || selectedId,
+          });
+        }}
+      >
+        {options.map((item) => (
+          <IonSegmentButton
+            key={item.id}
+            value={String(item.id)}
+            title={item.hoverTitle || item.title}
           >
-            {spaceProfile.description || `(${i18n.t('No description')})`}
-          </p>
-          <IonButtons slot="end" className="space-list-item-toolbar">
-            <IonButton
-              fill="clear"
-              color="primary"
-              title={i18n.t('Edit Space')}
-              onClick={() => this.onModalOpen(selectedId)}
-            >
-              <IonIcon slot="start" icon={createOutline} />
-              {i18n.t('Edit Space')}
-            </IonButton>
-          </IonButtons>
-        </IonToolbar>
-        <SpaceServices spaceId={spaceProfile.id} />
-        <BookingCalendar
-          spaceProfile={spaceProfile}
-          studioProfile={studioProfile}
-          showAddButton
-          showPastWeeks
-          showBookingDetails
-        />
-      </>
+            {!!item.icon && (
+              <IonIcon icon={item.icon} />
+            )}
+            <IonLabel>{item.title}</IonLabel>
+          </IonSegmentButton>
+        ))}
+      </IonSegment>
     );
   }
 
@@ -220,47 +234,6 @@ class SpaceList extends React.Component<Props, State> {
           )}
         </IonContent>
       </IonModal>
-    );
-  }
-
-  renderSpaces = () => {
-    const { items, selectedId } = this.state;
-    const options = [
-      ...(items || []),
-      {
-        id: 0,
-        title: i18n.t('Space'),
-        hoverTitle: i18n.t('Add Space'),
-        icon: addOutline,
-      },
-    ];
-    return (
-      <IonSegment
-        value={String(selectedId)}
-        scrollable
-        onIonChange={(e) => {
-          const newValue = Number(e.detail.value);
-          if (!newValue) {
-            this.onModalOpen();
-          }
-          this.setMountedState({
-            selectedId: newValue || selectedId,
-          });
-        }}
-      >
-        {options.map((item) => (
-          <IonSegmentButton
-            key={item.id}
-            value={String(item.id)}
-            title={item.hoverTitle || item.title}
-          >
-            {!!item.icon && (
-              <IonIcon icon={item.icon} />
-            )}
-            <IonLabel>{item.title}</IonLabel>
-          </IonSegmentButton>
-        ))}
-      </IonSegment>
     );
   }
 
