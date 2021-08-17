@@ -13,6 +13,7 @@ import AppContext from '../../context/AppContext';
 import Notification, { NotificationType } from '../../components/Notification/Notification';
 import ImageSlider from '../../components/ImageSlider/ImageSlider';
 import BookingCalendar from '../../components/BookingCalendar/BookingCalendar';
+import SpaceServices from '../../components/SpaceServices/SpaceServices';
 
 // services
 import i18n from '../../services/i18n/i18n';
@@ -20,6 +21,7 @@ import { getSpace, SpaceProfile } from '../../services/api/spaces';
 import { getSpacePhotos, SpacePhoto } from '../../services/api/spacePhotos';
 import { StudioProfile } from '../../services/api/studios';
 import { BookingDate } from '../../services/api/bookingItems';
+import { getSpaceServices, SpaceService } from '../../services/api/spaceServices';
 
 // css
 import './Space.css';
@@ -29,6 +31,7 @@ interface State {
   error: Error | null,
   spaceProfile: SpaceProfile | null,
   spacePhotos: SpacePhoto[],
+  spaceServices: SpaceService[],
 }
 
 interface Props extends RouteComponentProps {
@@ -48,6 +51,7 @@ class Space extends React.Component<Props, State> {
       error: null,
       spaceProfile: null,
       spacePhotos: [],
+      spaceServices: [],
     };
   }
 
@@ -89,10 +93,12 @@ class Space extends React.Component<Props, State> {
         console.log('loading space data...', id);
         const spaceProfile = await getSpace(this.context, id);
         const spacePhotos = await getSpacePhotos(this.context, { spaceId: id });
+        const spaceServices = await getSpaceServices(this.context, { spaceId: id });
         this.setMountedState({
           isLoading: false,
           spaceProfile,
           spacePhotos,
+          spaceServices,
         });
       } catch (error) {
         // eslint-disable-next-line no-console
@@ -108,12 +114,16 @@ class Space extends React.Component<Props, State> {
   // render
 
   renderAbout = () => {
-    const { spaceProfile } = this.state;
+    const { spaceProfile, spaceServices } = this.state;
+    if (!spaceProfile) {
+      return null;
+    }
     return (
       <>
-        {spaceProfile?.description && (
+        {spaceProfile.description && (
           <p>{spaceProfile.description}</p>
         )}
+        <SpaceServices spaceId={spaceProfile.id} items={spaceServices} />
       </>
     );
   }
@@ -129,8 +139,8 @@ class Space extends React.Component<Props, State> {
   }
 
   render() {
-    const { isLoading, error, spaceProfile } = this.state;
     const { studioProfile, bookingDates, onSelectionChange } = this.props;
+    const { isLoading, error, spaceProfile } = this.state;
     if (isLoading) {
       return (
         <div className="studio-page-loading studio-page-spacer">
