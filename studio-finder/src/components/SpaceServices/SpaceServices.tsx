@@ -33,7 +33,7 @@ class SpaceServices extends React.Component<Props> {
             : i18n.t('Free');
           const label = `${item.title} (${price})`;
           return (
-            <IonChip title={label}>
+            <IonChip key={`${item.spaceId}-${item.title}`} title={label}>
               <IonLabel>{label}</IonLabel>
             </IonChip>
           );

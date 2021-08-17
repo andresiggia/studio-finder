@@ -34,6 +34,10 @@ class BookingBar extends React.Component<Props> {
     scrollIntoView();
   }
 
+  getQuantity = (endAt: Date, startAt: Date) => (
+    (endAt.getTime() - startAt.getTime()) / (1000 * 60 * 60)
+  )
+
   getBookingItems = () => {
     const { bookingDates } = this.props;
     const sortedItems = sortByKey(bookingDates.map((item) => ({
@@ -54,15 +58,17 @@ class BookingBar extends React.Component<Props> {
           ...defaultBookingItem,
           spaceId: item.spaceId,
           serviceType: item.serviceType,
+          serviceTitle: item.serviceTitle,
+          servicePrice: item.servicePrice,
           startAt: item.date,
           endAt,
-          quantity: (endAt.getTime() - item.date.getTime()) / (1000 * 60 * 60),
+          quantity: this.getQuantity(endAt, item.date),
         });
       } else {
         bookingItems[index] = {
           ...bookingItems[index],
           endAt,
-          quantity: (endAt.getTime() - (bookingItems[index].startAt?.getTime() || 0)) / (1000 * 60 * 60),
+          quantity: this.getQuantity(endAt, bookingItems[index].startAt || new Date()),
         };
       }
     });
@@ -74,6 +80,8 @@ class BookingBar extends React.Component<Props> {
       spaces, onRemove, onClear, onSubmit,
     } = this.props;
     const bookingItems = this.getBookingItems();
+    const totalPrice = bookingItems.map((bookingItem) => bookingItem.quantity * bookingItem.servicePrice)
+      .reduce((partialSum, value) => partialSum + value, 0);
     return (
       <div className="booking-bar">
         <IonGrid className="booking-bar-container">
@@ -105,6 +113,9 @@ class BookingBar extends React.Component<Props> {
               <IonLabel className="booking-bar-label">
                 {i18n.t('Total')}
               </IonLabel>
+              <div className="booking-bar-total">
+                {`£ ${totalPrice.toFixed(2)}`}
+              </div>
               <IonRow>
                 <IonCol size="12" size-md="6">
                   <IonButton

@@ -33,6 +33,7 @@ interface State {
   showModal: boolean,
   modalSelectedId: number,
   weekOffset: number,
+  lastBookingDate: BookingDate | null,
 }
 
 interface Props {
@@ -59,6 +60,7 @@ class BookingCalendar extends React.Component<Props, State> {
       showModal: false,
       modalSelectedId: 0,
       weekOffset: 0,
+      lastBookingDate: null,
     };
   }
 
@@ -139,6 +141,31 @@ class BookingCalendar extends React.Component<Props, State> {
     });
   }
 
+  onChange = (index: number, item?: BookingDate) => {
+    const { onSelectionChange } = this.props;
+    if (typeof onSelectionChange === 'function') {
+      onSelectionChange(index, item);
+      if (item) {
+        this.setMountedState({ lastBookingDate: item });
+      }
+    }
+  }
+
+  getDefaultSpaceService = () => {
+    const { spaceServices } = this.props;
+    const { lastBookingDate } = this.state;
+    let defaultSpaceService: SpaceService | null = null;
+    if (spaceServices.length > 0) {
+      // use first option available
+      [defaultSpaceService] = spaceServices;
+      if (lastBookingDate) { // use last updated value
+        defaultSpaceService = spaceServices.find((sItem) => sItem.title === lastBookingDate.serviceTitle)
+          || defaultSpaceService;
+      }
+    }
+    return defaultSpaceService;
+  }
+
   // render
 
   renderModal = () => {
@@ -185,23 +212,15 @@ class BookingCalendar extends React.Component<Props, State> {
     );
   }
 
-  renderDateSelection = (relevantItems: BookingItemWithBooking[], date: Date) => {
+  renderDateSelection = (date: Date) => {
     const {
       bookingDates, spaceProfile, spaceServices, onSelectionChange,
     } = this.props;
-    let defaultServiceType = '';
-    if (bookingDates && bookingDates.length > 0) {
-      // use last item value
-      defaultServiceType = bookingDates[bookingDates.length - 1].serviceType;
-    } else if (spaceServices.length > 0) {
-      // use first option available
-      defaultServiceType = spaceServices[0].serviceType;
-    }
+    const defaultSpaceService = this.getDefaultSpaceService();
     if (!this.allowSelection()
       || typeof onSelectionChange !== 'function'
-      || !defaultServiceType
-      || relevantItems.length > 0
-      || date.getTime() < (new Date()).getTime()) {
+      || date.getTime() < (new Date()).getTime()
+      || !defaultSpaceService) {
       return null;
     }
     const index = bookingDates ? bookingDates.findIndex((item) => item.date.getTime() === date.getTime()) : -1;
@@ -212,14 +231,21 @@ class BookingCalendar extends React.Component<Props, State> {
         <div className="booking-calendar-service">
           <IonSelect
             color="primary"
-            value={bookingDate.serviceType}
-            onIonChange={(e: any) => onSelectionChange(index, {
-              ...bookingDate,
-              serviceType: e.detail.value,
-            })}
+            value={bookingDate.serviceTitle}
+            onIonChange={(e: any) => {
+              const spaceService = spaceServices.find((sItem) => sItem.title === e.detail.value);
+              if (spaceService) {
+                this.onChange(index, {
+                  ...bookingDate,
+                  serviceTitle: spaceService.title,
+                  serviceType: spaceService.serviceType,
+                  servicePrice: spaceService.price,
+                });
+              }
+            }}
           >
             {spaceServices.map((item: SpaceService) => (
-              <IonSelectOption key={item.serviceType} value={item.serviceType}>
+              <IonSelectOption key={item.title} value={item.title}>
                 {item.title}
               </IonSelectOption>
             ))}
@@ -228,7 +254,7 @@ class BookingCalendar extends React.Component<Props, State> {
             icon={closeCircle}
             color="light"
             style={{ cursor: 'pointer' }}
-            onClick={() => onSelectionChange(index)}
+            onClick={() => this.onChange(index)}
           />
         </div>
       );
@@ -240,8 +266,12 @@ class BookingCalendar extends React.Component<Props, State> {
         size="small"
         expand="block"
         title={i18n.t('Click to select')}
-        onClick={() => onSelectionChange(index, {
-          spaceId: spaceProfile.id, date, serviceType: defaultServiceType,
+        onClick={() => this.onChange(index, {
+          spaceId: spaceProfile.id,
+          date,
+          serviceTitle: defaultSpaceService.title,
+          serviceType: defaultSpaceService.serviceType,
+          servicePrice: defaultSpaceService.price,
         })}
       >
         {i18n.t('Available')}
@@ -349,8 +379,8 @@ class BookingCalendar extends React.Component<Props, State> {
                                 );
                               })}
                             </>
-                          ) : (
-                            this.renderDateSelection(relevantItems, date)
+                          ) : relevantItems.length === 0 && (
+                            this.renderDateSelection(date)
                           )}
                       </td>
                     );
