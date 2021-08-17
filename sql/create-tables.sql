@@ -116,7 +116,7 @@ CREATE TABLE "space_services" (
   "space_id" int,
   "service_type" varchar,
   "title" varchar,
-  "price" money,
+  "price" float8,
   PRIMARY KEY ("space_id", "title")
 );
 
@@ -138,7 +138,7 @@ CREATE TABLE "booking_payments" (
   "user_id" varchar,
   "vendor" varchar,
   "metadata" jsonb,
-  "value" money,
+  "value" float8,
   "is_paid" boolean,
   "created_at" timestamp DEFAULT (now())
 );
@@ -149,7 +149,7 @@ CREATE TABLE "booking_items" (
   "space_id" int,
   "service_type" varchar,
   "service_title" varchar,
-  "service_price" money,
+  "service_price" float8,
   "start_at" timestamp,
   "end_at" timestamp,
   "notes" varchar,
