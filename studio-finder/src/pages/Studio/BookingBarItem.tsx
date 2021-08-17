@@ -43,7 +43,7 @@ class BookingBarItem extends React.Component<Props> {
       // eslint-disable-next-line react/no-array-index-key
       <IonItem>
         <IonLabel title={`${mainLabel} | ${dateTimeLabel} ${totalHourslabel} - ${priceLabel}`}>
-          <strong>{mainLabel}</strong>
+          <em>{mainLabel}</em>
           &nbsp;|&nbsp;
           {dateTimeLabel}
           <IonText color="medium">
