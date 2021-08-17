@@ -145,7 +145,7 @@ CREATE TABLE "booking_items" (
   "start_at" timestamp,
   "end_at" timestamp,
   "notes" varchar,
-  "quantity" int
+  "quantity" float8
 );
 
 CREATE TABLE "booking_reviews" (
