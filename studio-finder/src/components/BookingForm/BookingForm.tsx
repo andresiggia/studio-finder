@@ -533,7 +533,7 @@ class BookingForm extends React.Component<Props, State> {
   }
 
   renderFields = (disabled: boolean) => {
-    const { spaceProfile, studioProfile } = this.props;
+    const { studioProfile } = this.props;
     const { booking, bookingItems, studios } = this.state;
     if (!booking || !bookingItems) {
       return null;
