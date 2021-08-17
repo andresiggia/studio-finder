@@ -8,6 +8,7 @@ export enum TableName {
   spaces = 'spaces',
   spaceUsers = 'space_users',
   spacePhotos = 'space_photos',
+  spaceServices = 'space_services',
   bookings = 'bookings',
   bookingItems = 'booking_items',
   bookingReviews = 'booking_reviews',
