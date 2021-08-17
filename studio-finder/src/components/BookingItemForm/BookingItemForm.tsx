@@ -11,14 +11,14 @@ import AppContext from '../../context/AppContext';
 
 // services
 import i18n from '../../services/i18n/i18n';
-
-// constants
 import { BookingItem, bookingItemRequiredFields, BookingItemWithBooking } from '../../services/api/bookingItems';
 import { getSpacesByUser, SpaceProfile } from '../../services/api/spaces';
-import { Service } from '../../services/api/services';
+import { SpaceService } from '../../services/api/spaceServices';
 
 // components
 import Notification, { NotificationType } from '../Notification/Notification';
+
+import BookingItemService from './BookingItemService';
 
 // css
 import './BookingItemForm.css';
@@ -207,12 +207,7 @@ class BookingItemForm extends React.Component<Props, State> {
 
   renderFields = (disabled: boolean) => {
     const { item, isValidEndDate } = this.props;
-    const { state } = this.context;
     const { spaces } = this.state;
-    const serviceTypeOptions = (state.services || []).map((service: Service) => ({
-      value: service.type,
-      label: service.title,
-    }));
     const spaceOptions = spaces.map((space) => ({
       value: space.id,
       label: space.title,
@@ -235,19 +230,31 @@ class BookingItemForm extends React.Component<Props, State> {
           })}
         </IonItem>
         <IonItem className="booking-item-form-list-item">
-          {this.renderSelectInput({
-            value: item.serviceType,
-            fieldName: 'serviceType',
-            label: i18n.t('Service Type'),
-            disabled,
-            options: serviceTypeOptions,
-            onChange: (value) => {
-              this.onChange(value, 'serviceType');
-              // update service title manually
-              const serviceType = serviceTypeOptions.find((sItem: any) => sItem.value === value);
-              this.onChange(serviceType?.label || '', 'serviceTitle');
-            },
-          })}
+          {item.spaceId && (
+            <BookingItemService
+              spaceId={item.spaceId}
+              render={(spaceServices: SpaceService[]) => (
+                this.renderSelectInput({
+                  value: item.serviceTitle,
+                  fieldName: 'serviceTitle',
+                  label: i18n.t('Service'),
+                  disabled,
+                  options: spaceServices.map((spaceService) => ({
+                    value: spaceService.title, // title is unique per spaceId
+                    label: spaceService.title,
+                  })),
+                  onChange: (title) => {
+                    const spaceService = spaceServices.find((sItem: any) => sItem.title === title);
+                    if (spaceService) {
+                      this.onChange(title, 'serviceTitle');
+                      this.onChange(spaceService.serviceType, 'serviceType');
+                      this.onChange(spaceService.price, 'price');
+                    }
+                  },
+                })
+              )}
+            />
+          )}
         </IonItem>
         <IonItem className="booking-item-form-list-item">
           {this.renderDateTimeInput({
