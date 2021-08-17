@@ -24,7 +24,8 @@ import i18n from '../../services/i18n/i18n';
 import { getStudio, StudioProfile } from '../../services/api/studios';
 import { getStudioPhotos, StudioPhoto } from '../../services/api/studioPhotos';
 import { getSpaces, SpaceProfileDisplay } from '../../services/api/spaces';
-import { BookingDate, BookingItem } from '../../services/api/bookingItems';
+import { BookingDate, BookingItem, upsertBookingItem } from '../../services/api/bookingItems';
+import { defaultBooking, upsertBooking } from '../../services/api/bookings';
 
 import Space from './Space';
 import BookingBar from './BookingBar';
@@ -133,8 +134,41 @@ class Studio extends React.Component<RouteComponentProps, State> {
   }
 
   onBookingConfirm = (bookingItems: BookingItem[]) => {
-    // eslint-disable-next-line no-console
-    console.log('booking confirmed', bookingItems);
+    this.setMountedState({
+      isLoading: true,
+    }, async () => {
+      try {
+        const { studioProfile } = this.state;
+        const { state } = this.context;
+        const booking = await upsertBooking(this.context, {
+          booking: {
+            ...defaultBooking,
+            userId: state.user.id,
+          },
+          studioId: studioProfile?.id || 0,
+        });
+        // eslint-disable-next-line no-console
+        console.log('created booking', booking);
+        const response = await Promise.all(bookingItems.map((bookingItem) => (
+          upsertBookingItem(this.context, {
+            bookingItem, bookingId: booking.id,
+          })
+        )));
+        // eslint-disable-next-line no-console
+        console.log('created booking items', response);
+        this.setMountedState({
+          isLoading: false,
+          bookingDates: [],
+        }, () => this.loadData()); // reload data
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.warn('error - onBookingConfirm', error);
+        this.setMountedState({
+          isLoading: false,
+          error,
+        });
+      }
+    });
   }
 
   // render

@@ -192,7 +192,7 @@ class BookingBar extends React.Component<Props, State> {
                     expand="block"
                     onClick={() => this.setMountedState({
                       showPaymentAlert: true,
-                    }, () => this.onModalClose())}
+                    })}
                   >
                     {i18n.t('Make Payment')}
                     <IonIcon slot="end" icon={checkmark} />
@@ -210,10 +210,10 @@ class BookingBar extends React.Component<Props, State> {
                     text: 'Ok',
                     role: 'cancel',
                     cssClass: 'primary',
-                    handler: () => {
-                      this.setMountedState({ showPaymentAlert: false });
-                      onConfirmBooking(bookingItems);
-                    },
+                    handler: () => this.setMountedState({
+                      showPaymentAlert: false,
+                      showModal: false,
+                    }, () => onConfirmBooking(bookingItems)),
                   },
                 ]}
               />
