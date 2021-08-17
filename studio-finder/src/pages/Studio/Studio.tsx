@@ -132,6 +132,13 @@ class Studio extends React.Component<RouteComponentProps, State> {
     });
   }
 
+  onBookingConfirm = (bookingItems: BookingItem[]) => {
+    // eslint-disable-next-line no-console
+    console.log('booking confirmed', bookingItems);
+  }
+
+  // render
+
   renderAbout = () => {
     const { studioProfile } = this.state;
     return (
@@ -303,11 +310,7 @@ class Studio extends React.Component<RouteComponentProps, State> {
             spaces={spaces}
             bookingDates={bookingDates}
             scrollIntoView={() => this.elementRef.current?.scrollIntoView({ behavior: 'smooth' })}
-            onSubmit={(bookingItems: BookingItem[]) => {
-              // to do
-              // eslint-disable-next-line no-console
-              console.log('submit booking', bookingItems);
-            }}
+            onConfirmBooking={this.onBookingConfirm}
             onClear={() => this.setMountedState({ bookingDates: [] })}
             onRemove={(bookingItem: BookingItem) => {
               const updatedItems = bookingDates.slice();

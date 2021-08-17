@@ -1,7 +1,10 @@
 import React from 'react';
 import {
-  IonButton, IonCol, IonGrid, IonLabel, IonList, IonRow,
+  IonAlert,
+  IonButton, IonButtons, IonCol, IonContent, IonGrid, IonIcon, IonItem, IonLabel, IonList, IonModal, IonRow, IonText, IonTitle, IonToolbar,
 } from '@ionic/react';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { closeOutline, checkmark } from 'ionicons/icons';
 
 // context
 import AppContext from '../../context/AppContext';
@@ -24,14 +27,49 @@ interface Props {
   bookingDates: BookingDate[],
   onRemove: (bookingItem: BookingItem) => void,
   onClear: () => void,
-  onSubmit: (bookingItems: BookingItem[]) => void,
+  onConfirmBooking: (bookingItems: BookingItem[]) => void,
   scrollIntoView: () => void,
 }
 
-class BookingBar extends React.Component<Props> {
+interface State {
+  showModal: boolean,
+  showPaymentAlert: boolean,
+}
+
+class BookingBar extends React.Component<Props, State> {
+  mounted = false
+
+  constructor(props: Props) {
+    super(props);
+    this.state = {
+      showModal: false,
+      showPaymentAlert: false,
+    };
+  }
+
   componentDidMount() {
+    this.mounted = true;
     const { scrollIntoView } = this.props;
     scrollIntoView();
+  }
+
+  componentWillUnmount() {
+    this.setMountedState({
+      showModal: false,
+    });
+    this.mounted = false;
+  }
+
+  setMountedState = (state: any, callback?: () => any) => {
+    if (this.mounted) {
+      this.setState(state, callback);
+    } else {
+      // eslint-disable-next-line no-console
+      console.log('unmounted request', state);
+      if (typeof callback === 'function') {
+        callback();
+      }
+    }
   }
 
   getQuantity = (endAt: Date, startAt: Date) => (
@@ -75,10 +113,140 @@ class BookingBar extends React.Component<Props> {
     return bookingItems;
   }
 
+  onModalOpen = () => {
+    this.setMountedState({
+      showModal: true,
+    });
+  }
+
+  onModalClose = () => {
+    this.setMountedState({
+      showModal: false,
+    });
+  }
+
+  // render
+
+  renderModal = (bookingItems: BookingItem[], totalPrice: number) => {
+    const { onConfirmBooking } = this.props;
+    const { showModal, showPaymentAlert } = this.state;
+    // eslint-disable-next-line max-len
+    const samplePolicy = 'This is a sample policy. Et has minim elitr intellegat. Mea aeterno eleifend antiopam ad, nam no suscipit quaerendum. At nam minimum ponderum. Est audiam animal molestiae te.';
+    return (
+      <IonModal
+        cssClass="booking-bar-modal"
+        isOpen={showModal}
+        onWillDismiss={() => this.onModalClose()}
+      >
+        <IonToolbar>
+          <IonTitle>
+            {i18n.t('Confirm booking')}
+          </IonTitle>
+          <IonButtons slot="end">
+            <IonButton
+              color="primary"
+              onClick={() => this.onModalClose()}
+            >
+              <IonIcon icon={closeOutline} ariaLabel={i18n.t('Close')} />
+            </IonButton>
+          </IonButtons>
+        </IonToolbar>
+        <IonContent>
+          {showModal && (
+            <IonGrid className="booking-bar-modal-grid">
+              <IonLabel className="booking-bar-label">
+                {i18n.t('Selection')}
+              </IonLabel>
+              <IonList className="booking-bar-modal-list">
+                {this.renderBookingItems(bookingItems)}
+                <IonItem color="medium">
+                  <IonLabel>
+                    <strong>{i18n.t('Total')}</strong>
+                  </IonLabel>
+                  <IonText>
+                    <strong>{`£ ${totalPrice.toFixed(2)}`}</strong>
+                  </IonText>
+                </IonItem>
+              </IonList>
+              <div className="booking-bar-modal-spacer" />
+              <IonLabel className="booking-bar-label">
+                {i18n.t('Cancellation Policy')}
+              </IonLabel>
+              <p>{samplePolicy}</p>
+              <div className="booking-bar-modal-spacer" />
+              <IonRow>
+                <IonCol size="12" size-md="6">
+                  <IonButton
+                    color="dark"
+                    fill="outline"
+                    expand="block"
+                    onClick={() => this.onModalClose()}
+                  >
+                    {i18n.t('Go back')}
+                  </IonButton>
+                </IonCol>
+                <IonCol size="12" size-md="6">
+                  <IonButton
+                    color="primary"
+                    fill="solid"
+                    expand="block"
+                    onClick={() => this.setMountedState({
+                      showPaymentAlert: true,
+                    }, () => this.onModalClose())}
+                  >
+                    {i18n.t('Make Payment')}
+                    <IonIcon slot="end" icon={checkmark} />
+                  </IonButton>
+                </IonCol>
+              </IonRow>
+              <IonAlert
+                isOpen={showPaymentAlert}
+                onDidDismiss={() => this.setMountedState({ showPaymentAlert: false })}
+                header={i18n.t('Payment confirmation')}
+                subHeader={`£ ${totalPrice.toFixed(2)}`}
+                message={i18n.t('Payment successful')}
+                buttons={[
+                  {
+                    text: 'Ok',
+                    role: 'cancel',
+                    cssClass: 'primary',
+                    handler: () => {
+                      this.setMountedState({ showPaymentAlert: false });
+                      onConfirmBooking(bookingItems);
+                    },
+                  },
+                ]}
+              />
+            </IonGrid>
+          )}
+        </IonContent>
+      </IonModal>
+    );
+  }
+
+  renderBookingItems = (bookingItems: BookingItem[]) => {
+    const { spaces, onRemove } = this.props;
+    return (
+      bookingItems.map((bookingItem, index) => {
+        const spaceProfile = spaces.find((spaceItem) => spaceItem.id === bookingItem.spaceId);
+        if (!spaceProfile) {
+          return null;
+        }
+        return (
+          <BookingBarItem
+            // eslint-disable-next-line react/no-array-index-key
+            key={index}
+            bookingItem={bookingItem}
+            spaceProfile={spaceProfile}
+            onRemove={onRemove}
+          />
+        );
+      })
+    );
+  }
+
   render() {
-    const {
-      spaces, onRemove, onClear, onSubmit,
-    } = this.props;
+    const { onClear } = this.props;
     const bookingItems = this.getBookingItems();
     const totalPrice = bookingItems.map((bookingItem) => bookingItem.quantity * bookingItem.servicePrice)
       .reduce((partialSum, value) => partialSum + value, 0);
@@ -91,22 +259,7 @@ class BookingBar extends React.Component<Props> {
                 {i18n.t('Booking selection')}
               </IonLabel>
               <IonList className="booking-bar-list">
-                {/* eslint-disable-next-line @typescript-eslint/no-unused-vars */}
-                {bookingItems.map((bookingItem, index) => {
-                  const spaceProfile = spaces.find((spaceItem) => spaceItem.id === bookingItem.spaceId);
-                  if (!spaceProfile) {
-                    return null;
-                  }
-                  return (
-                    <BookingBarItem
-                      // eslint-disable-next-line react/no-array-index-key
-                      key={index}
-                      bookingItem={bookingItem}
-                      spaceProfile={spaceProfile}
-                      onRemove={onRemove}
-                    />
-                  );
-                })}
+                {this.renderBookingItems(bookingItems)}
               </IonList>
             </IonCol>
             <IonCol size="12" size-md="6" size-lg="4">
@@ -132,7 +285,7 @@ class BookingBar extends React.Component<Props> {
                     color="primary"
                     fill="solid"
                     expand="block"
-                    onClick={() => onSubmit(bookingItems)}
+                    onClick={() => this.onModalOpen()}
                   >
                     {i18n.t('Book')}
                   </IonButton>
@@ -141,6 +294,7 @@ class BookingBar extends React.Component<Props> {
             </IonCol>
           </IonRow>
         </IonGrid>
+        {this.renderModal(bookingItems, totalPrice)}
       </div>
     );
   }

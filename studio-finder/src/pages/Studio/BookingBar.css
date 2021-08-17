@@ -39,3 +39,22 @@
 .booking-bar-loading {
   margin: .5rem;
 }
+
+@media only screen and (min-width: 820px) {
+  .booking-bar-modal {
+    --min-width: 800px;
+  }
+}
+
+.booking-bar-modal-list {
+  border: 1px solid var(--ion-color-medium);
+  padding: 0;
+}
+
+.booking-bar-modal-grid {
+  padding: 0 1.25rem;
+}
+
+.booking-bar-modal-spacer {
+  margin-bottom: 2rem;
+}
