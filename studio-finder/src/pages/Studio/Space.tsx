@@ -140,7 +140,9 @@ class Space extends React.Component<Props, State> {
 
   render() {
     const { studioProfile, bookingDates, onSelectionChange } = this.props;
-    const { isLoading, error, spaceProfile } = this.state;
+    const {
+      isLoading, error, spaceProfile, spaceServices,
+    } = this.state;
     if (isLoading) {
       return (
         <div className="studio-page-loading studio-page-spacer">
@@ -178,6 +180,7 @@ class Space extends React.Component<Props, State> {
         <BookingCalendar
           spaceProfile={spaceProfile}
           studioProfile={studioProfile}
+          spaceServices={spaceServices}
           maxHeight={300}
           bookingDates={bookingDates}
           onSelectionChange={onSelectionChange}

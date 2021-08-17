@@ -161,6 +161,7 @@ class SpaceListItem extends React.Component<Props, State> {
         <BookingCalendar
           spaceProfile={spaceProfile}
           studioProfile={studioProfile}
+          spaceServices={spaceServices}
           showAddButton
           showPastWeeks
           showBookingDetails

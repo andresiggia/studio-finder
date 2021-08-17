@@ -14,6 +14,7 @@ import i18n from '../../services/i18n/i18n';
 import { BookingDate, BookingItemWithBooking, getBookingItems } from '../../services/api/bookingItems';
 import { pad } from '../../services/helpers/misc';
 import { StudioProfile } from '../../services/api/studios';
+import { SpaceService } from '../../services/api/spaceServices';
 
 // components
 import Notification, { NotificationType } from '../Notification/Notification';
@@ -24,7 +25,6 @@ import AppContext from '../../context/AppContext';
 
 // css
 import './BookingCalendar.css';
-import { Service } from '../../services/api/services';
 
 interface State {
   isLoading: boolean,
@@ -38,6 +38,7 @@ interface State {
 interface Props {
   spaceProfile: SpaceProfile,
   studioProfile: StudioProfile,
+  spaceServices: SpaceService[],
   showAddButton?: boolean,
   showPastWeeks?: boolean,
   showBookingDetails?: boolean,
@@ -185,19 +186,19 @@ class BookingCalendar extends React.Component<Props, State> {
   }
 
   renderDateSelection = (relevantItems: BookingItemWithBooking[], date: Date) => {
-    const { bookingDates, spaceProfile, onSelectionChange } = this.props;
-    const { state } = this.context;
+    const {
+      bookingDates, spaceProfile, spaceServices, onSelectionChange,
+    } = this.props;
     let defaultServiceType = '';
     if (bookingDates && bookingDates.length > 0) {
       // use last item value
       defaultServiceType = bookingDates[bookingDates.length - 1].serviceType;
-    } else if (state.services?.length > 0) {
+    } else if (spaceServices.length > 0) {
       // use first option available
-      defaultServiceType = state.services[0].type;
+      defaultServiceType = spaceServices[0].serviceType;
     }
     if (!this.allowSelection()
       || typeof onSelectionChange !== 'function'
-      || !state.services
       || !defaultServiceType
       || relevantItems.length > 0
       || date.getTime() < (new Date()).getTime()) {
@@ -217,8 +218,8 @@ class BookingCalendar extends React.Component<Props, State> {
               serviceType: e.detail.value,
             })}
           >
-            {state.services.map((item: Service) => (
-              <IonSelectOption key={item.type} value={item.type}>
+            {spaceServices.map((item: SpaceService) => (
+              <IonSelectOption key={item.serviceType} value={item.serviceType}>
                 {item.title}
               </IonSelectOption>
             ))}
@@ -284,8 +285,9 @@ class BookingCalendar extends React.Component<Props, State> {
                     className={date.getTime() === today.getTime()
                       ? 'booking-calendar-item-header-active'
                       : ''}
-                    title={`${longDateTime.format(date)} ${
-                      date.getTime() === today.getTime() ? `(${i18n.t('Today')})` : ''
+                    title={`${longDateTime.format(date)} ${date.getTime() === today.getTime()
+                      ? `(${i18n.t('Today')})`
+                      : ''
                     }`}
                   >
                     {weekdayDateTime.format(date)}
