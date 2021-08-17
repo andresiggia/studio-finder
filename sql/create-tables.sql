@@ -104,14 +104,6 @@ CREATE TABLE "services" (
   "title" varchar
 );
 
-CREATE TABLE "studio_services" (
-  "id" SERIAL PRIMARY KEY,
-  "studio_id" int,
-  "service_type" varchar,
-  "title" varchar,
-  "price" money
-);
-
 CREATE TABLE "space_services" (
   "space_id" int,
   "service_type" varchar,
@@ -220,10 +212,6 @@ ALTER TABLE "space_users" ADD FOREIGN KEY ("space_id") REFERENCES "spaces" ("id"
 ALTER TABLE "space_users" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");
 
 ALTER TABLE "space_users" ADD FOREIGN KEY ("role_name") REFERENCES "roles" ("name");
-
-ALTER TABLE "studio_services" ADD FOREIGN KEY ("studio_id") REFERENCES "studios" ("id");
-
-ALTER TABLE "studio_services" ADD FOREIGN KEY ("service_type") REFERENCES "services" ("type");
 
 ALTER TABLE "space_services" ADD FOREIGN KEY ("space_id") REFERENCES "spaces" ("id");
 
