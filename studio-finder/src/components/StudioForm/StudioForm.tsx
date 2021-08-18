@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  IonLabel, IonIcon, IonSpinner, IonButton, IonGrid, IonRow, IonCol, IonList, IonInput, IonItem,
+  IonLabel, IonIcon, IonSpinner, IonButton, IonGrid, IonRow, IonCol, IonList, IonInput, IonItem, IonTextarea,
 } from '@ionic/react';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import {
@@ -382,6 +382,33 @@ class StudioForm extends React.Component<Props, State> {
     );
   }
 
+  renderTextareaInput = ({
+    value, disabled = false, required = false, label, fieldName,
+  }: {
+    value: string, disabled?: boolean, required?: boolean, label: string, fieldName: string,
+  }) => {
+    const isRequired = required || studioRequiredFields.includes(fieldName as keyof StudioProfile);
+    return (
+      <>
+        {this.renderLabel(label, isRequired)}
+        <IonTextarea
+          value={value}
+          required={isRequired}
+          disabled={disabled}
+          onIonChange={(e: any) => {
+            const { studioProfile } = this.state;
+            this.setMountedState({
+              studioProfile: {
+                ...studioProfile,
+                [fieldName]: e.detail.value || '',
+              },
+            });
+          }}
+        />
+      </>
+    );
+  }
+
   renderImageField = (disabled: boolean) => {
     const { studioProfile, studioPhotos, studioPhotoFiles } = this.state;
     return (
@@ -446,6 +473,14 @@ class StudioForm extends React.Component<Props, State> {
             value: studioProfile.title,
             fieldName: 'title',
             label: i18n.t('Title'),
+            disabled,
+          })}
+        </IonItem>
+        <IonItem>
+          {this.renderTextareaInput({
+            value: studioProfile.description,
+            fieldName: 'description',
+            label: i18n.t('Description'),
             disabled,
           })}
         </IonItem>
