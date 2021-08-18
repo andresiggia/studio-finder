@@ -20,6 +20,7 @@ interface Props {
   disabled?: boolean,
   required?: boolean,
   placeholder?: string,
+  color?: 'primary' | 'secondary' | 'tertiary' | 'success' | 'warning' | 'danger' | 'light' | 'medium' | 'dark',
   onChange: (address: Address) => void,
 }
 
@@ -137,7 +138,7 @@ class AddressInput extends React.Component<Props, State> {
 
   render() {
     const {
-      value, placeholder, disabled = false, required = false, onChange,
+      value, placeholder, disabled = false, required = false, color, onChange,
     } = this.props;
     const {
       queryString, results, isLoading, error,
@@ -152,6 +153,7 @@ class AddressInput extends React.Component<Props, State> {
           placeholder={placeholder}
           clearInput={!!value}
           clearOnEdit={!!value}
+          color={color}
           onIonChange={(e: any) => {
             if (!value) { // input was updated
               this.onInputChange(e.detail.value);
