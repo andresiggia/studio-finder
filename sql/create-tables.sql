@@ -17,20 +17,6 @@ CREATE TABLE "users" (
   "modified_at" timestamp DEFAULT (now())
 );
 
-CREATE TABLE "payment_vendors" (
-  "name" varchar PRIMARY KEY,
-  "title" varchar
-);
-
-CREATE TABLE "user_payment_methods" (
-  "id" SERIAL,
-  "user_id" varchar,
-  "title" varchar UNIQUE,
-  "vendor" varchar,
-  "metadata" jsonb,
-  PRIMARY KEY ("id", "user_id")
-);
-
 CREATE TABLE "studios" (
   "id" SERIAL PRIMARY KEY,
   "title" varchar,
@@ -109,17 +95,6 @@ CREATE TABLE "bookings" (
   "modified_at" timestamp DEFAULT (now())
 );
 
-CREATE TABLE "booking_payments" (
-  "id" SERIAL PRIMARY KEY,
-  "booking_id" int,
-  "user_id" varchar,
-  "vendor" varchar,
-  "metadata" jsonb,
-  "value" float8,
-  "is_paid" boolean,
-  "created_at" timestamp DEFAULT (now())
-);
-
 CREATE TABLE "booking_items" (
   "id" SERIAL PRIMARY KEY,
   "booking_id" int,
@@ -131,25 +106,6 @@ CREATE TABLE "booking_items" (
   "end_at" timestamp,
   "notes" varchar,
   "quantity" float8
-);
-
-CREATE TABLE "booking_reviews" (
-  "booking_id" int,
-  "space_id" int,
-  "user_id" varchar,
-  "title" varchar,
-  "description" varchar,
-  "stars" int,
-  "created_at" timestamp DEFAULT (now()),
-  PRIMARY KEY ("booking_id", "space_id")
-);
-
-CREATE TABLE "booking_review_photos" (
-  "id" SERIAL PRIMARY KEY,
-  "booking_id" int,
-  "space_id" int,
-  "photo_url" varchar,
-  "order" int
 );
 
 CREATE TABLE "permissions" (
@@ -169,10 +125,6 @@ CREATE TABLE "roles" (
 );
 
 ALTER TABLE "permissions" ADD FOREIGN KEY ("role_name") REFERENCES "roles" ("name");
-
-ALTER TABLE "user_payment_methods" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");
-
-ALTER TABLE "user_payment_methods" ADD FOREIGN KEY ("vendor") REFERENCES "payment_vendors" ("name");
 
 ALTER TABLE "studio_photos" ADD FOREIGN KEY ("studio_id") REFERENCES "studios" ("id");
 
@@ -204,24 +156,8 @@ ALTER TABLE "bookings" ADD FOREIGN KEY ("created_by") REFERENCES "users" ("id");
 
 ALTER TABLE "bookings" ADD FOREIGN KEY ("modified_by") REFERENCES "users" ("id");
 
-ALTER TABLE "booking_payments" ADD FOREIGN KEY ("booking_id") REFERENCES "bookings" ("id");
-
-ALTER TABLE "booking_payments" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");
-
-ALTER TABLE "booking_payments" ADD FOREIGN KEY ("vendor") REFERENCES "payment_vendors" ("name");
-
 ALTER TABLE "booking_items" ADD FOREIGN KEY ("booking_id") REFERENCES "bookings" ("id");
 
 ALTER TABLE "booking_items" ADD FOREIGN KEY ("space_id") REFERENCES "spaces" ("id");
 
 ALTER TABLE "booking_items" ADD FOREIGN KEY ("service_type") REFERENCES "services" ("type");
-
-ALTER TABLE "booking_reviews" ADD FOREIGN KEY ("booking_id") REFERENCES "bookings" ("id");
-
-ALTER TABLE "booking_reviews" ADD FOREIGN KEY ("space_id") REFERENCES "spaces" ("id");
-
-ALTER TABLE "booking_reviews" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");
-
-ALTER TABLE "booking_review_photos" ADD FOREIGN KEY ("booking_id") REFERENCES "bookings" ("id");
-
-ALTER TABLE "booking_review_photos" ADD FOREIGN KEY ("space_id") REFERENCES "spaces" ("id");

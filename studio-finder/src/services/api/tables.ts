@@ -11,8 +11,6 @@ export enum TableName {
   spaceServices = 'space_services',
   bookings = 'bookings',
   bookingItems = 'booking_items',
-  bookingReviews = 'booking_reviews',
-  bookingPayments = 'booking_payments',
   settings = 'settings',
   services = 'services',
 }
