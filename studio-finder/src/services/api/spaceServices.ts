@@ -20,7 +20,7 @@ export const defaultSpaceService: SpaceService = {
   title: '',
   price: 0,
 };
-export const spaceServiceRequiredFields: (keyof SpaceService)[] = ['spaceId', 'serviceType', 'title'];
+export const spaceServiceRequiredFields: (keyof SpaceService)[] = ['serviceType', 'title'];
 
 export const getSpaceServices = async (context: AppContextValue, props: {
   spaceId?: number, start?: number, limit?: number,
