@@ -121,7 +121,7 @@ class Space extends React.Component<Props, State> {
     return (
       <>
         {spaceProfile.description && (
-          <p>{spaceProfile.description}</p>
+          <p className="studio-page-space-description">{spaceProfile.description}</p>
         )}
         <SpaceServices spaceId={spaceProfile.id} items={spaceServices} />
       </>

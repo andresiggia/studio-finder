@@ -182,7 +182,7 @@ class Studio extends React.Component<RouteComponentProps, State> {
           {i18n.t('About')}
         </IonLabel>
         {studioProfile?.description && (
-          <p>{studioProfile.description}</p>
+          <p className="studio-page-description">{studioProfile.description}</p>
         )}
       </>
     );
@@ -330,10 +330,10 @@ class Studio extends React.Component<RouteComponentProps, State> {
           {studioProfile.title}
         </IonText>
         <IonRow>
-          <IonCol size="12" size-sm="6" size-md="8">
+          <IonCol size="12" size-sm="6">
             {this.renderPhotos()}
           </IonCol>
-          <IonCol size="12" size-sm="6" size-md="4">
+          <IonCol size="12" size-sm="6">
             {this.renderAbout()}
           </IonCol>
         </IonRow>
