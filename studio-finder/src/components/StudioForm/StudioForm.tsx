@@ -20,10 +20,12 @@ import {
   defaultStudioPhoto, deleteStudioPhoto, getStudioPhotos, StudioPhoto, studioPhotoRequiredFields, upsertStudioPhoto,
 } from '../../services/api/studioPhotos';
 import { Photo } from '../../services/api/photos';
+import { Address } from '../../services/api/address';
 
 // components
 import Notification, { NotificationType } from '../Notification/Notification';
 import PhotoList from '../PhotoList/PhotoList';
+import AddressInput from '../AddressInput/AddressInput';
 
 // css
 import './StudioForm.css';
@@ -475,6 +477,20 @@ class StudioForm extends React.Component<Props, State> {
             label: i18n.t('Title'),
             disabled,
           })}
+        </IonItem>
+        <IonItem>
+          {this.renderLabel(i18n.t('Address'), true)}
+          <AddressInput
+            value={studioProfile.address}
+            disabled={disabled}
+            placeholder={i18n.t('Type a postcode or address')}
+            onChange={(address: Address) => this.setMountedState({
+              studioProfile: {
+                ...studioProfile,
+                ...address,
+              },
+            })}
+          />
         </IonItem>
         <IonItem>
           {this.renderTextareaInput({

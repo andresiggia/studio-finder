@@ -22,7 +22,7 @@ export interface StudioProfile extends Address {
 }
 
 const studioDateFields: (keyof StudioProfile)[] = ['createdAt', 'modifiedAt'];
-export const studioRequiredFields: (keyof StudioProfile)[] = ['title'];
+export const studioRequiredFields: (keyof StudioProfile)[] = ['title', 'address'];
 
 export interface StudioUser {
   studioId: number,
