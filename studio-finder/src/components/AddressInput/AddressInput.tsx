@@ -5,7 +5,7 @@ import {
 
 // services
 import i18n from '../../services/i18n/i18n';
-import { geocode } from '../../services/geoapify/geocode';
+import { geocodeAddress } from '../../services/geoapify/geocode';
 import { Address, defaultAddress } from '../../services/api/address';
 
 // components
