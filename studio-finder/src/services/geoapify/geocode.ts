@@ -19,7 +19,7 @@ const convertToAddress = (response: any): Address[] => (
       city: properties.city,
       country: properties.country,
       latitude: properties.lat,
-      longitude: properties.long,
+      longitude: properties.lon,
     } as Address;
   })
 );
