@@ -5,7 +5,7 @@ import {
 
 // services
 import i18n from '../../services/i18n/i18n';
-import { searchAddress } from '../../services/geoapify/geocode';
+import { geocode } from '../../services/geoapify/geocode';
 import { Address, defaultAddress } from '../../services/api/address';
 
 // components
@@ -86,7 +86,7 @@ class AddressInput extends React.Component<Props, State> {
     }, async () => {
       if (hasReachedMinChars) {
         try {
-          const results = await searchAddress(queryString);
+          const results = await geocode(queryString);
           const { queryString: currentQuery } = this.state;
           if (currentQuery === queryString) { // prevent saving outdated query
             // eslint-disable-next-line no-console
