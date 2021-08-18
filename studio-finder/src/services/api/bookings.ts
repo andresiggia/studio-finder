@@ -17,7 +17,6 @@ export interface Booking {
   id: number,
   studioId: number,
   userId: string | null,
-  actId: number | null,
   createdBy: string | null,
   modifiedBy: string | null,
   notes: string,
@@ -28,7 +27,6 @@ export const defaultBooking: Booking = {
   id: 0,
   studioId: 0,
   userId: null,
-  actId: null,
   createdBy: null,
   modifiedBy: null,
   notes: '',
@@ -46,7 +44,6 @@ export interface BookingWithUser extends Booking {
   createdBySurname: string,
   modifiedByName: string,
   modifiedBySurname: string,
-  actTitle: string,
 }
 export const defaultBookingWithUser: BookingWithUser = {
   ...defaultBooking,
@@ -57,7 +54,6 @@ export const defaultBookingWithUser: BookingWithUser = {
   createdBySurname: '',
   modifiedByName: '',
   modifiedBySurname: '',
-  actTitle: '',
 };
 
 export const getBookings = async (context: AppContextValue, props: {

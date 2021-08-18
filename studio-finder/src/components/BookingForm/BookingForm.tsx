@@ -106,7 +106,6 @@ class BookingForm extends React.Component<Props, State> {
       createdBy: state.user.id,
       createdByName: state.profile.name,
       createdBySurname: state.profile.surname,
-      actTitle: '',
     };
   }
 
@@ -312,8 +311,6 @@ class BookingForm extends React.Component<Props, State> {
       modifiedBy: '',
       modifiedByName: '',
       modifiedBySurname: '',
-      actId: 0,
-      actTitle: '',
       spaceTitle: spaceProfile.title,
       // booking items
       bookingId: booking?.id || 0,
@@ -560,16 +557,6 @@ class BookingForm extends React.Component<Props, State> {
               value: `${booking.userName || ''} ${booking.userSurname || ''}`.trim() || booking.userId,
               fieldName: 'user',
               label: i18n.t('User'),
-              disabled: true,
-            })}
-          </IonItem>
-        )}
-        {booking.actId && (
-          <IonItem className="booking-form-list-item">
-            {this.renderTextInput({
-              value: booking.actTitle || String(booking.actId),
-              fieldName: 'act',
-              label: i18n.t('Act'),
               disabled: true,
             })}
           </IonItem>

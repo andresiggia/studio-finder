@@ -44,7 +44,6 @@ export const bookingItemRequiredFields: (keyof BookingItem)[] = ['spaceId', 'ser
 export interface BookingItemWithBooking extends BookingItem {
   studioId: number,
   userId: string,
-  actId: number,
   createdBy: string,
   modifiedBy: string,
   studioTitle: string,
@@ -54,7 +53,6 @@ export interface BookingItemWithBooking extends BookingItem {
   createdBySurname: string,
   modifiedByName: string,
   modifiedBySurname: string,
-  actTitle: string,
   spaceTitle: string,
 }
 

@@ -17,20 +17,6 @@ CREATE TABLE "users" (
   "modified_at" timestamp DEFAULT (now())
 );
 
-CREATE TABLE "acts" (
-  "id" SERIAL PRIMARY KEY,
-  "title" varchar,
-  "created_at" timestamp DEFAULT (now()),
-  "modified_at" timestamp DEFAULT (now())
-);
-
-CREATE TABLE "act_users" (
-  "act_id" int,
-  "user_id" varchar,
-  "role_name" varchar,
-  PRIMARY KEY ("act_id", "user_id")
-);
-
 CREATE TABLE "payment_vendors" (
   "name" varchar PRIMARY KEY,
   "title" varchar
@@ -116,7 +102,6 @@ CREATE TABLE "bookings" (
   "id" SERIAL PRIMARY KEY,
   "studio_id" int,
   "user_id" varchar,
-  "act_id" int,
   "created_by" varchar,
   "modified_by" varchar,
   "notes" varchar,
@@ -185,12 +170,6 @@ CREATE TABLE "roles" (
 
 ALTER TABLE "permissions" ADD FOREIGN KEY ("role_name") REFERENCES "roles" ("name");
 
-ALTER TABLE "act_users" ADD FOREIGN KEY ("act_id") REFERENCES "acts" ("id");
-
-ALTER TABLE "act_users" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");
-
-ALTER TABLE "act_users" ADD FOREIGN KEY ("role_name") REFERENCES "roles" ("name");
-
 ALTER TABLE "user_payment_methods" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");
 
 ALTER TABLE "user_payment_methods" ADD FOREIGN KEY ("vendor") REFERENCES "payment_vendors" ("name");
@@ -224,8 +203,6 @@ ALTER TABLE "bookings" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");
 ALTER TABLE "bookings" ADD FOREIGN KEY ("created_by") REFERENCES "users" ("id");
 
 ALTER TABLE "bookings" ADD FOREIGN KEY ("modified_by") REFERENCES "users" ("id");
-
-ALTER TABLE "bookings" ADD FOREIGN KEY ("act_id") REFERENCES "acts" ("id");
 
 ALTER TABLE "booking_payments" ADD FOREIGN KEY ("booking_id") REFERENCES "bookings" ("id");
 
