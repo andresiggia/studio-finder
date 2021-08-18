@@ -1,3 +1,15 @@
 .address-input {
   width: 100%;
 }
+
+.address-input-results {
+  border: 1px solid var(--ion-color-medium);
+  max-height: 100px;
+  overflow-y: auto;
+  margin-bottom: .5rem;
+}
+
+.address-input-results-none {
+  display: block;
+  padding: .5rem;
+}

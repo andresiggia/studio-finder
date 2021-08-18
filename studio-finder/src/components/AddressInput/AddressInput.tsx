@@ -1,11 +1,7 @@
 import React from 'react';
 import {
-  IonList, IonInput, IonItem, IonSpinner,
+  IonList, IonInput, IonItem, IonSpinner, IonText,
 } from '@ionic/react';
-// eslint-disable-next-line import/no-extraneous-dependencies
-// import {
-//   refreshOutline, saveOutline,
-// } from 'ionicons/icons';
 
 // services
 import i18n from '../../services/i18n/i18n';
@@ -84,12 +80,13 @@ class AddressInput extends React.Component<Props, State> {
     const { minChars = 3 } = this.props;
     const hasReachedMinChars = queryString.length >= minChars;
     this.setMountedState({
+      ...this.DEFAULT_STATE,
       isLoading: hasReachedMinChars,
       queryString,
     }, async () => {
       if (hasReachedMinChars) {
         try {
-          const results = await searchAddress(queryString, true);
+          const results = await searchAddress(queryString);
           const { queryString: currentQuery } = this.state;
           if (currentQuery === queryString) { // prevent saving outdated query
             // eslint-disable-next-line no-console
@@ -120,15 +117,20 @@ class AddressInput extends React.Component<Props, State> {
     const { onChange } = this.props;
     return (
       <IonList className="address-input-results">
-        {results.map((result) => (
-          <IonItem
-            key={result.address}
-            button
-            onClick={() => onChange(result)}
-          >
-            {result.address}
-          </IonItem>
-        ))}
+        {results.length === 0
+          ? (
+            <IonText color="medium" className="address-input-results-none">
+              {`(${i18n.t('No results')})`}
+            </IonText>
+          ) : results.map((result) => (
+            <IonItem
+              key={result.address}
+              button
+              onClick={() => onChange(result)}
+            >
+              {result.address}
+            </IonItem>
+          ))}
       </IonList>
     );
   }
