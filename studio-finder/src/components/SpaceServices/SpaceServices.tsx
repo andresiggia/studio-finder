@@ -24,7 +24,6 @@ class SpaceServices extends React.Component<Props> {
         <p>{i18n.t('No services found.')}</p>
       );
     }
-
     return (
       <div className="space-services">
         {items.map((item) => {
@@ -33,7 +32,7 @@ class SpaceServices extends React.Component<Props> {
             : i18n.t('Free');
           const label = `${item.title} (${price})`;
           return (
-            <IonChip key={`${item.spaceId}-${item.title}`} title={label}>
+            <IonChip key={`${item.spaceId}-${item.title}`} title={label} color="primary">
               <IonLabel>{label}</IonLabel>
             </IonChip>
           );
