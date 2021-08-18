@@ -133,7 +133,7 @@ class Studio extends React.Component<RouteComponentProps, State> {
     });
   }
 
-  onBookingConfirm = (bookingItems: BookingItem[]) => {
+  onBookingConfirm = (bookingItems: BookingItem[], notes: string) => {
     this.setMountedState({
       isLoading: true,
     }, async () => {
@@ -144,6 +144,7 @@ class Studio extends React.Component<RouteComponentProps, State> {
           booking: {
             ...defaultBooking,
             userId: state.user.id,
+            notes,
           },
           studioId: studioProfile?.id || 0,
         });

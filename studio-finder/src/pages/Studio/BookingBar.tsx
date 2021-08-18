@@ -1,7 +1,8 @@
 import React from 'react';
 import {
   IonAlert,
-  IonButton, IonButtons, IonCol, IonContent, IonGrid, IonIcon, IonItem, IonLabel, IonList, IonModal, IonRow, IonText, IonTitle, IonToolbar,
+  IonButton, IonButtons, IonCol, IonContent, IonGrid, IonIcon, IonItem, IonLabel, IonList, IonModal, IonRow,
+  IonText, IonTextarea, IonTitle, IonToolbar,
 } from '@ionic/react';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { closeOutline, checkmark } from 'ionicons/icons';
@@ -27,13 +28,14 @@ interface Props {
   bookingDates: BookingDate[],
   onRemove: (bookingItem: BookingItem) => void,
   onClear: () => void,
-  onConfirmBooking: (bookingItems: BookingItem[]) => void,
+  onConfirmBooking: (bookingItems: BookingItem[], notes: string) => void,
   scrollIntoView: () => void,
 }
 
 interface State {
   showModal: boolean,
   showPaymentAlert: boolean,
+  notes: string,
 }
 
 class BookingBar extends React.Component<Props, State> {
@@ -44,6 +46,7 @@ class BookingBar extends React.Component<Props, State> {
     this.state = {
       showModal: false,
       showPaymentAlert: false,
+      notes: '',
     };
   }
 
@@ -56,6 +59,7 @@ class BookingBar extends React.Component<Props, State> {
   componentWillUnmount() {
     this.setMountedState({
       showModal: false,
+      showPaymentAlert: false,
     });
     this.mounted = false;
   }
@@ -127,9 +131,38 @@ class BookingBar extends React.Component<Props, State> {
 
   // render
 
+  renderLabel = (label: string, required = false) => (
+    <IonLabel position="stacked">
+      {`${label} ${required
+        ? '*'
+        : ''}`}
+    </IonLabel>
+  )
+
+  renderTextareaInput = ({
+    value, disabled = false, required = false, label, fieldName, placeholder,
+  }: {
+    value: string, disabled?: boolean, required?: boolean, label: string, fieldName: string, placeholder?: string,
+  }) => (
+    <>
+      {this.renderLabel(label, required)}
+      <IonTextarea
+        value={value}
+        required={required}
+        disabled={disabled}
+        placeholder={placeholder}
+        onIonChange={(e: any) => {
+          this.setMountedState({
+            [fieldName]: e.detail.value || '',
+          });
+        }}
+      />
+    </>
+  )
+
   renderModal = (bookingItems: BookingItem[], totalPrice: number) => {
     const { onConfirmBooking } = this.props;
-    const { showModal, showPaymentAlert } = this.state;
+    const { showModal, showPaymentAlert, notes } = this.state;
     // eslint-disable-next-line max-len
     const samplePolicy = 'This is a sample policy. Et has minim elitr intellegat. Mea aeterno eleifend antiopam ad, nam no suscipit quaerendum. At nam minimum ponderum. Est audiam animal molestiae te.';
     return (
@@ -166,6 +199,14 @@ class BookingBar extends React.Component<Props, State> {
                   <IonText>
                     <strong>{`£ ${totalPrice.toFixed(2)}`}</strong>
                   </IonText>
+                </IonItem>
+                <IonItem className="booking-form-list-item-full">
+                  {this.renderTextareaInput({
+                    value: notes,
+                    fieldName: 'notes',
+                    label: i18n.t('Notes'),
+                    placeholder: i18n.t('Type any extra information or request to the studio.'),
+                  })}
                 </IonItem>
               </IonList>
               <div className="booking-bar-modal-spacer" />
@@ -213,7 +254,7 @@ class BookingBar extends React.Component<Props, State> {
                     handler: () => this.setMountedState({
                       showPaymentAlert: false,
                       showModal: false,
-                    }, () => onConfirmBooking(bookingItems)),
+                    }, () => onConfirmBooking(bookingItems, notes)),
                   },
                 ]}
               />
