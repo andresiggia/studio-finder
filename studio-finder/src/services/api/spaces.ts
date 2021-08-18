@@ -30,7 +30,7 @@ export const spaceRequiredFields: (keyof SpaceProfile)[] = ['title'];
 export interface SpaceUser {
   spaceId: number,
   userId: string,
-  spaceRoleName: string,
+  roleName: string,
 }
 
 export const defaultSpaceProfile: SpaceProfile = {
@@ -190,7 +190,7 @@ export const upsertSpace = async (context: AppContextValue, {
     const spaceUser: SpaceUser = {
       userId,
       spaceId,
-      spaceRoleName: defaultSpaceRoleName,
+      roleName: defaultSpaceRoleName,
     };
     const spaceUserData = updateObjectKeysToUnderscoreCase(spaceUser);
     // eslint-disable-next-line no-console

@@ -33,7 +33,7 @@ export const studioRequiredFields: (keyof StudioProfile)[] = ['title'];
 export interface StudioUser {
   studioId: number,
   userId: string,
-  studioRoleName: string,
+  roleName: string,
 }
 
 export const defaultStudioProfile: StudioProfile = {
@@ -173,7 +173,7 @@ export const upsertStudio = async (context: AppContextValue, studioProfile: Stud
     const studioUser: StudioUser = {
       userId,
       studioId,
-      studioRoleName: defaultStudioRoleName,
+      roleName: defaultStudioRoleName,
     };
     const studioUserData = updateObjectKeysToUnderscoreCase(studioUser);
     // eslint-disable-next-line no-console
