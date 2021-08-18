@@ -58,3 +58,11 @@ export const getFilename = (url: string) => {
   const nameArr = url.split('/');
   return nameArr[nameArr.length - 1];
 };
+
+export const overflowText = (text: string, maxChars: number, overflowIndicator = '...') => {
+  if (text.length > maxChars) {
+    const maxCharsWithOverflowIndicator = maxChars - overflowIndicator.length;
+    return `${text.substr(0, maxCharsWithOverflowIndicator)}${overflowIndicator}`;
+  }
+  return text;
+};

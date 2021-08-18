@@ -23,6 +23,7 @@ import Notification, { NotificationType } from '../Notification/Notification';
 
 // css
 import './StudioList.css';
+import { overflowText } from '../../services/helpers/misc';
 
 // interface Filters {
 
@@ -130,7 +131,7 @@ class StudioList extends React.Component<RouteComponentProps, State> {
           </IonCardTitle>
         </IonCardHeader>
         <IonCardContent>
-          {item.description}
+          {overflowText(item.description, 100)}
         </IonCardContent>
       </IonCard>
     );
