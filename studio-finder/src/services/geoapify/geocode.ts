@@ -1,10 +1,11 @@
 import { Address } from '../api/address';
+import i18n from '../i18n/i18n';
 
 import apiKey from './key';
-import geocodeAutoCompleteSample from './geocode-autocomplete.sample.json';
+import geocodeSample from './geocode.sample.json';
 
-// FROM GEOAPIFY/AUTOCOMPLETE https://apidocs.geoapify.com/docs/geocoding/address-autocomplete/#autocomplete
-const AUTOCOMPLETE_URL = 'https://api.geoapify.com/v1/geocode/autocomplete';
+// FROM GEOAPIFY/AUTOCOMPLETE https://apidocs.geoapify.com/docs/geocoding/forward-geocoding/#about
+const AUTOCOMPLETE_URL = 'https://api.geoapify.com/v1/geocode/search';
 const SAMPLE_TIMEOUT = 2000;
 
 const convertToAddress = (response: any): Address[] => (
@@ -24,19 +25,21 @@ export const searchAddress = async (text: string, useSample?: boolean): Promise<
   if (useSample) {
     return new Promise((resolve) => {
       setTimeout(() => {
-        const address = convertToAddress(geocodeAutoCompleteSample);
+        const address = convertToAddress(geocodeSample);
         resolve(address);
       }, SAMPLE_TIMEOUT);
     });
   }
-  const requestOptions = {
-    method: 'GET',
-    params: {
-      apiKey,
-      text: encodeURIComponent(text),
-      filter: 'countrycode:gb', // only searching UK
-    },
-  };
-  const response = await fetch(AUTOCOMPLETE_URL, requestOptions);
-  return convertToAddress(response.json());
+  const requestOptions = { method: 'GET' };
+  const params = new URLSearchParams({
+    apiKey,
+    text,
+    lang: i18n.language.substr(0, 2),
+  }).toString();
+  const url = `${AUTOCOMPLETE_URL}?${params}&filter=countrycode:gb`; // filtering only UK results
+  // eslint-disable-next-line no-console
+  console.log('will request api', url, requestOptions);
+  const response = await fetch(url, requestOptions);
+  const responseJson = await response.json();
+  return convertToAddress(responseJson);
 };

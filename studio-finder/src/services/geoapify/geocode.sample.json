@@ -1,0 +1,216 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -0.206614,
+          51.445775
+        ]
+      },
+      "properties": {
+        "name": "Southfields",
+        "country": "United Kingdom",
+        "datasource": {
+          "sourcename": "openstreetmap",
+          "attribution": "© OpenStreetMap contributors",
+          "license": "Open Database License",
+          "url": "https://www.openstreetmap.org/copyright"
+        },
+        "country_code": "gb",
+        "state": "Greater London",
+        "city": "London",
+        "district": "Wandsworth",
+        "suburb": "Southfields",
+        "lon": -0.206614,
+        "lat": 51.445775,
+        "formatted": "Southfields, London, United Kingdom",
+        "address_line1": "Southfields",
+        "address_line2": "London, United Kingdom",
+        "result_type": "amenity",
+        "rank": {
+          "popularity": 6.938187789627354,
+          "confidence": 1,
+          "match_type": "full_match"
+        },
+        "place_id": "51bda772da5372cabf59ec2fbb270fb94940f00103f901ba2907e300000000c0020192030b536f7574686669656c6473"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -0.196351,
+          51.445361
+        ]
+      },
+      "properties": {
+        "name": "Southfields Academy",
+        "housenumber": "333",
+        "street": "Merton Road",
+        "country": "United Kingdom",
+        "datasource": {
+          "sourcename": "openstreetmap",
+          "attribution": "© OpenStreetMap contributors",
+          "license": "Open Database License",
+          "url": "https://www.openstreetmap.org/copyright"
+        },
+        "country_code": "gb",
+        "postcode": "SW18 5JU",
+        "state": "Greater London",
+        "city": "London",
+        "district": "Wandsworth",
+        "suburb": "Earlsfield",
+        "lon": -0.196351,
+        "lat": 51.445361,
+        "formatted": "Southfields Academy, 333 Merton Road, London SW18 5JU, United Kingdom",
+        "address_line1": "Southfields Academy",
+        "address_line2": "333 Merton Road, London SW18 5JU, United Kingdom",
+        "result_type": "amenity",
+        "rank": {
+          "popularity": 7.109152965272565,
+          "confidence": 1,
+          "match_type": "full_match"
+        },
+        "place_id": "5102b9c4910722c9bf59f9f4d89601b94940f00102f9016c0c1a0b00000000c00201920313536f7574686669656c64732041636164656d79"
+      },
+      "bbox": [
+        -0.198181,
+        51.4442583,
+        -0.1954817,
+        51.4461338
+      ]
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -0.208704,
+          51.443576
+        ]
+      },
+      "properties": {
+        "name": "Southfields Library",
+        "country": "United Kingdom",
+        "datasource": {
+          "sourcename": "openstreetmap",
+          "attribution": "© OpenStreetMap contributors",
+          "license": "Open Database License",
+          "url": "https://www.openstreetmap.org/copyright"
+        },
+        "country_code": "gb",
+        "state": "Greater London",
+        "city": "London",
+        "district": "Wandsworth",
+        "suburb": "Southfields",
+        "lon": -0.208704,
+        "lat": 51.443576,
+        "formatted": "Southfields Library, Southfields, London, United Kingdom",
+        "address_line1": "Southfields Library",
+        "address_line2": "Southfields, London, United Kingdom",
+        "result_type": "amenity",
+        "rank": {
+          "popularity": 6.836347336625073,
+          "confidence": 1,
+          "match_type": "full_match"
+        },
+        "place_id": "5160ae450bd0b6cabf592fa52e19c7b84940f00103f90117e0f31a00000000c00201920313536f7574686669656c6473204c696272617279"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -0.206499,
+          51.445034
+        ]
+      },
+      "properties": {
+        "name": "Southfields Station",
+        "street": "Wimbledon Park Road",
+        "country": "United Kingdom",
+        "datasource": {
+          "sourcename": "openstreetmap",
+          "attribution": "© OpenStreetMap contributors",
+          "license": "Open Database License",
+          "url": "https://www.openstreetmap.org/copyright"
+        },
+        "country_code": "gb",
+        "state": "Greater London",
+        "city": "London",
+        "district": "Wandsworth",
+        "suburb": "Southfields",
+        "lon": -0.206499,
+        "lat": 51.445034,
+        "formatted": "Southfields Station, Wimbledon Park Road, London, United Kingdom",
+        "address_line1": "Southfields Station",
+        "address_line2": "Wimbledon Park Road, London, United Kingdom",
+        "result_type": "amenity",
+        "rank": {
+          "popularity": 6.994272851888132,
+          "confidence": 1,
+          "match_type": "full_match"
+        },
+        "place_id": "51e00ed4298f6ecabf59d5cdc5dff6b84940f00102f901feea0d1100000000c00201920313536f7574686669656c64732053746174696f6e"
+      },
+      "bbox": [
+        -0.2066081,
+        51.4449694,
+        -0.206341,
+        51.4451088
+      ]
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -2.797656,
+          54.042862
+        ]
+      },
+      "properties": {
+        "name": "Southfield",
+        "country": "United Kingdom",
+        "county": "Lancashire",
+        "datasource": {
+          "sourcename": "openstreetmap",
+          "attribution": "© OpenStreetMap contributors",
+          "license": "Open Database License",
+          "url": "https://www.openstreetmap.org/copyright"
+        },
+        "street": "Southfield",
+        "country_code": "gb",
+        "state": "Lancashire",
+        "city": "Lancaster",
+        "lon": -2.797656,
+        "lat": 54.042862,
+        "formatted": "Southfield, Lancaster, United Kingdom",
+        "address_line1": "Southfield",
+        "address_line2": "Lancaster, United Kingdom",
+        "county_code": "LAN",
+        "result_type": "amenity",
+        "rank": {
+          "popularity": 5.790282141257969,
+          "confidence": 1,
+          "match_type": "full_match"
+        },
+        "place_id": "5158aa0b78996106c059de1e84807c054b40f00102f901b701390900000000c0020192030a536f7574686669656c64"
+      },
+      "bbox": [
+        -2.7979396,
+        54.0426259,
+        -2.797304,
+        54.0430608
+      ]
+    }
+  ],
+  "query": {
+    "text": "Southfi"
+  }
+}
