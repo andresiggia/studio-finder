@@ -4,6 +4,7 @@ import { convertDateFields, updateObjectKeysToCamelCase, updateObjectKeysToUnder
 import { getDefaultStudioRoleName, Role, RoleType } from './roles';
 import { TableName } from './tables';
 import { ViewName } from './views';
+import { Address, defaultAddress } from './address';
 
 export enum StudioError {
   notLoggedIn = 'notLoggedIn',
@@ -12,17 +13,10 @@ export enum StudioError {
   missingStudioRoles = 'missingStudioRoles',
 }
 
-export interface StudioProfile {
+export interface StudioProfile extends Address {
   id: number,
   title: string,
   description: string,
-  address1: string,
-  address2: string,
-  address3: string,
-  postCode: string,
-  city: string,
-  region: string,
-  country: string,
   createdAt: Date | null,
   modifiedAt: Date | null,
 }
@@ -37,16 +31,10 @@ export interface StudioUser {
 }
 
 export const defaultStudioProfile: StudioProfile = {
+  ...defaultAddress,
   id: 0,
   title: '',
   description: '',
-  address1: '',
-  address2: '',
-  address3: '',
-  postCode: '',
-  city: '',
-  region: '',
-  country: '',
   createdAt: null,
   modifiedAt: null,
 };
