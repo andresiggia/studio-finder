@@ -86,7 +86,7 @@ class AddressInput extends React.Component<Props, State> {
     }, async () => {
       if (hasReachedMinChars) {
         try {
-          const results = await geocode(queryString);
+          const results = await geocodeAddress(queryString);
           const { queryString: currentQuery } = this.state;
           if (currentQuery === queryString) { // prevent saving outdated query
             // eslint-disable-next-line no-console
