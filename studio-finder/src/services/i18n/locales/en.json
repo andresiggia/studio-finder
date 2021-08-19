@@ -1,6 +1,4 @@
 {
-  "Found {{count}} result": "Found {{count}} result",
-  "Found {{count}} result_plural": "Found {{count}} results",
   "{{count}} hour": "{{count}} hour",
   "{{count}} hour_plural": "{{count}} hours"
 }

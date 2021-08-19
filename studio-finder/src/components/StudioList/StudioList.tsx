@@ -17,21 +17,18 @@ import AppContext from '../../context/AppContext';
 import i18n from '../../services/i18n/i18n';
 import { getStudios, StudioProfileDisplay } from '../../services/api/studios';
 import { getRoutesByName, RouteName } from '../../services/routes/routes';
+import { overflowText } from '../../services/helpers/misc';
 
 // components
 import Notification, { NotificationType } from '../Notification/Notification';
 
 // css
 import './StudioList.css';
-import { overflowText } from '../../services/helpers/misc';
 
-// interface Filters {
-
-// }
-
-// interface Props {
-//   // filters?: Filters,
-// }
+interface Props extends RouteComponentProps {
+  latitude?: number,
+  longitude?: number,
+}
 
 interface State {
   isLoading: boolean,
@@ -39,10 +36,10 @@ interface State {
   items: StudioProfileDisplay[] | null,
 }
 
-class StudioList extends React.Component<RouteComponentProps, State> {
+class StudioList extends React.Component<Props, State> {
   mounted = false
 
-  constructor(props: RouteComponentProps) {
+  constructor(props: Props) {
     super(props);
     this.state = {
       isLoading: false,
@@ -56,11 +53,13 @@ class StudioList extends React.Component<RouteComponentProps, State> {
     this.loadData();
   }
 
-  // componentDidUpdate(prevProps: RouteComponentProps) {
-  //   if (this.getSearchParams(prevProps) !== this.getSearchParams(this.props)) {
-  //     this.loadData();
-  //   }
-  // }
+  componentDidUpdate(prevProps: Props) {
+    const { latitude, longitude } = this.props;
+    if (prevProps.latitude !== latitude
+      || prevProps.longitude !== longitude) {
+      this.loadData();
+    }
+  }
 
   componentWillUnmount() {
     this.mounted = false;
@@ -83,7 +82,10 @@ class StudioList extends React.Component<RouteComponentProps, State> {
       isLoading: true,
     }, async () => {
       try {
-        const items = await getStudios(this.context);
+        const { latitude, longitude } = this.props;
+        const items = await getStudios(this.context, {
+          lat: latitude, lon: longitude,
+        });
         this.setMountedState({
           isLoading: false,
           items,
@@ -164,7 +166,6 @@ class StudioList extends React.Component<RouteComponentProps, State> {
     }
     return (
       <IonGrid className="studio-list">
-        <p>{i18n.t('Found {{count}} result', { count: items.length })}</p>
         <IonRow>
           {items.map((item) => (
             <IonCol key={item.id} size="12" size-sm="6" size-md="4" size-lg="3">
