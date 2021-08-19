@@ -1,5 +1,7 @@
 import React from 'react';
-import { IonContent, IonPage } from '@ionic/react';
+import {
+  IonContent, IonGrid, IonPage, IonText,
+} from '@ionic/react';
 
 // components
 import Header from '../../components/Header/Header';
@@ -13,7 +15,15 @@ class About extends React.Component {
       <IonPage>
         <IonContent fullscreen>
           <Header />
-          <p>About - Under development</p>
+          <IonGrid>
+            <p className="about-text">
+              <IonText color="primary">
+                Studio
+                <strong>Finder</strong>
+              </IonText>
+              &nbsp;was developed by Andre Siggia for the MSc in Information Systems and Management of the Birkbeck University of London.
+            </p>
+          </IonGrid>
         </IonContent>
       </IonPage>
     );
