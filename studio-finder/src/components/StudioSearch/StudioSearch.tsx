@@ -1,7 +1,4 @@
 import React from 'react';
-import {
-  IonButton, IonInput,
-} from '@ionic/react';
 import { withRouter, RouteComponentProps, matchPath } from 'react-router-dom';
 
 // services
@@ -10,12 +7,15 @@ import { getRoutesByName, RouteName } from '../../services/routes/routes';
 
 // components
 import StudioList from '../StudioList/StudioList';
+import AddressInput from '../AddressInput/AddressInput';
 
 // css
 import './StudioSearch.css';
 
 interface State {
-  query: string,
+  address: string,
+  latitude: number,
+  longitude: number,
 }
 
 interface Props extends RouteComponentProps {
@@ -28,7 +28,9 @@ class StudioSearch extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
-      query: '',
+      address: '',
+      latitude: 0,
+      longitude: 0,
     };
   }
 
@@ -38,7 +40,7 @@ class StudioSearch extends React.Component<Props, State> {
   }
 
   componentDidUpdate(prevProps: Props) {
-    if (this.getSearchParams(prevProps) !== this.getSearchParams(this.props)) {
+    if (this.getSearchParams(prevProps).address !== this.getSearchParams(this.props).address) {
       this.updateState();
     }
   }
@@ -67,27 +69,46 @@ class StudioSearch extends React.Component<Props, State> {
       exact: route.exact,
       strict: route.strict,
     });
+    let address = '';
+    let latitude = 0;
+    let longitude = 0;
     if (isSearchPage) {
       const { query = '' } = match.params as { query?: string };
-      return decodeURIComponent(query);
+      const params = new URLSearchParams(query);
+      address = params.get('address') || '';
+      latitude = Number(params.get('latitude') || 0);
+      longitude = Number(params.get('longitude') || 0);
     }
-    return '';
+    return {
+      address,
+      latitude,
+      longitude,
+    };
   }
 
   updateState = () => {
-    const query = this.getSearchParams();
+    const { address, latitude, longitude } = this.getSearchParams();
     this.setMountedState({
-      query,
+      address,
+      latitude,
+      longitude,
     });
   }
 
-  onSubmit = (e: any) => {
+  onSubmit = (e?: any) => {
+    if (e) {
+      e.preventDefault(); // prevent form submission
+    }
     const { history } = this.props;
-    const { query } = this.state;
-    e.preventDefault(); // prevent form submission
-    // if (query) {
+    const { address, latitude, longitude } = this.state;
+    // if (address) {
     const [route] = getRoutesByName([RouteName.search]);
-    history.push(`${route.path}/${encodeURIComponent(query)}`);
+    const paramsString = new URLSearchParams({
+      address,
+      latitude: String(latitude),
+      longitude: String(longitude),
+    }).toString();
+    history.push(`${route.path}/${paramsString}`);
     // }
   }
 
@@ -95,26 +116,23 @@ class StudioSearch extends React.Component<Props, State> {
 
   render() {
     const { showResults } = this.props;
-    const { query } = this.state;
+    const { address, latitude, longitude } = this.state;
     return (
       <>
-        <form onSubmit={this.onSubmit} className="studio-search-form">
-          <IonInput
-            value={query}
-            type="text"
-            name="search"
-            placeholder={i18n.t('Location or post code')}
-            onIonChange={(e: any) => this.setMountedState({ query: e.detail.value })}
-          />
-          <IonButton
+        <div className="studio-search">
+          <AddressInput
+            value={address}
             color="primary"
-            type="submit"
-          >
-            {i18n.t('Search')}
-          </IonButton>
-        </form>
-        {showResults && (
-          <StudioList />
+            placeholder={i18n.t('Location or post code')}
+            onChange={(response) => this.setMountedState({
+              address: response.address,
+              latitude: response.latitude,
+              longitude: response.longitude,
+            }, () => this.onSubmit())}
+          />
+        </div>
+        {(showResults && !!address) && (
+          <StudioList latitude={latitude} longitude={longitude} />
         )}
       </>
     );

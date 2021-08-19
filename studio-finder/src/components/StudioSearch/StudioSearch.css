@@ -1,8 +1,7 @@
-.studio-search-form {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 300px;
-  max-width: 100%;
+.studio-search {
+  width: 100%;
+  max-width: 600px;
   margin: 0 auto;
+  border: 1px solid var(--ion-color-primary);
+  border-radius: 5px;
 }
