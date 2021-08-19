@@ -91,7 +91,7 @@ export const getStudiosByUser = async (context: AppContextValue, props?: {
   if (error) {
     throw error;
   }
-  let studios: StudioProfileDisplay[] = [];
+  let studios: StudioProfile[] = [];
   if (data && Array.isArray(data) && data.length > 0) {
     studios = data.map((studioDataWithUserId: any) => {
       // extract userId from studioDataWithUserId before saving
