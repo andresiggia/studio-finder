@@ -26,7 +26,7 @@ export const getSpaceServices = async (context: AppContextValue, props: {
   spaceId?: number, start?: number, limit?: number,
 }) => {
   const {
-    spaceId, start = 0, limit = 100,
+    spaceId, start = 0, limit = 1000,
   } = props;
   if (!spaceId) {
     throw new Error(SpaceServiceError.missingSpaceId);

@@ -68,7 +68,7 @@ export const getBookingItems = async (context: AppContextValue, props: {
   spaceId?: number, bookingId?: number, start?: number, limit?: number, includeBookingAndUser?: boolean
 }) => {
   const {
-    spaceId, bookingId, start = 0, limit = 100, includeBookingAndUser,
+    spaceId, bookingId, start = 0, limit = 1000, includeBookingAndUser,
   } = props;
   if (!spaceId && !bookingId) { // at least one param is required
     throw new Error(BookingItemError.missingSpaceId);

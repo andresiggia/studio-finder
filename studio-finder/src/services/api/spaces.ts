@@ -56,7 +56,7 @@ export const getSpaces = async (context: AppContextValue, props: {
   studioId: number, start?: number, limit?: number,
 }) => {
   const {
-    studioId, start = 0, limit = 100,
+    studioId, start = 0, limit = 1000,
   } = props || {};
   if (!studioId) {
     throw new Error(SpaceError.missingStudioId);
@@ -88,7 +88,7 @@ export const getSpacesByUser = async (context: AppContextValue, props: {
   studioId: number, start?: number, limit?: number, inactive?: boolean,
 }) => {
   const {
-    studioId, start = 0, limit = 100, inactive = false,
+    studioId, start = 0, limit = 1000, inactive = false,
   } = props || {};
   if (!studioId) {
     throw new Error(SpaceError.missingStudioId);

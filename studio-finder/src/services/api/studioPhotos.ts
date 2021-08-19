@@ -29,7 +29,7 @@ export const getStudioPhotos = async (context: AppContextValue, props: {
   studioId?: number, start?: number, limit?: number,
 }) => {
   const {
-    studioId, start = 0, limit = 100,
+    studioId, start = 0, limit = 1000,
   } = props;
   if (!studioId) {
     throw new Error(StudioPhotoError.missingStudioId);

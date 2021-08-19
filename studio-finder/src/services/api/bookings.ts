@@ -60,7 +60,7 @@ export const getBookings = async (context: AppContextValue, props: {
   studioId: number, start?: number, limit?: number, includeUser?: boolean,
 }) => {
   const {
-    studioId, start = 0, limit = 100, includeUser,
+    studioId, start = 0, limit = 1000, includeUser,
   } = props || {};
   if (!studioId) {
     throw new Error(BookingError.missingStudioId);

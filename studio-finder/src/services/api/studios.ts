@@ -51,7 +51,7 @@ export const defaultStudioProfileDisplay: StudioProfileDisplay = {
 export const getStudios = async (context: AppContextValue, props?: {
   start?: number, limit?: number,
 }) => {
-  const { start = 0, limit = 100 } = props || {};
+  const { start = 0, limit = 1000 } = props || {};
   const { supabase } = context;
   const { data, error } = await supabase
     .from(ViewName.studiosList)
