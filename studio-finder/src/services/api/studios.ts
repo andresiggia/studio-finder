@@ -4,6 +4,7 @@ import { convertDateFields, updateObjectKeysToCamelCase, updateObjectKeysToUnder
 import { getDefaultStudioRoleName, Role, RoleType } from './roles';
 import { TableName } from './tables';
 import { ViewName } from './views';
+import { DBFunction } from './functions';
 import { Address, defaultAddress } from './address';
 
 export enum StudioError {
@@ -41,26 +42,48 @@ export const defaultStudioProfile: StudioProfile = {
 
 export interface StudioProfileDisplay extends StudioProfile {
   photoUrl: string,
+  distance: number,
 }
 
 export const defaultStudioProfileDisplay: StudioProfileDisplay = {
   ...defaultStudioProfile,
   photoUrl: '',
+  distance: 0,
 };
 
 export const getStudios = async (context: AppContextValue, props?: {
-  start?: number, limit?: number,
+  start?: number, limit?: number, lat?: number, lon?: number,
 }) => {
-  const { start = 0, limit = 1000 } = props || {};
+  const {
+    start = 0, limit = 1000, lat, lon,
+  } = props || {};
   const { supabase } = context;
-  const { data, error } = await supabase
-    .from(ViewName.studiosList)
-    .select()
-    .eq('inactive', false)
-    .order('title', { ascending: true })
-    .range(start, start + limit - 1);
-  if (error) {
-    throw error;
+  let data;
+  if (lat && lon) {
+    // order by distance to provided latitude/longitude
+    const { data: dataDistance, error } = await supabase
+      .rpc(DBFunction.getStudiosWithDistance, {
+        lat, lon,
+      })
+      .eq('inactive', false)
+      .order('distance', { ascending: true, nullsFirst: false })
+      .range(start, start + limit - 1);
+    if (error) {
+      throw error;
+    }
+    data = dataDistance;
+  } else {
+    // order by latest additions
+    const { data: dataList, error } = await supabase
+      .from(ViewName.studiosList)
+      .select()
+      .eq('inactive', false)
+      .order('created_at', { ascending: false })
+      .range(start, start + limit - 1);
+    if (error) {
+      throw error;
+    }
+    data = dataList;
   }
   let studios: StudioProfileDisplay[] = [];
   if (data && Array.isArray(data) && data.length > 0) {
@@ -75,7 +98,7 @@ export const getStudios = async (context: AppContextValue, props?: {
 export const getStudiosByUser = async (context: AppContextValue, props?: {
   start?: number, limit?: number, inactive?: boolean,
 }) => {
-  const { start = 0, limit = 100, inactive = false } = props || {};
+  const { start = 0, limit = 1000, inactive = false } = props || {};
   const { supabase, state } = context;
   const userId = state.user?.id;
   if (!userId) {
