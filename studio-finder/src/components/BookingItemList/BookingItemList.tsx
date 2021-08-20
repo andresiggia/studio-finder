@@ -110,10 +110,11 @@ class BookingItemList extends React.Component<Props, State> {
     return (
       <IonList className="booking-item-list-items">
         {items.map((item, index) => {
-          const label = `${index + 1}. ${item.spaceTitle}${
-            item.serviceTitle
-              ? ` (${item.serviceTitle})`
-              : ''}`;
+          const label = `${index + 1}. ${
+            item.inactive ? `(${i18n.t('inactive')}) ` : ''
+          }${
+            item.serviceTitle ? `${item.serviceTitle} - ` : ''
+          }${item.spaceTitle}`;
           return (
             <IonItem
               // eslint-disable-next-line react/no-array-index-key

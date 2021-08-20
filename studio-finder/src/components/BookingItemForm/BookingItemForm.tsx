@@ -4,7 +4,9 @@ import {
   IonToolbar, IonTitle, IonDatetime, IonSpinner,
 } from '@ionic/react';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { trashOutline } from 'ionicons/icons';
+import {
+  trashOutline, refreshOutline,
+} from 'ionicons/icons';
 
 // context
 import AppContext from '../../context/AppContext';
@@ -301,27 +303,52 @@ class BookingItemForm extends React.Component<Props, State> {
 
   render() {
     const {
-      disabled: parentDisabled, index, onDelete,
+      disabled: parentDisabled, index, item, onDelete,
     } = this.props;
     const { isLoading, error } = this.state;
     const disabled = parentDisabled || isLoading || !!error;
     return (
       <fieldset className="booking-item-form-fieldset" disabled={disabled}>
         <IonToolbar className="booking-item-form-toolbar">
-          <IonTitle size="small" className="booking-item-form-title">
-            {`${i18n.t('Item')} #${index + 1}`}
+          <IonTitle
+            className="booking-item-form-title"
+            size="small"
+            color={item.inactive ? 'danger' : ''}
+          >
+            {`${i18n.t('Item')} #${index + 1} ${
+              item.inactive ? `(${i18n.t('inactive')})` : ''
+            }`}
           </IonTitle>
           <IonButtons slot="end">
             {!disabled && (
-              <IonButton
-                size="small"
-                color="danger"
-                fill="clear"
-                title={i18n.t('Delete Item')}
-                onClick={() => onDelete()}
-              >
-                <IonIcon icon={trashOutline} />
-              </IonButton>
+              item.inactive
+                ? (
+                  <IonButton
+                    size="small"
+                    color="primary"
+                    fill="clear"
+                    title={i18n.t('Restore Item')}
+                    onClick={() => this.onChange(false, 'inactive')}
+                  >
+                    <IonIcon icon={refreshOutline} />
+                  </IonButton>
+                ) : (
+                  <IonButton
+                    size="small"
+                    color="danger"
+                    fill="clear"
+                    title={i18n.t('Delete Item')}
+                    onClick={() => {
+                      if (item.id) { // deactivate (existing item)
+                        this.onChange(true, 'inactive');
+                      } else { // delete (new item)
+                        onDelete();
+                      }
+                    }}
+                  >
+                    <IonIcon icon={trashOutline} />
+                  </IonButton>
+                )
             )}
           </IonButtons>
         </IonToolbar>
@@ -339,7 +366,7 @@ class BookingItemForm extends React.Component<Props, State> {
             onDismiss={() => this.setMountedState({ error: null })}
           />
         )}
-        {this.renderFields(disabled)}
+        {this.renderFields(disabled || item.inactive)}
       </fieldset>
     );
   }
