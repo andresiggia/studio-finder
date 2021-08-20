@@ -16,26 +16,6 @@
   font-weight: bold;
 }
 
-.space-service-form-list {
-  padding: 0;
-}
-
-@media only screen and (min-width: 820px) {
-  .space-service-form-list {
-    display: flex;
-    flex-wrap: wrap;
-  }
-  .space-service-form-list-item {
-    width: calc(50% - .5rem);
-  }
-  .space-service-form-list-item:nth-child(even) {
-    margin-left: 1rem;
-  }
-  .space-service-form-list-item-full {
-    width: 100%;
-  }
-}
-
 .space-service-form-loading {
   text-align: center;
 }

@@ -16,23 +16,6 @@
   font-weight: bold;
 }
 
-.photo-form-list {
-  padding: 0;
-}
-
-@media only screen and (min-width: 820px) {
-  .photo-form-list {
-    display: flex;
-    flex-wrap: wrap;
-  }
-  .photo-form-list-item {
-    width: calc(50% - .5rem);
-  }
-  .photo-form-list-item:nth-child(even) {
-    margin-left: 1rem;
-  }
-}
-
 .photo-form-spacer {
   margin-top: 1rem;
   margin-bottom: 1rem;

@@ -200,7 +200,7 @@ class BookingBar extends React.Component<Props, State> {
                     <strong>{`£ ${totalPrice.toFixed(2)}`}</strong>
                   </IonText>
                 </IonItem>
-                <IonItem className="booking-form-list-item-full">
+                <IonItem>
                   {this.renderTextareaInput({
                     value: notes,
                     fieldName: 'notes',

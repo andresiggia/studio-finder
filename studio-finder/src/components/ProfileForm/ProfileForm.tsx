@@ -409,8 +409,8 @@ class ProfileForm extends React.Component<Props, State> {
     const { state } = this.context;
     const { userProfile, file } = this.state;
     return (
-      <IonList className="profile-form-list">
-        <IonItem>
+      <IonList className="form-list">
+        <IonItem className="form-list-item-full">
           {this.renderTextInput({
             value: state.user.email,
             fieldName: 'email',
@@ -418,7 +418,7 @@ class ProfileForm extends React.Component<Props, State> {
             disabled: true, // read-only field
           }, showRequired)}
         </IonItem>
-        <IonItem>
+        <IonItem className="form-list-item">
           {this.renderTextInput({
             value: userProfile.name,
             fieldName: 'name',
@@ -426,7 +426,7 @@ class ProfileForm extends React.Component<Props, State> {
             disabled,
           }, showRequired)}
         </IonItem>
-        <IonItem>
+        <IonItem className="form-list-item">
           {this.renderTextInput({
             value: userProfile.surname,
             fieldName: 'surname',
@@ -434,27 +434,7 @@ class ProfileForm extends React.Component<Props, State> {
             disabled,
           }, showRequired)}
         </IonItem>
-        {showRequired && (
-          <IonItem>
-            {this.renderLabel(i18n.t('Photo'))}
-            <ImageInput
-              files={[file]}
-              disabled={disabled}
-              imageUrls={[userProfile.photoUrl]}
-              renderImage={this.renderAvatar}
-              onFilesChange={this.onFileChange}
-              onImageUrlsChange={(imageUrls: string[]) => this.setMountedState({
-                userProfile: {
-                  ...userProfile,
-                  photoUrl: imageUrls.length > 0
-                    ? imageUrls[0]
-                    : '',
-                },
-              })}
-            />
-          </IonItem>
-        )}
-        <IonItem>
+        <IonItem className="form-list-item">
           {this.renderLabel(i18n.t('Date of birth'))}
           <IonDatetime
             displayFormat="DD MM YYYY"
@@ -474,6 +454,26 @@ class ProfileForm extends React.Component<Props, State> {
             }}
           />
         </IonItem>
+        {showRequired && (
+          <IonItem className="form-list-item-full">
+            {this.renderLabel(i18n.t('Photo'))}
+            <ImageInput
+              files={[file]}
+              disabled={disabled}
+              imageUrls={[userProfile.photoUrl]}
+              renderImage={this.renderAvatar}
+              onFilesChange={this.onFileChange}
+              onImageUrlsChange={(imageUrls: string[]) => this.setMountedState({
+                userProfile: {
+                  ...userProfile,
+                  photoUrl: imageUrls.length > 0
+                    ? imageUrls[0]
+                    : '',
+                },
+              })}
+            />
+          </IonItem>
+        )}
       </IonList>
     );
   }

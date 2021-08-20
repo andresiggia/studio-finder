@@ -55,10 +55,6 @@
   flex-grow: 1;
 }
 
-.profile-form-list {
-  padding: 0;
-}
-
 .profile-form-loading {
   text-align: center;
 }

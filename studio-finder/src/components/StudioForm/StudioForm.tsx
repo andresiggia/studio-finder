@@ -469,8 +469,8 @@ class StudioForm extends React.Component<Props, State> {
   renderFields = (disabled: boolean) => {
     const { studioProfile } = this.state;
     return (
-      <IonList className="studio-form-list">
-        <IonItem>
+      <IonList className="studio-form-list form-list">
+        <IonItem className="form-list-item-full">
           {this.renderTextInput({
             value: studioProfile.title,
             fieldName: 'title',
@@ -478,7 +478,7 @@ class StudioForm extends React.Component<Props, State> {
             disabled,
           })}
         </IonItem>
-        <IonItem>
+        <IonItem className="form-list-item-full">
           {this.renderLabel(i18n.t('Address'), true)}
           <AddressInput
             value={studioProfile.address}
@@ -492,7 +492,7 @@ class StudioForm extends React.Component<Props, State> {
             })}
           />
         </IonItem>
-        <IonItem>
+        <IonItem className="form-list-item-full">
           {this.renderTextareaInput({
             value: studioProfile.description,
             fieldName: 'description',
@@ -500,7 +500,7 @@ class StudioForm extends React.Component<Props, State> {
             disabled,
           })}
         </IonItem>
-        <IonItem>
+        <IonItem className="form-list-item-full">
           {this.renderImageField(disabled)}
         </IonItem>
       </IonList>

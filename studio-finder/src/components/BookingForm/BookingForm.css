@@ -44,24 +44,8 @@
   margin-bottom: 1rem;
 }
 
-.booking-form-list {
+.form-list.booking-form-list {
   padding: 1rem;
-}
-
-@media only screen and (min-width: 820px) {
-  .booking-form-list {
-    display: flex;
-    flex-wrap: wrap;
-  }
-  .booking-form-list-item {
-    width: calc(50% - .5rem);
-  }
-  .booking-form-list-item:nth-child(even) {
-    margin-left: 1rem;
-  }
-  .booking-form-list-item-full {
-    width: 100%;
-  }
 }
 
 .booking-form-loading {

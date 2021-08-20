@@ -44,28 +44,12 @@
   margin-bottom: 1rem;
 }
 
-.space-form-list {
+.form-list.space-form-list {
   padding: 1rem;
 }
 
 .space-form-photo {
   width: 100%;
-}
-
-@media only screen and (min-width: 820px) {
-  .space-form-list {
-    display: flex;
-    flex-wrap: wrap;
-  }
-  .space-form-list-item {
-    width: calc(50% - .5rem);
-  }
-  .space-form-list-item:nth-child(even) {
-    margin-left: 1rem;
-  }
-  .space-form-list-item-full {
-    width: 100%;
-  }
 }
 
 .space-form-loading {

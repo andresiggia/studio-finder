@@ -30,7 +30,7 @@ class PasswordFields extends React.Component<Props> {
     } = this.props;
     return (
       <>
-        <IonItem>
+        <IonItem className="form-list-item-full">
           <IonInput
             value={password}
             type="password"
@@ -53,7 +53,7 @@ class PasswordFields extends React.Component<Props> {
         )}
         {showPasswordRepeat && (
           <>
-            <IonItem>
+            <IonItem className="form-list-item-full">
               <IonInput
                 value={passwordRepeat}
                 type="password"

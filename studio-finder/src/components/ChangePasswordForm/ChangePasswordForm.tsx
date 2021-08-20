@@ -145,7 +145,7 @@ class ChangePasswordForm extends React.Component<Props, State> {
     return (
       <form onSubmit={this.onSubmit}>
         <fieldset className="changepass-form-fieldset" disabled={disabled}>
-          <IonList className="changepass-form-list">
+          <IonList className="changepass-form-list form-list">
             <PasswordFields
               password={password}
               onPasswordChange={(e) => {

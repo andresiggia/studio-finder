@@ -213,8 +213,8 @@ class BookingItemForm extends React.Component<Props, State> {
       label: space.title,
     }));
     return (
-      <IonList className="booking-item-form-list">
-        <IonItem className="booking-item-form-list-item">
+      <IonList className="form-list">
+        <IonItem className="form-list-item">
           {this.renderSelectInput({
             value: item.spaceId,
             fieldName: 'spaceId',
@@ -229,7 +229,7 @@ class BookingItemForm extends React.Component<Props, State> {
             },
           })}
         </IonItem>
-        <IonItem className="booking-item-form-list-item">
+        <IonItem className="form-list-item">
           {item.spaceId && (
             <BookingItemService
               spaceId={item.spaceId}
@@ -256,7 +256,7 @@ class BookingItemForm extends React.Component<Props, State> {
             />
           )}
         </IonItem>
-        <IonItem className="booking-item-form-list-item">
+        <IonItem className="form-list-item">
           {this.renderDateTimeInput({
             value: item.startAt,
             fieldName: 'startAt',
@@ -265,7 +265,7 @@ class BookingItemForm extends React.Component<Props, State> {
             disabled,
           })}
         </IonItem>
-        <IonItem className="booking-item-form-list-item">
+        <IonItem className="form-list-item">
           {this.renderDateTimeInput({
             value: item.endAt,
             fieldName: 'endAt',
@@ -283,7 +283,7 @@ class BookingItemForm extends React.Component<Props, State> {
             preventDismiss
           />
         )}
-        <IonItem className="booking-item-form-list-item-full">
+        <IonItem className="form-list-item-full">
           {this.renderTextareaInput({
             value: item.notes,
             fieldName: 'notes',

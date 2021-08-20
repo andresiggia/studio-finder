@@ -128,8 +128,8 @@ class SpaceServiceForm extends React.Component<Props> {
       label: service.title,
     }));
     return (
-      <IonList className="space-service-form-list">
-        <IonItem className="space-service-form-list-item">
+      <IonList className="form-list">
+        <IonItem className="form-list-item">
           {this.renderSelectInput({
             value: item.serviceType,
             fieldName: 'serviceType',
@@ -144,7 +144,7 @@ class SpaceServiceForm extends React.Component<Props> {
             },
           })}
         </IonItem>
-        <IonItem className="space-service-form-list-item">
+        <IonItem className="form-list-item">
           {this.renderTextInput({
             value: item.title,
             fieldName: 'title',
@@ -155,13 +155,13 @@ class SpaceServiceForm extends React.Component<Props> {
         {!isUniqueTitle(item) && (
           <Notification
             type={NotificationType.danger}
-            className="space-service-form-notification space-service-form-list-item-full space-service-form-spacer"
+            className="space-service-form-notification form-list-item-full space-service-form-spacer"
             header={i18n.t('Invalid title')}
             message={i18n.t('Title must be unique')}
             preventDismiss
           />
         )}
-        <IonItem className="space-service-form-list-item">
+        <IonItem className="form-list-item">
           {this.renderNumericInput({
             value: item.price,
             fieldName: 'price',

@@ -538,8 +538,8 @@ class BookingForm extends React.Component<Props, State> {
       return null;
     }
     return (
-      <IonList className="booking-form-list">
-        <IonItem className="booking-form-list-item">
+      <IonList className="form-list booking-form-list">
+        <IonItem className="form-list-item">
           {this.renderSelectInput({
             value: booking.studioId,
             fieldName: 'studio',
@@ -552,7 +552,7 @@ class BookingForm extends React.Component<Props, State> {
           })}
         </IonItem>
         {booking.userId && (
-          <IonItem className="booking-form-list-item">
+          <IonItem className="form-list-item">
             {this.renderTextInput({
               value: `${booking.userName || ''} ${booking.userSurname || ''}`.trim() || booking.userId,
               fieldName: 'user',
@@ -562,7 +562,7 @@ class BookingForm extends React.Component<Props, State> {
           </IonItem>
         )}
         {!!booking.createdBy && (
-          <IonItem className="booking-form-list-item">
+          <IonItem className="form-list-item">
             {this.renderTextInput({
               value: `${booking.createdByName || ''} ${booking.createdBySurname || ''}`.trim() || booking.createdBy,
               fieldName: 'createdBy',
@@ -572,7 +572,7 @@ class BookingForm extends React.Component<Props, State> {
           </IonItem>
         )}
         {!!booking.modifiedBy && (
-          <IonItem className="booking-form-list-item">
+          <IonItem className="form-list-item">
             {this.renderTextInput({
               value: `${booking.modifiedByName || ''} ${booking.modifiedBySurname || ''}`.trim() || booking.modifiedBy,
               fieldName: 'modifiedBy',
@@ -581,7 +581,7 @@ class BookingForm extends React.Component<Props, State> {
             })}
           </IonItem>
         )}
-        <IonItem className="booking-form-list-item-full">
+        <IonItem className="form-list-item-full">
           {this.renderTextareaInput({
             value: booking.notes,
             fieldName: 'notes',
@@ -589,7 +589,7 @@ class BookingForm extends React.Component<Props, State> {
             disabled,
           })}
         </IonItem>
-        <div className="booking-form-list-item-full">
+        <div className="form-list-item-full">
           <BookingItemList
             items={bookingItems}
             disabled={disabled}

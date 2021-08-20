@@ -16,26 +16,6 @@
   font-weight: bold;
 }
 
-.booking-item-form-list {
-  padding: 0;
-}
-
-@media only screen and (min-width: 820px) {
-  .booking-item-form-list {
-    display: flex;
-    flex-wrap: wrap;
-  }
-  .booking-item-form-list-item {
-    width: calc(50% - .5rem);
-  }
-  .booking-item-form-list-item:nth-child(even) {
-    margin-left: 1rem;
-  }
-  .booking-item-form-list-item-full {
-    width: 100%;
-  }
-}
-
 .booking-item-form-loading {
   text-align: center;
 }
