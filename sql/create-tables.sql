@@ -80,6 +80,7 @@ CREATE TABLE "space_services" (
 
 CREATE TABLE "bookings" (
   "id" SERIAL PRIMARY KEY,
+  "inactive" boolean,
   "studio_id" int,
   "user_id" varchar,
   "created_by" varchar,
@@ -91,6 +92,7 @@ CREATE TABLE "bookings" (
 
 CREATE TABLE "booking_items" (
   "id" SERIAL PRIMARY KEY,
+  "inactive" boolean,
   "booking_id" int,
   "space_id" int,
   "service_type" varchar,

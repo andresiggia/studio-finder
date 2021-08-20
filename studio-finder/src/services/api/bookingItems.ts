@@ -16,6 +16,7 @@ export enum BookingItemError {
 
 export interface BookingItem {
   id: number,
+  inactive: boolean,
   bookingId: number,
   spaceId: number,
   serviceType: string,
@@ -28,6 +29,7 @@ export interface BookingItem {
 }
 export const defaultBookingItem: BookingItem = {
   id: 0,
+  inactive: false,
   bookingId: 0,
   spaceId: 0,
   serviceType: '',
