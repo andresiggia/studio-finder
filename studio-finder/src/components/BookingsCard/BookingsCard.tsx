@@ -28,7 +28,6 @@ interface State {
   items: BookingItemWithBooking[] | null,
   showModal: boolean,
   modalSelectedId: number,
-  // showDeleteAlert: boolean,
 }
 
 class BookingsCard extends React.Component<any, State> {
@@ -42,7 +41,6 @@ class BookingsCard extends React.Component<any, State> {
       items: null,
       showModal: false,
       modalSelectedId: 0,
-      // showDeleteAlert: false,
     };
   }
 
@@ -77,12 +75,7 @@ class BookingsCard extends React.Component<any, State> {
       try {
         const items = await getBookingItemsByUser(this.context);
         // eslint-disable-next-line no-console
-        console.log('got user rbookings', items);
-        // let selectedId = 0;
-        // // pre-select first item
-        // if (items?.length > 0) {
-        //   selectedId = items[0].id;
-        // }
+        console.log('got user bookings', items);
         this.setMountedState({
           isLoading: false,
           items,
