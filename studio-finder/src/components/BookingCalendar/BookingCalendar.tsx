@@ -180,7 +180,7 @@ class BookingCalendar extends React.Component<Props, State> {
         <IonToolbar>
           <IonTitle>
             {modalSelectedId
-              ? i18n.t('Edit Booking')
+              ? i18n.t('View/Modify Booking')
               : i18n.t('Create Booking')}
           </IonTitle>
           <IonButtons slot="end">
