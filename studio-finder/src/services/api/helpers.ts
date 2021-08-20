@@ -1,3 +1,5 @@
+import { pad } from '../helpers/misc';
+
 // from https://www.tutorialspoint.com/converting-any-case-to-camelcase-in-javascript
 export const toCamelCase = (str: string) => str
   .replace(/[^a-z0-9]/gi, ' ').toLowerCase().split(' ')
@@ -41,3 +43,7 @@ export const convertDateFields = (original: any, dateFields: string[]) => {
   });
   return converted;
 };
+
+export const convertDateForComparison = (date: Date) => (
+  `${date.getFullYear()}-${pad(date.getMonth() + 1, 2)}-${date.getDate()} ${pad(date.getHours(), 2)}:${date.getMinutes()}`
+);

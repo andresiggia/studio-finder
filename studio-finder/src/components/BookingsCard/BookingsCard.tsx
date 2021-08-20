@@ -5,7 +5,7 @@ import {
 } from '@ionic/react';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import {
-  closeOutline, createOutline,
+  closeOutline, createOutline, timerOutline,
 } from 'ionicons/icons';
 
 // services
@@ -28,6 +28,7 @@ interface State {
   items: BookingItemWithBooking[] | null,
   showModal: boolean,
   modalSelectedId: number,
+  showPastItems: boolean,
 }
 
 class BookingsCard extends React.Component<any, State> {
@@ -41,6 +42,7 @@ class BookingsCard extends React.Component<any, State> {
       items: null,
       showModal: false,
       modalSelectedId: 0,
+      showPastItems: false,
     };
   }
 
@@ -73,7 +75,10 @@ class BookingsCard extends React.Component<any, State> {
       isLoading: true,
     }, async () => {
       try {
-        const items = await getBookingItemsByUser(this.context);
+        const { showPastItems } = this.state;
+        const items = await getBookingItemsByUser(this.context, {
+          showPastItems,
+        });
         // eslint-disable-next-line no-console
         console.log('got user bookings', items);
         this.setMountedState({
@@ -242,6 +247,7 @@ class BookingsCard extends React.Component<any, State> {
   }
 
   render() {
+    const { showPastItems } = this.state;
     return (
       <>
         <IonCard>
@@ -249,6 +255,20 @@ class BookingsCard extends React.Component<any, State> {
             <IonCardTitle>
               {i18n.t('My Bookings')}
             </IonCardTitle>
+            <IonButtons>
+              <IonButton
+                type="button"
+                color={showPastItems ? 'primary' : ''}
+                fill="clear"
+                title={i18n.t('Show Past Bookings')}
+                onClick={() => this.setMountedState({
+                  showPastItems: !showPastItems,
+                }, () => this.loadItems())}
+              >
+                <IonIcon slot="start" icon={timerOutline} ariaLabel={i18n.t('Show Past Bookings')} />
+                {i18n.t('Past')}
+              </IonButton>
+            </IonButtons>
           </IonCardHeader>
           <IonCardContent>
             <IonGrid>

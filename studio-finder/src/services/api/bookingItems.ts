@@ -1,6 +1,8 @@
 import { AppContextValue } from '../../context/AppContext';
 
-import { convertDateFields, updateObjectKeysToCamelCase, updateObjectKeysToUnderscoreCase } from './helpers';
+import {
+  convertDateFields, convertDateForComparison, updateObjectKeysToCamelCase, updateObjectKeysToUnderscoreCase,
+} from './helpers';
 import { TableName } from './tables';
 import { ViewName } from './views';
 
@@ -67,21 +69,39 @@ export interface BookingDate {
 }
 
 export const getBookingItemsByUser = async (context: AppContextValue, props?: {
-  start?: number, limit?: number,
+  start?: number, limit?: number, showPastItems?: boolean,
 }) => {
-  const { start = 0, limit = 1000 } = props || {};
+  const { start = 0, limit = 1000, showPastItems } = props || {};
   const { supabase, state } = context;
   const userId = state.user?.id;
   if (!userId) {
     throw new Error(BookingItemError.notLoggedIn);
   }
-  const { data, error } = await supabase
-    .from(ViewName.bookingItemsWithBooking)
-    .select()
-    .order('start_at', { ascending: true })
-    .range(start, start + limit - 1);
-  if (error) {
-    throw error;
+  let data: any[] | null = null;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  if (showPastItems) {
+    const { data: dataPast, error } = await supabase
+      .from(ViewName.bookingItemsWithBooking)
+      .select()
+      .gte('start_at', convertDateForComparison(today))
+      .order('start_at', { ascending: true })
+      .range(start, start + limit - 1);
+    if (error) {
+      throw error;
+    }
+    data = dataPast;
+  } else {
+    const { data: dataFuture, error } = await supabase
+      .from(ViewName.bookingItemsWithBooking)
+      .select()
+      .lt('start_at', convertDateForComparison(today))
+      .order('start_at', { ascending: true })
+      .range(start, start + limit - 1);
+    if (error) {
+      throw error;
+    }
+    data = dataFuture;
   }
   let bookingItems: BookingItemWithBooking[] = [];
   if (data && Array.isArray(data) && data.length > 0) {
