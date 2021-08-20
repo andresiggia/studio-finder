@@ -90,12 +90,13 @@ export const getBookingItemsByUser = async (context: AppContextValue, props?: {
   return bookingItems;
 };
 
-export const getBookingItems = async (context: AppContextValue, props: {
-  spaceId?: number, bookingId?: number, start?: number, limit?: number, includeBookingAndUser?: boolean
+export const getBookingItems = async (context: AppContextValue, props?: {
+  inactive?: boolean, spaceId?: number, bookingId?: number, includeBookingAndUser?: boolean,
+  start?: number, limit?: number,
 }) => {
   const {
-    spaceId, bookingId, start = 0, limit = 1000, includeBookingAndUser,
-  } = props;
+    inactive, spaceId, bookingId, start = 0, limit = 1000, includeBookingAndUser,
+  } = props || {};
   if (!spaceId && !bookingId) { // at least one param is required
     throw new Error(BookingItemError.missingSpaceId);
   }
@@ -104,16 +105,31 @@ export const getBookingItems = async (context: AppContextValue, props: {
     ? 'space_id'
     : 'booking_id';
   const filterValue = spaceId || bookingId;
-  const { data, error } = await supabase
-    .from(includeBookingAndUser
-      ? ViewName.bookingItemsWithBooking
-      : TableName.bookingItems)
-    .select()
-    .eq('inactive', false)
-    .eq(filterName, filterValue)
-    .range(start, start + limit - 1);
-  if (error) {
-    throw error;
+  const from = includeBookingAndUser
+    ? ViewName.bookingItemsWithBooking
+    : TableName.bookingItems;
+  let data: any[] | null = null;
+  if (typeof inactive === 'boolean') {
+    const { data: data1, error } = await supabase
+      .from(from)
+      .select()
+      .eq('inactive', inactive)
+      .eq(filterName, filterValue)
+      .range(start, start + limit - 1);
+    if (error) {
+      throw error;
+    }
+    data = data1;
+  } else {
+    const { data: data2, error } = await supabase
+      .from(from)
+      .select()
+      .eq(filterName, filterValue)
+      .range(start, start + limit - 1);
+    if (error) {
+      throw error;
+    }
+    data = data2;
   }
   let bookingItems: (BookingItemWithBooking | BookingItem)[] = [];
   if (data && Array.isArray(data) && data.length > 0) {
