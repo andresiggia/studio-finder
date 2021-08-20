@@ -21,7 +21,7 @@ import {
 import {
   BookingItemWithBooking, getBookingItems, setBookingItem, deleteBookingItem, defaultBookingItem, BookingItem, bookingItemRequiredFields,
 } from '../../services/api/bookingItems';
-import { StudioProfile } from '../../services/api/studios';
+import { StudioProfile, getStudio } from '../../services/api/studios';
 import { SpaceProfile } from '../../services/api/spaces';
 
 // components
@@ -44,6 +44,7 @@ interface State {
   isLoading: boolean,
   error: Error | null,
   // fields
+  studioProfile: StudioProfile | null,
   booking: BookingWithUser | null,
   bookingOriginal: BookingWithUser | null,
   bookingItems: BookingItemWithBooking[] | null,
@@ -59,6 +60,7 @@ class BookingForm extends React.Component<Props, State> {
       allowEdit: false,
       isLoading: false,
       error: null,
+      studioProfile: null,
       booking: null,
       bookingOriginal: null,
       bookingItems: [],
@@ -94,8 +96,8 @@ class BookingForm extends React.Component<Props, State> {
     }
   }
 
-  getDefaultBookingWithUser = (props: Props = this.props): BookingWithUser => {
-    const { studioProfile } = props;
+  getDefaultBookingWithUser = (): BookingWithUser => {
+    const { studioProfile } = this.state;
     const { state } = this.context;
     return {
       ...defaultBookingWithUser,
@@ -115,6 +117,7 @@ class BookingForm extends React.Component<Props, State> {
         let booking: any = null; // new booking
         let bookingItems: any[] = [];
         const isEditing = this.isEditing();
+        let { studioProfile } = this.props;
         if (isEditing) {
           const { id } = this.props;
           // eslint-disable-next-line no-console
@@ -126,12 +129,16 @@ class BookingForm extends React.Component<Props, State> {
             }),
             getBookingItems(this.context, { bookingId: id, includeBookingAndUser: true }),
           ]);
+          if (!studioProfile) {
+            studioProfile = await getStudio(this.context, booking.studioId);
+          }
         }
         // eslint-disable-next-line no-console
         const defaultItem = this.getDefaultBookingWithUser();
         this.setMountedState({
           isLoading: false,
           allowEdit: !isEditing, // if creating new, skip allowEdit
+          studioProfile,
           booking: booking || defaultItem,
           bookingOriginal: booking || defaultItem,
           bookingItems,
@@ -194,8 +201,10 @@ class BookingForm extends React.Component<Props, State> {
       isLoading: true,
     }, async () => {
       try {
-        const { studioProfile, onSave } = this.props;
-        const { booking: bookingWithUser, bookingItems, bookingItemsOriginal } = this.state;
+        const { onSave } = this.props;
+        const {
+          studioProfile, booking: bookingWithUser, bookingItems, bookingItemsOriginal,
+        } = this.state;
         if (!bookingWithUser) {
           throw new Error(i18n.t('Invalid booking'));
         }
@@ -289,8 +298,8 @@ class BookingForm extends React.Component<Props, State> {
   }
 
   onItemAdd = () => {
-    const { studioProfile, spaceProfile } = this.props;
-    const { booking, bookingItems } = this.state;
+    const { spaceProfile } = this.props;
+    const { studioProfile, booking, bookingItems } = this.state;
     const { state } = this.context;
     const updatedItems = (bookingItems || []).slice();
     updatedItems.push({
@@ -527,12 +536,11 @@ class BookingForm extends React.Component<Props, State> {
   }
 
   renderFields = (disabled: boolean) => {
-    const { studioProfile } = this.props;
-    const { booking, bookingItems } = this.state;
+    const { studioProfile, booking, bookingItems } = this.state;
     if (!booking || !bookingItems) {
       return null;
     }
-    if (!this.isEditing() && !studioProfile) {
+    if (!studioProfile) {
       return (
         <Notification
           type={NotificationType.danger}
@@ -547,7 +555,7 @@ class BookingForm extends React.Component<Props, State> {
       <IonList className="form-list booking-form-list">
         <IonItem className="form-list-item">
           {this.renderTextInput({
-            value: studioProfile?.title || '',
+            value: studioProfile.title || '',
             fieldName: 'studio',
             label: i18n.t('Studio'),
             disabled: true,
