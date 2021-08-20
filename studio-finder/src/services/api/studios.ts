@@ -163,7 +163,7 @@ export const setStudio = async (context: AppContextValue, studioProfile: StudioP
     delete profile.createdAt; // createdAt should be created by back-end
     delete profile.id; // id should be created by back-end
   }
-  const studioProfileData = convertToAPI(profile);
+  const studioProfileData = convertToAPI(profile, studioDateFields);
   const { data, error } = await supabase
     .from(TableName.studios)
     .upsert([studioProfileData]);

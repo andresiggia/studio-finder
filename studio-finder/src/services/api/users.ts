@@ -104,7 +104,7 @@ export const setUserProfile = async (context: AppContextValue, {
     }
     itemObj.photoUrl = photoUrl;
   }
-  const itemData = convertToAPI(itemObj);
+  const itemData = convertToAPI(itemObj, userDateFields);
   const { data, error } = await supabase
     .from(TableName.users)
     .upsert(itemData);

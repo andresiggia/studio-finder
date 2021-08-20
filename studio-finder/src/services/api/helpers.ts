@@ -1,4 +1,4 @@
-import { pad } from '../helpers/misc';
+import { isValidDate } from '../helpers/misc';
 
 // from https://www.tutorialspoint.com/converting-any-case-to-camelcase-in-javascript
 export const toCamelCase = (str: string) => str
@@ -37,18 +37,28 @@ export const convertFromAPI = (original: any, dateFields: string[] = []) => {
   const converted = convertObjectKeysToCamelCase(original);
   dateFields.forEach((fieldName: string) => {
     const value = converted[fieldName];
-    converted[fieldName] = value
-      ? new Date(value)
-      : null;
+    if (value) {
+      const offsetMs = (new Date()).getTimezoneOffset() * 60 * 1000;
+      const newValue = new Date((new Date(value)).getTime() - offsetMs);
+      converted[fieldName] = newValue;
+    }
   });
   return converted;
 };
 
-export const convertToAPI = (original: any) => {
+export const convertToAPI = (original: any, dateFields: string[] = []) => {
   const converted = convertObjectKeysToUnderscoreCase(original);
+  dateFields.forEach((fieldName: string) => {
+    const date = converted[fieldName];
+    if (isValidDate(date)) {
+      const offsetMs = (new Date()).getTimezoneOffset() * 60 * 1000;
+      const newValue = new Date(date.getTime() + offsetMs);
+      converted[fieldName] = newValue;
+    }
+  });
   return converted;
 };
 
 export const convertDateForComparison = (date: Date) => (
-  `${date.getFullYear()}-${pad(date.getMonth() + 1, 2)}-${date.getDate()} ${pad(date.getHours(), 2)}:${date.getMinutes()}`
+  date.toUTCString()
 );

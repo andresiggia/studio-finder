@@ -202,7 +202,7 @@ export const setBookingItem = async (context: AppContextValue, {
     // bookingId must match value provided
     throw new Error(BookingItemError.editingItemOfWrongBooking);
   }
-  const itemData = convertToAPI(itemObj);
+  const itemData = convertToAPI(itemObj, bookingItemDateFields);
   // eslint-disable-next-line no-console
   console.log('will upsert bookingItem', itemData);
   const { supabase } = context;

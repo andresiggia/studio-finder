@@ -172,7 +172,7 @@ export const setSpace = async (context: AppContextValue, {
     // studioId must match value provided
     throw new Error(SpaceError.editingSpaceOfWrongStudio);
   }
-  const spaceProfileData = convertToAPI(profile);
+  const spaceProfileData = convertToAPI(profile, spaceDateFields);
   const { data, error } = await supabase
     .from(TableName.spaces)
     .upsert([spaceProfileData]);

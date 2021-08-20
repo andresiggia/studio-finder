@@ -160,7 +160,7 @@ export const setBooking = async (context: AppContextValue, {
     itemObj.modifiedBy = userId; // injecting user id provided
     itemObj.modifiedAt = new Date(); // modifiedAt to be updated to current date/time
   }
-  const itemData = convertToAPI(itemObj);
+  const itemData = convertToAPI(itemObj, bookingDateFields);
   const { data, error } = await supabase
     .from(TableName.bookings)
     .upsert([itemData]);
