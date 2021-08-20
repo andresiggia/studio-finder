@@ -21,7 +21,7 @@ import {
 import {
   BookingItemWithBooking, getBookingItems, setBookingItem, deleteBookingItem, defaultBookingItem, BookingItem, bookingItemRequiredFields,
 } from '../../services/api/bookingItems';
-import { getStudiosByUser, StudioProfile } from '../../services/api/studios';
+import { StudioProfile } from '../../services/api/studios';
 import { SpaceProfile } from '../../services/api/spaces';
 
 // components
@@ -43,7 +43,6 @@ interface State {
   allowEdit: boolean,
   isLoading: boolean,
   error: Error | null,
-  studios: StudioProfile[],
   // fields
   booking: BookingWithUser | null,
   bookingOriginal: BookingWithUser | null,
@@ -60,7 +59,6 @@ class BookingForm extends React.Component<Props, State> {
       allowEdit: false,
       isLoading: false,
       error: null,
-      studios: [],
       booking: null,
       bookingOriginal: null,
       bookingItems: [],
@@ -130,13 +128,10 @@ class BookingForm extends React.Component<Props, State> {
           ]);
         }
         // eslint-disable-next-line no-console
-        console.log('loading studios...');
-        const studios = await getStudiosByUser(this.context);
         const defaultItem = this.getDefaultBookingWithUser();
         this.setMountedState({
           isLoading: false,
           allowEdit: !isEditing, // if creating new, skip allowEdit
-          studios,
           booking: booking || defaultItem,
           bookingOriginal: booking || defaultItem,
           bookingItems,
@@ -533,22 +528,18 @@ class BookingForm extends React.Component<Props, State> {
 
   renderFields = (disabled: boolean) => {
     const { studioProfile } = this.props;
-    const { booking, bookingItems, studios } = this.state;
+    const { booking, bookingItems } = this.state;
     if (!booking || !bookingItems) {
       return null;
     }
     return (
       <IonList className="form-list booking-form-list">
         <IonItem className="form-list-item">
-          {this.renderSelectInput({
-            value: booking.studioId,
+          {this.renderTextInput({
+            value: studioProfile?.title || '',
             fieldName: 'studio',
             label: i18n.t('Studio'),
             disabled: true,
-            options: studios.map((item) => ({
-              value: item.id,
-              label: item.title,
-            })),
           })}
         </IonItem>
         {booking.userId && (
