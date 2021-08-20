@@ -29,7 +29,7 @@ export interface UserProfile {
   modifiedAt: Date | null,
 }
 
-const dateFields = ['birthday', 'createdAt', 'modifiedAt'];
+const userDateFields = ['birthday', 'createdAt', 'modifiedAt'];
 
 export const defaultUserProfile: UserProfile = {
   id: '',
@@ -61,7 +61,7 @@ export const getUserProfile = async (context: AppContextValue) => {
   }
   let profile: any = null;
   if (data && data.id === id) {
-    profile = convertFromAPI(data, dateFields);
+    profile = convertFromAPI(data, userDateFields);
   }
   return profile;
 };

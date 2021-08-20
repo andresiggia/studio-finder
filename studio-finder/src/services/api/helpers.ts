@@ -9,7 +9,7 @@ export const toCamelCase = (str: string) => str
 // from https://stackoverflow.com/questions/30970286/convert-javascript-object-camelcase-keys-to-underscore-case
 export const toUnderscoreCase = (str: string) => str.replace(/([A-Z])/g, '_$1').toLowerCase();
 
-export const updateObjectKeysToCamelCase = (originalObj: any) => {
+export const convertObjectKeysToCamelCase = (originalObj: any) => {
   let obj: any = null;
   if (originalObj) {
     obj = {};
@@ -34,9 +34,9 @@ export const updateObjectKeysToUnderscoreCase = (originalObj: any) => {
 };
 
 export const convertFromAPI = (original: any, dateFields: string[] = []) => {
-  const converted = updateObjectKeysToCamelCase(original);
+  const converted = convertObjectKeysToCamelCase(original);
   dateFields.forEach((fieldName: string) => {
-    const value = original[fieldName];
+    const value = converted[fieldName];
     converted[fieldName] = value
       ? new Date(value)
       : null;

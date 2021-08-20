@@ -1,6 +1,6 @@
 import { AppContextValue } from '../../context/AppContext';
 
-import { convertFromAPI, updateObjectKeysToCamelCase, updateObjectKeysToUnderscoreCase } from './helpers';
+import { convertFromAPI, updateObjectKeysToUnderscoreCase } from './helpers';
 import { getDefaultStudioRoleName, Role, RoleType } from './roles';
 import { TableName } from './tables';
 import { ViewName } from './views';
@@ -87,10 +87,7 @@ export const getStudios = async (context: AppContextValue, props?: {
   }
   let studios: StudioProfileDisplay[] = [];
   if (data && Array.isArray(data) && data.length > 0) {
-    studios = data.map((studioData: any) => {
-      const studio = updateObjectKeysToCamelCase(studioData);
-      return convertFromAPI(studio, studioDateFields);
-    });
+    studios = data.map((studioData: any) => convertFromAPI(studioData, studioDateFields));
   }
   return studios;
 };
@@ -119,8 +116,8 @@ export const getStudiosByUser = async (context: AppContextValue, props?: {
     studios = data.map((studioDataWithUserId: any) => {
       // extract userId from studioDataWithUserId before saving
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { userId: _userId, ...studio } = updateObjectKeysToCamelCase(studioDataWithUserId);
-      return convertFromAPI(studio, studioDateFields);
+      const { userId: _userId, ...studio } = convertFromAPI(studioDataWithUserId, studioDateFields);
+      return studio;
     });
   }
   return studios;

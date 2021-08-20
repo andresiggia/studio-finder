@@ -1,6 +1,6 @@
 import { AppContextValue } from '../../context/AppContext';
 
-import { updateObjectKeysToCamelCase, updateObjectKeysToUnderscoreCase } from './helpers';
+import { convertFromAPI, updateObjectKeysToUnderscoreCase } from './helpers';
 import { Photo } from './photos';
 import {
   deleteFile, getFileUrl, StorageBucket, uploadFile,
@@ -46,7 +46,7 @@ export const getStudioPhotos = async (context: AppContextValue, props: {
   }
   let studioPhotos: StudioPhoto[] = [];
   if (data && Array.isArray(data) && data.length > 0) {
-    studioPhotos = data.map((item: any) => updateObjectKeysToCamelCase(item));
+    studioPhotos = data.map((item: any) => convertFromAPI(item));
   }
   return studioPhotos;
 };

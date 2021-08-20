@@ -1,6 +1,6 @@
 import { AppContextValue } from '../../context/AppContext';
 
-import { updateObjectKeysToCamelCase } from './helpers';
+import { convertFromAPI } from './helpers';
 import { SettingKey } from './settings';
 import { TableName } from './tables';
 import { ViewName } from './views';
@@ -81,7 +81,7 @@ export const getRoles = async (context: AppContextValue) => {
   }
   const roles: Role[] = [];
   if (data && Array.isArray(data) && data.length > 0) {
-    data.map((item: any) => updateObjectKeysToCamelCase(item))
+    data.map((item: any) => convertFromAPI(item))
       .forEach((permissionWithRole) => {
         const {
           roleName, roleTitle, roleType, ...permission

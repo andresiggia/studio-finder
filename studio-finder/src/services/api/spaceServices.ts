@@ -1,6 +1,6 @@
 import { AppContextValue } from '../../context/AppContext';
 
-import { updateObjectKeysToCamelCase, updateObjectKeysToUnderscoreCase } from './helpers';
+import { convertFromAPI, updateObjectKeysToUnderscoreCase } from './helpers';
 import { TableName } from './tables';
 
 export enum SpaceServiceError {
@@ -42,7 +42,7 @@ export const getSpaceServices = async (context: AppContextValue, props: {
   }
   let spaceServices: SpaceService[] = [];
   if (data && Array.isArray(data) && data.length > 0) {
-    spaceServices = data.map((item: any) => updateObjectKeysToCamelCase(item));
+    spaceServices = data.map((item: any) => convertFromAPI(item));
   }
   return spaceServices;
 };

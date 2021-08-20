@@ -1,6 +1,6 @@
 import { AppContextValue } from '../../context/AppContext';
 
-import { updateObjectKeysToCamelCase, updateObjectKeysToUnderscoreCase } from './helpers';
+import { convertFromAPI, updateObjectKeysToUnderscoreCase } from './helpers';
 import { Photo } from './photos';
 import {
   deleteFile, getFileUrl, StorageBucket, uploadFile,
@@ -46,7 +46,7 @@ export const getSpacePhotos = async (context: AppContextValue, props: {
   }
   let spacePhotos: SpacePhoto[] = [];
   if (data && Array.isArray(data) && data.length > 0) {
-    spacePhotos = data.map((item: any) => updateObjectKeysToCamelCase(item));
+    spacePhotos = data.map((item: any) => convertFromAPI(item));
   }
   return spacePhotos;
 };
