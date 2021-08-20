@@ -66,6 +66,30 @@ export interface BookingDate {
   date: Date,
 }
 
+export const getBookingItemsByUser = async (context: AppContextValue, props?: {
+  start?: number, limit?: number,
+}) => {
+  const { start = 0, limit = 1000 } = props || {};
+  const { supabase, state } = context;
+  const userId = state.user?.id;
+  if (!userId) {
+    throw new Error(BookingItemError.notLoggedIn);
+  }
+  const { data, error } = await supabase
+    .from(ViewName.bookingItemsWithBooking)
+    .select()
+    .order('start_at', { ascending: true })
+    .range(start, start + limit - 1);
+  if (error) {
+    throw error;
+  }
+  let bookingItems: BookingItemWithBooking[] = [];
+  if (data && Array.isArray(data) && data.length > 0) {
+    bookingItems = data.map((item: any) => convertDateFields(updateObjectKeysToCamelCase(item), bookingItemDateFields));
+  }
+  return bookingItems;
+};
+
 export const getBookingItems = async (context: AppContextValue, props: {
   spaceId?: number, bookingId?: number, start?: number, limit?: number, includeBookingAndUser?: boolean
 }) => {
