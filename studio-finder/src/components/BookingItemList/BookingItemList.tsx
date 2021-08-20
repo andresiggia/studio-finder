@@ -115,7 +115,7 @@ class BookingItemList extends React.Component<Props, State> {
       <IonList className="booking-item-list-items">
         {items.map((item, index) => {
           const label = `${index + 1}. ${
-            item.inactive ? `(${i18n.t('inactive')}) ` : ''
+            item.inactive ? `(${i18n.t('cancelled')}) ` : ''
           }${
             item.serviceTitle ? `${item.serviceTitle} - ` : ''
           }${item.spaceTitle}`;

@@ -317,7 +317,7 @@ class BookingItemForm extends React.Component<Props, State> {
             color={item.inactive ? 'danger' : ''}
           >
             {`${i18n.t('Item')} #${index + 1} ${
-              item.inactive ? `(${i18n.t('inactive')})` : ''
+              item.inactive ? `(${i18n.t('cancelled')})` : ''
             }`}
           </IonTitle>
           <IonButtons slot="end">
