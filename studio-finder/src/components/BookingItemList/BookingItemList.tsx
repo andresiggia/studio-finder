@@ -91,6 +91,9 @@ class BookingItemList extends React.Component<Props, State> {
       items, studioId, disabled, onDelete, onChange, isValidEndDate,
     } = this.props;
     const { selectedIndex } = this.state;
+    if (!items[selectedIndex]) {
+      return null;
+    }
     return (
       <BookingItemForm
         index={selectedIndex}
