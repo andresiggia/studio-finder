@@ -24,6 +24,7 @@ import BookingItemService from './BookingItemService';
 
 // css
 import './BookingItemForm.css';
+import { isValidDate } from '../../services/helpers/misc';
 
 interface Props {
   index: number,
@@ -143,14 +144,14 @@ class BookingItemForm extends React.Component<Props, State> {
       <>
         {this.renderLabel(label, isRequired)}
         <IonDatetime
-          value={(!!value && value instanceof Date)
+          value={isValidDate(value)
             ? value.toISOString()
             : ''}
           displayFormat="D MMM YYYY, HH:mm"
-          min={(!!minDate && minDate instanceof Date)
+          min={isValidDate(minDate)
             ? minDate.toISOString()
             : undefined}
-          max={(!!maxDate && maxDate instanceof Date)
+          max={isValidDate(maxDate)
             ? maxDate.toISOString()
             : undefined}
           placeholder={i18n.t('Select')}

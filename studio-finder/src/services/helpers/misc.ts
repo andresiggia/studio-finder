@@ -1,3 +1,7 @@
+export const isValidDate = (date: any): date is Date => (
+  !!date && date instanceof Date && !Number.isNaN(date.getTime())
+);
+
 // adapted from https://dmitripavlutin.com/how-to-compare-objects-in-javascript/
 export const isObject = (item: any) => item != null && typeof item === 'object';
 
@@ -22,7 +26,7 @@ export const deepEqual = (item1: any, item2: any): boolean => {
   const keys1 = Object.keys(item1);
   const keys2 = Object.keys(item2);
 
-  if (item1 instanceof Date && item2 instanceof Date) {
+  if (isValidDate(item1) && isValidDate(item2)) {
     return isDateEqual(item1, item2);
   }
 

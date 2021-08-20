@@ -12,7 +12,7 @@ import AppContext from '../../context/AppContext';
 
 // services
 import i18n from '../../services/i18n/i18n';
-import { deepEqual } from '../../services/helpers/misc';
+import { deepEqual, isValidDate } from '../../services/helpers/misc';
 
 // constants
 import {
@@ -277,8 +277,7 @@ class BookingForm extends React.Component<Props, State> {
 
   isValidEndDate = (item: BookingItemWithBooking) => {
     const { startAt, endAt } = item;
-    if ((!startAt || !(startAt instanceof Date))
-      || (!endAt || !(endAt instanceof Date))) {
+    if (!isValidDate(startAt) || !isValidDate(endAt)) {
       return true; // ignore when dates are not set
     }
     return startAt.getTime() < endAt.getTime();

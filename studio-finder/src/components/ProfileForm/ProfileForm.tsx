@@ -18,7 +18,7 @@ import i18n from '../../services/i18n/i18n';
 import {
   UserType, defaultUserProfile, UserProfile, updateUserType,
 } from '../../services/api/users';
-import { deepEqual } from '../../services/helpers/misc';
+import { deepEqual, isValidDate } from '../../services/helpers/misc';
 
 // components
 import Notification, { NotificationProps, NotificationType } from '../Notification/Notification';
@@ -439,7 +439,7 @@ class ProfileForm extends React.Component<Props, State> {
           <IonDatetime
             displayFormat="DD MM YYYY"
             disabled={disabled}
-            value={(!!userProfile.birthday && userProfile.birthday instanceof Date)
+            value={isValidDate(userProfile.birthday)
               ? userProfile.birthday.toString()
               : null}
             onIonChange={(e: any) => {
