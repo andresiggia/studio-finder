@@ -19,7 +19,8 @@ import {
   defaultBookingWithUser, getBooking, setBooking, Booking, BookingWithUser, bookingRequiredFields, defaultBooking,
 } from '../../services/api/bookings';
 import {
-  BookingItemWithBooking, getBookingItemsByBooking, setBookingItem, deleteBookingItem, defaultBookingItem, BookingItem, bookingItemRequiredFields,
+  BookingItemWithBooking, getBookingItemsByBooking, setBookingItem, deleteBookingItem, defaultBookingItem,
+  BookingItem, bookingItemRequiredFields,
 } from '../../services/api/bookingItems';
 import { StudioProfile, getStudio } from '../../services/api/studios';
 import { SpaceProfile } from '../../services/api/spaces';
