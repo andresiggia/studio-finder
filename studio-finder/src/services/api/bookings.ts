@@ -1,6 +1,6 @@
 import { AppContextValue } from '../../context/AppContext';
 
-import { convertDateFields, updateObjectKeysToCamelCase, updateObjectKeysToUnderscoreCase } from './helpers';
+import { convertDateFieldsFromAPI, updateObjectKeysToCamelCase, updateObjectKeysToUnderscoreCase } from './helpers';
 import { TableName } from './tables';
 import { ViewName } from './views';
 
@@ -77,7 +77,7 @@ export const getBookingsByUser = async (context: AppContextValue, props?: {
   }
   let bookings: (Booking | BookingWithUser)[] = [];
   if (data && Array.isArray(data) && data.length > 0) {
-    bookings = data.map((item: any) => convertDateFields(updateObjectKeysToCamelCase(item), bookingDateFields));
+    bookings = data.map((item: any) => convertDateFieldsFromAPI(updateObjectKeysToCamelCase(item), bookingDateFields));
   }
   return bookings;
 };
@@ -104,7 +104,7 @@ export const getBookings = async (context: AppContextValue, props: {
   }
   let bookings: (Booking | BookingWithUser)[] = [];
   if (data && Array.isArray(data) && data.length > 0) {
-    bookings = data.map((item: any) => convertDateFields(updateObjectKeysToCamelCase(item), bookingDateFields));
+    bookings = data.map((item: any) => convertDateFieldsFromAPI(updateObjectKeysToCamelCase(item), bookingDateFields));
   }
   return bookings;
 };
@@ -126,7 +126,7 @@ export const getBooking = async (context: AppContextValue, props: {
   }
   let booking: Booking | BookingWithUser | null = null;
   if (data && data.id === bookingId) {
-    booking = convertDateFields(updateObjectKeysToCamelCase(data), bookingDateFields);
+    booking = convertDateFieldsFromAPI(updateObjectKeysToCamelCase(data), bookingDateFields);
   }
   return booking;
 };

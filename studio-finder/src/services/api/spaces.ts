@@ -1,6 +1,6 @@
 import { AppContextValue } from '../../context/AppContext';
 
-import { convertDateFields, updateObjectKeysToCamelCase, updateObjectKeysToUnderscoreCase } from './helpers';
+import { convertDateFieldsFromAPI, updateObjectKeysToCamelCase, updateObjectKeysToUnderscoreCase } from './helpers';
 import { getDefaultSpaceRoleName, Role, RoleType } from './roles';
 import { TableName } from './tables';
 import { ViewName } from './views';
@@ -78,7 +78,7 @@ export const getSpaces = async (context: AppContextValue, props: {
       // extract userId from spaceDataWithUserId before saving
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { userId: _userId, ...spaceData } = updateObjectKeysToCamelCase(spaceDataWithUserId);
-      return convertDateFields(spaceData, spaceDateFields);
+      return convertDateFieldsFromAPI(spaceData, spaceDateFields);
     });
   }
   return spaces;
@@ -115,7 +115,7 @@ export const getSpacesByUser = async (context: AppContextValue, props: {
       // extract userId from spaceDataWithUserId before saving
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { userId: _userId, ...spaceData } = updateObjectKeysToCamelCase(spaceDataWithUserId);
-      return convertDateFields(spaceData, spaceDateFields);
+      return convertDateFieldsFromAPI(spaceData, spaceDateFields);
     });
   }
   return spaces;
@@ -136,7 +136,7 @@ export const getSpace = async (context: AppContextValue, spaceId: number) => {
   }
   let space: any = null;
   if (data && data.id === spaceId) {
-    space = convertDateFields(updateObjectKeysToCamelCase(data), spaceDateFields);
+    space = convertDateFieldsFromAPI(updateObjectKeysToCamelCase(data), spaceDateFields);
   }
   return space;
 };
