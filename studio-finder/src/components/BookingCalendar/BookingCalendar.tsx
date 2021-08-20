@@ -43,6 +43,7 @@ interface Props {
   showAddButton?: boolean,
   showPastWeeks?: boolean,
   showBookingDetails?: boolean,
+  showOnlyActive?: boolean,
   maxHeight?: number,
   bookingDates?: BookingDate[],
   onSelectionChange?: (index: number, item?: BookingDate) => void,
@@ -98,13 +99,13 @@ class BookingCalendar extends React.Component<Props, State> {
       isLoading: true,
     }, async () => {
       try {
-        const { spaceProfile } = this.props;
+        const { spaceProfile, showOnlyActive } = this.props;
         // eslint-disable-next-line no-console
         console.log('will load bookings for space', spaceProfile);
         const items = await getBookingItems(this.context, {
           spaceId: spaceProfile.id,
           includeBookingAndUser: true,
-          inactive: false,
+          inactive: showOnlyActive ? false : undefined,
         });
         // eslint-disable-next-line no-console
         console.log('got booking items', items);
@@ -350,16 +351,17 @@ class BookingCalendar extends React.Component<Props, State> {
                       const endAtTimestamp = item.endAt.getTime();
                       return startAtTimestamp <= currentTimestamp && endAtTimestamp > currentTimestamp;
                     });
+                    const activeItems = relevantItems.filter((item) => !item.inactive);
                     return (
                       <td key={weekday}>
                         {showBookingDetails
                           ? (
                             <>
-                              {relevantItems.length > 1 && (
+                              {activeItems.length > 1 && (
                                 <IonChip color="danger">{i18n.t('Overbooking')}</IonChip>
                               )}
                               {relevantItems.map((item) => {
-                                let label = item.serviceTitle;
+                                let label = item.inactive ? i18n.t('cancelled') : item.serviceTitle;
                                 if (item.userId) {
                                   const userNameSurname = `${item.userName} ${item.userSurname}`.trim();
                                   label = `${userNameSurname} (${label})`;
@@ -368,10 +370,10 @@ class BookingCalendar extends React.Component<Props, State> {
                                   <IonButton
                                     key={item.id}
                                     fill={(modalSelectedId === item.id) ? 'solid' : 'clear'}
-                                    color="primary"
+                                    color={item.inactive ? 'medium' : 'primary'}
                                     size="small"
                                     expand="block"
-                                    title={i18n.t('View booking')}
+                                    title={i18n.t('View/modify Booking')}
                                     // important: select booking id, not booking item id
                                     onClick={() => this.onModalOpen(item.bookingId)}
                                   >
