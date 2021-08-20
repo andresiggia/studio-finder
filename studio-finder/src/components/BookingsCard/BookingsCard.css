@@ -1,0 +1,35 @@
+
+.bookings-card-loading {
+  text-align: center;
+}
+
+.bookings-card-spacer {
+  margin-top: 1rem;
+}
+
+.bookings-card-header {
+  display: flex;
+  justify-content: space-between;
+}
+
+.bookings-card-header-toolbar {
+  margin: 0 0 0 1rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.bookings-card-header-toolbar-select {
+  font-size: 1rem;
+  padding: .425rem 0 .5rem;
+  margin-left: 1rem;
+}
+
+.bookings-card-header-toolbar-buttons {
+  margin-left: .5rem;
+}
+
+@media only screen and (min-width: 820px) {
+  .bookings-card-modal {
+    --min-width: 800px;
+  }
+}

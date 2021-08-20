@@ -13,27 +13,22 @@ import { UserType } from '../../services/api/users';
 import ProfileForm from '../ProfileForm/ProfileForm';
 import { UserValidationProps } from '../withUserValidation/withUserValidation';
 import StudioCard from '../StudioCard/StudioCard';
+import BookingsCard from '../BookingsCard/BookingsCard';
 
 class AccountBase extends React.Component<UserValidationProps> {
-  renderProfile = (hasProfile: boolean) => {
+  renderProfileCard = (hasProfile: boolean) => {
     const { userType } = this.props;
     return (
-      <IonCol
-        size="12"
-        size-md={hasProfile ? '6' : '8'}
-        offset-md={hasProfile ? '0' : '2'}
-        size-lg={hasProfile ? '4' : '6'}
-        offset-lg={hasProfile ? '0' : '3'}
-      >
-        <ProfileForm unlockToEdit={hasProfile} userType={userType} />
-      </IonCol>
+      <ProfileForm unlockToEdit={hasProfile} userType={userType} />
     );
   }
 
   renderStudioCard = () => (
-    <IonCol size="12" size-md="6" size-lg="8">
-      <StudioCard />
-    </IonCol>
+    <StudioCard />
+  )
+
+  renderBookingsCard = () => (
+    <BookingsCard />
   )
 
   render() {
@@ -43,13 +38,27 @@ class AccountBase extends React.Component<UserValidationProps> {
     return (
       <IonGrid>
         <IonRow>
-          {this.renderProfile(hasProfile)}
+          <IonCol
+            size="12"
+            size-md={hasProfile ? 6 : 8}
+            offset-md={hasProfile ? 0 : 2}
+            size-lg={hasProfile ? 4 : 6}
+            offset-lg={hasProfile ? 0 : 3}
+          >
+            {this.renderProfileCard(hasProfile)}
+            {isStudio && (
+              this.renderBookingsCard()
+            )}
+          </IonCol>
           {hasProfile && (
-            <>
-              {isStudio && (
-                this.renderStudioCard()
-              )}
-            </>
+            <IonCol size="12" size-md="6" size-lg="8">
+              {isStudio
+                ? (
+                  this.renderStudioCard()
+                ) : (
+                  this.renderBookingsCard()
+                )}
+            </IonCol>
           )}
         </IonRow>
       </IonGrid>
