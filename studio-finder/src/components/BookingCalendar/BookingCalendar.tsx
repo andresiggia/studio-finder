@@ -373,19 +373,19 @@ class BookingCalendar extends React.Component<Props, State> {
                     const startDateTime = new Date(weekStartsAt.getTime());
                     startDateTime.setDate(startDateTime.getDate() + weekday);
                     startDateTime.setHours(startHours, startMinutes, 0, 0);
-                    const currentTimestamp = startDateTime.getTime();
+                    const cellStartTimestamp = startDateTime.getTime();
                     const relevantItems = (items || []).filter((item) => {
                       if (!item.startAt || !item.endAt) {
                         return false;
                       }
                       const startAtTimestamp = item.startAt.getTime();
                       const endAtTimestamp = item.endAt.getTime();
-                      return startAtTimestamp <= currentTimestamp
-                        && endAtTimestamp > currentTimestamp;
+                      return (startAtTimestamp <= cellStartTimestamp
+                        && endAtTimestamp > cellStartTimestamp);
                     });
                     const activeItems = relevantItems.filter((item) => !item.inactive);
                     return (
-                      <td key={weekday}>
+                      <td key={weekday} title={startDateTime.toString()}>
                         {showBookingDetails
                           ? (
                             <>
@@ -405,7 +405,11 @@ class BookingCalendar extends React.Component<Props, State> {
                                     color={item.inactive ? 'medium' : 'primary'}
                                     size="small"
                                     expand="block"
-                                    title={i18n.t('View/modify Booking')}
+                                    title={`${
+                                      item.startAt ? longDateTime.format(item.startAt) : ''
+                                    } / ${
+                                      item.endAt ? longDateTime.format(item.endAt) : ''
+                                    }`}
                                     // important: select booking id, not booking item id
                                     onClick={() => this.onModalOpen(item.bookingId)}
                                   >

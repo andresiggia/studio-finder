@@ -40,6 +40,8 @@ export const convertFromAPI = (original: any, dateFields: string[] = []) => {
     if (value) {
       const offsetMs = (new Date()).getTimezoneOffset() * 60 * 1000;
       const newValue = new Date((new Date(value)).getTime() - offsetMs);
+      newValue.setSeconds(0);
+      newValue.setMilliseconds(0);
       converted[fieldName] = newValue;
     }
   });
@@ -47,16 +49,20 @@ export const convertFromAPI = (original: any, dateFields: string[] = []) => {
 };
 
 export const convertToAPI = (original: any, dateFields: string[] = []) => {
-  const converted = convertObjectKeysToUnderscoreCase(original);
+  const converted = { ...original };
   dateFields.forEach((fieldName: string) => {
     const date = converted[fieldName];
     if (isValidDate(date)) {
-      const offsetMs = (new Date()).getTimezoneOffset() * 60 * 1000;
-      const newValue = new Date(date.getTime() + offsetMs);
-      converted[fieldName] = newValue;
+      // prevent setting seconds and miliseconds
+      date.setSeconds(0);
+      date.setMilliseconds(0);
+      converted[fieldName] = date;
+      console.log('converted date', fieldName, date);
+    } else {
+      console.log('not a valid date', fieldName, date);
     }
   });
-  return converted;
+  return convertObjectKeysToUnderscoreCase(converted);
 };
 
 export const convertDateForComparison = (date: Date) => (
