@@ -1,10 +1,11 @@
 import React from 'react';
 import {
-  IonAlert, IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonContent, IonGrid, IonIcon, IonItem, IonLabel, IonList, IonModal, IonSelect, IonSelectOption, IonSpinner, IonText, IonTitle, IonToolbar,
+  IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonContent,
+  IonGrid, IonIcon, IonItem, IonList, IonModal, IonSpinner, IonText, IonTitle, IonToolbar,
 } from '@ionic/react';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import {
-  addOutline, closeOutline, createOutline,
+  closeOutline, createOutline,
 } from 'ionicons/icons';
 
 // services
@@ -13,7 +14,7 @@ import { BookingItemWithBooking, getBookingItemsByUser } from '../../services/ap
 
 // components
 import Notification, { NotificationType } from '../Notification/Notification';
-// import BookingForm from '../BookingForm/BookingForm';
+import BookingForm from '../BookingForm/BookingForm';
 
 // context
 import AppContext from '../../context/AppContext';
@@ -25,9 +26,8 @@ interface State {
   isLoading: boolean,
   error: Error | null,
   items: BookingItemWithBooking[] | null,
-  // selectedId: number,
-  // showModal: boolean,
-  // modalSelectedId: number,
+  showModal: boolean,
+  modalSelectedId: number,
   // showDeleteAlert: boolean,
 }
 
@@ -40,9 +40,8 @@ class BookingsCard extends React.Component<any, State> {
       isLoading: false,
       error: null,
       items: null,
-      // selectedId: 0,
-      // showModal: false,
-      // modalSelectedId: 0,
+      showModal: false,
+      modalSelectedId: 0,
       // showDeleteAlert: false,
     };
   }
@@ -100,42 +99,18 @@ class BookingsCard extends React.Component<any, State> {
     });
   }
 
-  // onModalOpen = (modalSelectedId = 0) => {
-  //   this.setMountedState({
-  //     showModal: true,
-  //     modalSelectedId,
-  //   });
-  // }
+  onModalOpen = (modalSelectedId = 0) => {
+    this.setMountedState({
+      showModal: true,
+      modalSelectedId,
+    });
+  }
 
-  // onModalClose = () => {
-  //   this.setMountedState({
-  //     showModal: false,
-  //   });
-  // }
-
-  // onDelete = (selectedId: number) => {
-  //   this.setMountedState({
-  //     isLoading: true,
-  //   }, async () => {
-  //     try {
-  //       const { items } = this.state;
-  //       const booking = items?.find((item) => item.id === selectedId);
-  //       if (!booking) {
-  //         throw new Error(i18n.t('Invalid booking selected'));
-  //       }
-  //       booking.inactive = true;
-  //       await setBooking(this.context, { booking });
-  //       this.loadItems();
-  //     } catch (error) {
-  //       // eslint-disable-next-line no-console
-  //       console.warn('error - onDelete', error);
-  //       this.setMountedState({
-  //         isLoading: false,
-  //         error,
-  //       });
-  //     }
-  //   });
-  // }
+  onModalClose = () => {
+    this.setMountedState({
+      showModal: false,
+    });
+  }
 
   // render
 
@@ -197,8 +172,8 @@ class BookingsCard extends React.Component<any, State> {
                 slot="end"
                 fill="clear"
                 type="button"
-                title={i18n.t('Modify Booking')}
-                // onClick={() => this.setMountedState({ modalSelectedId: bookingItem.bookingId })}
+                title={i18n.t('View/Modify Booking')}
+                onClick={() => this.onModalOpen(bookingItem.bookingId)}
               >
                 <IonIcon icon={createOutline} />
               </IonButton>
@@ -234,44 +209,42 @@ class BookingsCard extends React.Component<any, State> {
     );
   }
 
-  // renderModal = () => {
-  //   const { showModal } = this.state;
-  //   return (
-  //     <IonModal
-  //       cssClass="bookings-card-modal"
-  //       isOpen={showModal}
-  //       onWillDismiss={() => this.onModalClose()}
-  //     >
-  //       <IonToolbar>
-  //         <IonTitle>
-  //           {i18n.t('Modify Booking')}
-  //         </IonTitle>
-  //         <IonButtons slot="end">
-  //           <IonButton
-  //             color="primary"
-  //             onClick={() => this.onModalClose()}
-  //           >
-  //             <IonIcon icon={closeOutline} ariaLabel={i18n.t('Close')} />
-  //           </IonButton>
-  //         </IonButtons>
-  //       </IonToolbar>
-  //       <IonContent>
-  //         {showModal && (
-  //           // <BookingForm
-  //           //   id={modalSelectedId}
-  //           //   studioProfile
-  //           //   onCancel={() => this.onModalClose()}
-  //           //   onSave={() => {
-  //           //     this.onModalClose();
-  //           //     this.loadItems();
-  //           //   }}
-  //           // />
-  //           <p>Coming soon.</p>
-  //         )}
-  //       </IonContent>
-  //     </IonModal>
-  //   );
-  // }
+  renderModal = () => {
+    const { showModal, modalSelectedId } = this.state;
+    return (
+      <IonModal
+        cssClass="bookings-card-modal"
+        isOpen={showModal}
+        onWillDismiss={() => this.onModalClose()}
+      >
+        <IonToolbar>
+          <IonTitle>
+            {i18n.t('View/Modify Booking')}
+          </IonTitle>
+          <IonButtons slot="end">
+            <IonButton
+              color="primary"
+              onClick={() => this.onModalClose()}
+            >
+              <IonIcon icon={closeOutline} ariaLabel={i18n.t('Close')} />
+            </IonButton>
+          </IonButtons>
+        </IonToolbar>
+        <IonContent>
+          {showModal && (
+            <BookingForm
+              id={modalSelectedId}
+              onCancel={() => this.onModalClose()}
+              onSave={() => {
+                this.onModalClose();
+                this.loadItems();
+              }}
+            />
+          )}
+        </IonContent>
+      </IonModal>
+    );
+  }
 
   render() {
     return (
@@ -288,7 +261,7 @@ class BookingsCard extends React.Component<any, State> {
             </IonGrid>
           </IonCardContent>
         </IonCard>
-        {/* {this.renderModal()} */}
+        {this.renderModal()}
       </>
     );
   }
