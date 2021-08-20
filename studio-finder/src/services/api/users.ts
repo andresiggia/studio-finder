@@ -1,6 +1,6 @@
 import { AppContextValue } from '../../context/AppContext';
 
-import { convertDateFieldsFromAPI, updateObjectKeysToCamelCase, updateObjectKeysToUnderscoreCase } from './helpers';
+import { convertFromAPI, updateObjectKeysToUnderscoreCase } from './helpers';
 import {
   deleteFile, StorageBucket, uploadFile, getFileUrl,
 } from './storage';
@@ -61,7 +61,7 @@ export const getUserProfile = async (context: AppContextValue) => {
   }
   let profile: any = null;
   if (data && data.id === id) {
-    profile = convertDateFieldsFromAPI(updateObjectKeysToCamelCase(data), dateFields);
+    profile = convertFromAPI(data, dateFields);
   }
   return profile;
 };

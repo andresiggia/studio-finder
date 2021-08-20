@@ -33,8 +33,8 @@ export const updateObjectKeysToUnderscoreCase = (originalObj: any) => {
   return obj;
 };
 
-export const convertDateFieldsFromAPI = (original: any, dateFields: string[]) => {
-  const converted = { ...original };
+export const convertFromAPI = (original: any, dateFields: string[] = []) => {
+  const converted = updateObjectKeysToCamelCase(original);
   dateFields.forEach((fieldName: string) => {
     const value = original[fieldName];
     converted[fieldName] = value
