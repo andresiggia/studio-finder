@@ -109,6 +109,7 @@ export const getBookingItems = async (context: AppContextValue, props: {
       ? ViewName.bookingItemsWithBooking
       : TableName.bookingItems)
     .select()
+    .eq('inactive', false)
     .eq(filterName, filterValue)
     .range(start, start + limit - 1);
   if (error) {

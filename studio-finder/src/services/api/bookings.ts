@@ -70,6 +70,7 @@ export const getBookingsByUser = async (context: AppContextValue, props?: {
   const { data, error } = await supabase
     .from(TableName.bookings)
     .select()
+    .eq('inactive', false)
     .eq('user_id', userId)
     .order('modified_at', { ascending: false })
     .range(start, start + limit - 1);
@@ -98,6 +99,7 @@ export const getBookings = async (context: AppContextValue, props: {
       ? ViewName.bookingsWithUser
       : TableName.bookings)
     .select()
+    .eq('inactive', false)
     .eq('studio_id', studioId)
     .range(start, start + limit - 1);
   if (error) {
