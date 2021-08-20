@@ -204,7 +204,7 @@ export const setBookingItem = async (context: AppContextValue, {
   }
   const itemData = convertToAPI(itemObj, bookingItemDateFields);
   // eslint-disable-next-line no-console
-  console.log('will upsert bookingItem', itemData);
+  console.log('will set bookingItem', itemData);
   const { supabase } = context;
   const { data, error } = await supabase
     .from(TableName.bookingItems)
