@@ -15,7 +15,6 @@ export enum BookingError {
 
 export interface Booking {
   id: number,
-  inactive: boolean,
   studioId: number,
   userId: string | null,
   createdBy: string | null,
@@ -26,7 +25,6 @@ export interface Booking {
 }
 export const defaultBooking: Booking = {
   id: 0,
-  inactive: false,
   studioId: 0,
   userId: null,
   createdBy: null,
@@ -99,7 +97,6 @@ export const getBookings = async (context: AppContextValue, props: {
       ? ViewName.bookingsWithUser
       : TableName.bookings)
     .select()
-    .eq('inactive', false)
     .eq('studio_id', studioId)
     .range(start, start + limit - 1);
   if (error) {
