@@ -58,6 +58,31 @@ export const defaultBookingWithUser: BookingWithUser = {
   modifiedBySurname: '',
 };
 
+export const getBookingsByUser = async (context: AppContextValue, props?: {
+  start?: number, limit?: number,
+}) => {
+  const { start = 0, limit = 1000 } = props || {};
+  const { supabase, state } = context;
+  const userId = state.user?.id;
+  if (!userId) {
+    throw new Error(BookingError.notLoggedIn);
+  }
+  const { data, error } = await supabase
+    .from(TableName.bookings)
+    .select()
+    .eq('user_id', userId)
+    .order('modified_at', { ascending: false })
+    .range(start, start + limit - 1);
+  if (error) {
+    throw error;
+  }
+  let bookings: (Booking | BookingWithUser)[] = [];
+  if (data && Array.isArray(data) && data.length > 0) {
+    bookings = data.map((item: any) => convertDateFields(updateObjectKeysToCamelCase(item), bookingDateFields));
+  }
+  return bookings;
+};
+
 export const getBookings = async (context: AppContextValue, props: {
   studioId: number, start?: number, limit?: number, includeUser?: boolean,
 }) => {
