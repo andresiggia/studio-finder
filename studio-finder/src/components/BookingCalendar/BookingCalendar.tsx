@@ -318,7 +318,7 @@ class BookingCalendar extends React.Component<Props, State> {
     });
     const longDateTime = new Intl.DateTimeFormat(i18n.languages, {
       dateStyle: 'long',
-      timeStyle: 'long',
+      timeStyle: 'short',
     });
     return (
       <div className="booking-calendar-container">
@@ -354,27 +354,34 @@ class BookingCalendar extends React.Component<Props, State> {
             </tr>
           </thead>
           <tbody style={{ maxHeight: `${maxHeight}px` }}>
-            {halfTimes.map((time) => {
-              const timeArr = String(time).split('.');
-              const hours = Number(timeArr[0]);
-              const minutes = (Number(timeArr[1] || 0) / 10) * 60;
+            {halfTimes.map((time, index) => {
+              const startTimeArr = String(time).split('.');
+              const startHours = Number(startTimeArr[0]);
+              const startMinutes = (Number(startTimeArr[1] || 0) / 10) * 60;
+              const endTime = (index + 1) === halfTimes.length
+                ? halfTimes[0]
+                : halfTimes[index + 1];
+              const endTimeArr = String(endTime).split('.');
+              const endHours = Number(endTimeArr[0]);
+              const endMinutes = (Number(endTimeArr[1] || 0) / 10) * 60;
               return (
                 <tr key={time}>
                   <td>
-                    <p>{`${pad(hours, 2)}:${pad(minutes, 2)}`}</p>
+                    <p>{`${pad(startHours, 2)}:${pad(startMinutes, 2)} - ${pad(endHours, 2)}:${pad(endMinutes, 2)}`}</p>
                   </td>
                   {weekdays.map((weekday) => {
-                    const date = new Date(weekStartsAt.getTime());
-                    date.setDate(date.getDate() + weekday);
-                    date.setHours(hours, minutes, 0, 0);
+                    const startDateTime = new Date(weekStartsAt.getTime());
+                    startDateTime.setDate(startDateTime.getDate() + weekday);
+                    startDateTime.setHours(startHours, startMinutes, 0, 0);
+                    const currentTimestamp = startDateTime.getTime();
                     const relevantItems = (items || []).filter((item) => {
                       if (!item.startAt || !item.endAt) {
                         return false;
                       }
-                      const currentTimestamp = date.getTime();
                       const startAtTimestamp = item.startAt.getTime();
                       const endAtTimestamp = item.endAt.getTime();
-                      return startAtTimestamp <= currentTimestamp && endAtTimestamp > currentTimestamp;
+                      return startAtTimestamp <= currentTimestamp
+                        && endAtTimestamp > currentTimestamp;
                     });
                     const activeItems = relevantItems.filter((item) => !item.inactive);
                     return (
@@ -408,7 +415,7 @@ class BookingCalendar extends React.Component<Props, State> {
                               })}
                             </>
                           ) : relevantItems.length === 0 && (
-                            this.renderDateSelection(date)
+                            this.renderDateSelection(startDateTime)
                           )}
                       </td>
                     );
