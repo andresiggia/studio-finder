@@ -104,7 +104,6 @@ class BookingCalendar extends React.Component<Props, State> {
         console.log('will load bookings for space', spaceProfile);
         const items = await getBookingItems(this.context, {
           spaceId: spaceProfile.id,
-          includeBookingAndUser: true,
           inactive: showOnlyActive ? false : undefined,
         });
         // eslint-disable-next-line no-console

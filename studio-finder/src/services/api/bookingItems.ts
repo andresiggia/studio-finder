@@ -1,4 +1,5 @@
 import { AppContextValue } from '../../context/AppContext';
+import { isValidDate } from '../helpers/misc';
 
 import {
   convertDateFields, convertDateForComparison, updateObjectKeysToCamelCase, updateObjectKeysToUnderscoreCase,
@@ -14,6 +15,7 @@ export enum BookingItemError {
   invalidResponse = 'invalidResponse',
   missingBookingRoles = 'missingBookingRoles',
   editingItemOfWrongBooking = 'editingItemOfWrongBooking',
+  missingDateRange = 'missingDateRange',
 }
 
 export interface BookingItem {
@@ -110,31 +112,52 @@ export const getBookingItemsByUser = async (context: AppContextValue, props?: {
   return bookingItems;
 };
 
-export const getBookingItems = async (context: AppContextValue, props?: {
-  inactive?: boolean, spaceId?: number, bookingId?: number, includeBookingAndUser?: boolean,
+export const getBookingItemsByBooking = async (context: AppContextValue, props: {
+  bookingId?: number, start?: number, limit?: number,
+}) => {
+  const { bookingId, start = 0, limit = 1000 } = props;
+  if (!bookingId) {
+    throw new Error(BookingItemError.missingBookingId);
+  }
+  const { supabase } = context;
+  const { data, error } = await supabase
+    .from(ViewName.bookingItemsWithBooking)
+    .select()
+    .eq('booking_id', bookingId)
+    .range(start, start + limit - 1);
+  if (error) {
+    throw error;
+  }
+  let bookingItems: BookingItemWithBooking[] = [];
+  if (data && Array.isArray(data) && data.length > 0) {
+    bookingItems = data.map((item: any) => convertDateFields(updateObjectKeysToCamelCase(item), bookingItemDateFields));
+  }
+  return bookingItems;
+};
+
+export const getBookingItemsBySpace = async (context: AppContextValue, props: {
+  inactive?: boolean, spaceId?: number, fromDate: Date, toDate: Date,
   start?: number, limit?: number,
 }) => {
   const {
-    inactive, spaceId, bookingId, start = 0, limit = 1000, includeBookingAndUser,
-  } = props || {};
-  if (!spaceId && !bookingId) { // at least one param is required
+    inactive, spaceId, fromDate, toDate, start = 0, limit = 1000,
+  } = props;
+  if (!spaceId) {
     throw new Error(BookingItemError.missingSpaceId);
   }
+  if (!isValidDate(fromDate) || !isValidDate(toDate)) {
+    throw new Error(BookingItemError.missingDateRange);
+  }
   const { supabase } = context;
-  const filterName = spaceId
-    ? 'space_id'
-    : 'booking_id';
-  const filterValue = spaceId || bookingId;
-  const from = includeBookingAndUser
-    ? ViewName.bookingItemsWithBooking
-    : TableName.bookingItems;
   let data: any[] | null = null;
   if (typeof inactive === 'boolean') {
     const { data: data1, error } = await supabase
-      .from(from)
+      .from(ViewName.bookingItemsWithBooking)
       .select()
+      .gte('start_at', convertDateForComparison(fromDate))
+      .lte('end_at', convertDateForComparison(toDate))
       .eq('inactive', inactive)
-      .eq(filterName, filterValue)
+      .eq('space_id', spaceId)
       .range(start, start + limit - 1);
     if (error) {
       throw error;
@@ -142,9 +165,11 @@ export const getBookingItems = async (context: AppContextValue, props?: {
     data = data1;
   } else {
     const { data: data2, error } = await supabase
-      .from(from)
+      .from(ViewName.bookingItemsWithBooking)
       .select()
-      .eq(filterName, filterValue)
+      .gte('start_at', convertDateForComparison(fromDate))
+      .lte('end_at', convertDateForComparison(toDate))
+      .eq('space_id', spaceId)
       .range(start, start + limit - 1);
     if (error) {
       throw error;

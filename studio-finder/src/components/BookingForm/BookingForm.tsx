@@ -19,7 +19,7 @@ import {
   defaultBookingWithUser, getBooking, setBooking, Booking, BookingWithUser, bookingRequiredFields, defaultBooking,
 } from '../../services/api/bookings';
 import {
-  BookingItemWithBooking, getBookingItems, setBookingItem, deleteBookingItem, defaultBookingItem, BookingItem, bookingItemRequiredFields,
+  BookingItemWithBooking, getBookingItemsByBooking, setBookingItem, deleteBookingItem, defaultBookingItem, BookingItem, bookingItemRequiredFields,
 } from '../../services/api/bookingItems';
 import { StudioProfile, getStudio } from '../../services/api/studios';
 import { SpaceProfile } from '../../services/api/spaces';
@@ -127,7 +127,7 @@ class BookingForm extends React.Component<Props, State> {
               bookingId: id,
               includeUser: true,
             }),
-            getBookingItems(this.context, { bookingId: id, includeBookingAndUser: true }),
+            getBookingItemsByBooking(this.context, { bookingId: id }),
           ]);
           if (!studioProfile) {
             studioProfile = await getStudio(this.context, booking.studioId);
