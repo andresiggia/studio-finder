@@ -292,8 +292,11 @@ class BookingCalendar extends React.Component<Props, State> {
     const halfTimes = Array.from(Array(24 * 2)).map((_item, index) => index / 2);
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    const weekdayDateTime = new Intl.DateTimeFormat(i18n.languages, {
+    const weekdayDate = new Intl.DateTimeFormat(i18n.languages, {
       weekday: 'short',
+    });
+    const shortDate = new Intl.DateTimeFormat(i18n.languages, {
+      dateStyle: 'short',
     });
     const longDateTime = new Intl.DateTimeFormat(i18n.languages, {
       dateStyle: 'long',
@@ -322,7 +325,11 @@ class BookingCalendar extends React.Component<Props, State> {
                       : ''
                     }`}
                   >
-                    {weekdayDateTime.format(date)}
+                    {weekdayDate.format(date)}
+                    <br />
+                    <span className="booking-calendar-item-detail">
+                      {shortDate.format(date)}
+                    </span>
                   </td>
                 );
               })}
