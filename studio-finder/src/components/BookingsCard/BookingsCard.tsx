@@ -144,7 +144,7 @@ class BookingsCard extends React.Component<any, State> {
           const totalHourslabel = `(${i18n.t('{{count}} hour', { count: bookingItem.quantity })})`;
           const serviceLabel = bookingItem.serviceTitle || `(${i18n.t('Unnamed service')})`;
           return (
-            <IonItem>
+            <IonItem key={bookingItem.id}>
               <p>
                 <IonText color={bookingItem.inactive ? 'medium' : 'primary'}>
                   {`${serviceLabel} @${bookingItem.studioTitle}/${bookingItem.spaceTitle}${
