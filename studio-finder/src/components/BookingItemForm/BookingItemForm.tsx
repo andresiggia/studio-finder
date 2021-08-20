@@ -34,7 +34,7 @@ interface Props {
 }
 
 interface State {
-  spaces: SpaceProfile[],
+  spaces: SpaceProfile[] | null,
   isLoading: boolean,
   error: Error | null,
 }
@@ -45,7 +45,7 @@ class BookingItemForm extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
-      spaces: [],
+      spaces: null,
       isLoading: false,
       error: null,
     };
@@ -95,6 +95,8 @@ class BookingItemForm extends React.Component<Props, State> {
         const spaces = await getSpacesByUser(this.context, {
           studioId,
         });
+        // eslint-disable-next-line no-console
+        console.log('got spaces', spaces);
         this.setMountedState({
           isLoading: false,
           spaces,
@@ -208,26 +210,28 @@ class BookingItemForm extends React.Component<Props, State> {
   renderFields = (disabled: boolean) => {
     const { item, isValidEndDate } = this.props;
     const { spaces } = this.state;
-    const spaceOptions = spaces.map((space) => ({
+    const spaceOptions = (spaces || []).map((space) => ({
       value: space.id,
       label: space.title,
     }));
     return (
       <IonList className="form-list">
         <IonItem className="form-list-item">
-          {this.renderSelectInput({
-            value: item.spaceId,
-            fieldName: 'spaceId',
-            label: i18n.t('Space'),
-            disabled,
-            options: spaceOptions,
-            onChange: (value) => {
-              this.onChange(value, 'spaceId');
-              // update space title manually
-              const space = spaceOptions.find((sItem: any) => sItem.value === value);
-              this.onChange(space?.label || '', 'spaceTitle');
-            },
-          })}
+          {!!spaces && (
+            this.renderSelectInput({
+              value: item.spaceId,
+              fieldName: 'spaceId',
+              label: i18n.t('Space'),
+              disabled,
+              options: spaceOptions,
+              onChange: (value) => {
+                this.onChange(value, 'spaceId');
+                // update space title manually
+                const space = spaceOptions.find((sItem: any) => sItem.value === value);
+                this.onChange(space?.label || '', 'spaceTitle');
+              },
+            })
+          )}
         </IonItem>
         <IonItem className="form-list-item">
           {item.spaceId && (
