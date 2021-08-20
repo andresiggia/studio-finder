@@ -24,8 +24,8 @@ import i18n from '../../services/i18n/i18n';
 import { getStudio, StudioProfile } from '../../services/api/studios';
 import { getStudioPhotos, StudioPhoto } from '../../services/api/studioPhotos';
 import { getSpaces, SpaceProfileDisplay } from '../../services/api/spaces';
-import { BookingDate, BookingItem, upsertBookingItem } from '../../services/api/bookingItems';
-import { defaultBooking, upsertBooking } from '../../services/api/bookings';
+import { BookingDate, BookingItem, setBookingItem } from '../../services/api/bookingItems';
+import { defaultBooking, setBooking } from '../../services/api/bookings';
 
 import Space from './Space';
 import BookingBar from './BookingBar';
@@ -140,7 +140,7 @@ class Studio extends React.Component<RouteComponentProps, State> {
       try {
         const { studioProfile } = this.state;
         const { state } = this.context;
-        const booking = await upsertBooking(this.context, {
+        const booking = await setBooking(this.context, {
           booking: {
             ...defaultBooking,
             userId: state.user.id,
@@ -151,7 +151,7 @@ class Studio extends React.Component<RouteComponentProps, State> {
         // eslint-disable-next-line no-console
         console.log('created booking', booking);
         const response = await Promise.all(bookingItems.map((bookingItem) => (
-          upsertBookingItem(this.context, {
+          setBookingItem(this.context, {
             bookingItem, bookingId: booking.id,
           })
         )));

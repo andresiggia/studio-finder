@@ -14,10 +14,10 @@ import AppContext from '../../context/AppContext';
 import i18n from '../../services/i18n/i18n';
 import { deepEqual } from '../../services/helpers/misc';
 import {
-  defaultStudioProfile, getStudio, upsertStudio, StudioProfile, studioRequiredFields,
+  defaultStudioProfile, getStudio, setStudio, StudioProfile, studioRequiredFields,
 } from '../../services/api/studios';
 import {
-  defaultStudioPhoto, deleteStudioPhoto, getStudioPhotos, StudioPhoto, studioPhotoRequiredFields, upsertStudioPhoto,
+  defaultStudioPhoto, deleteStudioPhoto, getStudioPhotos, StudioPhoto, studioPhotoRequiredFields, setStudioPhoto,
 } from '../../services/api/studioPhotos';
 import { Photo } from '../../services/api/photos';
 import { Address } from '../../services/api/address';
@@ -182,7 +182,7 @@ class StudioForm extends React.Component<Props, State> {
         if (this.hasProfileChanges() || !this.isEditing()) {
           // eslint-disable-next-line no-console
           console.log('will insert/update studio', studioProfile);
-          const data = await upsertStudio(this.context, studioProfile);
+          const data = await setStudio(this.context, studioProfile);
           // eslint-disable-next-line no-console
           console.log('got studio data', data);
           studioId = data.id;
@@ -206,7 +206,7 @@ class StudioForm extends React.Component<Props, State> {
           await Promise.all(studioPhotos.map((studioPhoto, index) => {
             // eslint-disable-next-line no-console
             console.log('will insert/update studio photo', studioPhoto);
-            return upsertStudioPhoto(this.context, {
+            return setStudioPhoto(this.context, {
               studioPhoto, studioId, file: studioPhotoFiles[index],
             });
           }));

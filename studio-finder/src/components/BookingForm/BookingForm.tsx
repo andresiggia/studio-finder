@@ -16,10 +16,10 @@ import { deepEqual } from '../../services/helpers/misc';
 
 // constants
 import {
-  defaultBookingWithUser, getBooking, upsertBooking, Booking, BookingWithUser, bookingRequiredFields, defaultBooking,
+  defaultBookingWithUser, getBooking, setBooking, Booking, BookingWithUser, bookingRequiredFields, defaultBooking,
 } from '../../services/api/bookings';
 import {
-  BookingItemWithBooking, getBookingItems, upsertBookingItem, deleteBookingItem, defaultBookingItem, BookingItem, bookingItemRequiredFields,
+  BookingItemWithBooking, getBookingItems, setBookingItem, deleteBookingItem, defaultBookingItem, BookingItem, bookingItemRequiredFields,
 } from '../../services/api/bookingItems';
 import { getStudiosByUser, StudioProfile } from '../../services/api/studios';
 import { SpaceProfile } from '../../services/api/spaces';
@@ -213,7 +213,7 @@ class BookingForm extends React.Component<Props, State> {
           });
           // eslint-disable-next-line no-console
           console.log('will insert/update booking', booking);
-          const data = await upsertBooking(this.context, {
+          const data = await setBooking(this.context, {
             booking, studioId: studioProfile.id,
           });
           // eslint-disable-next-line no-console
@@ -245,7 +245,7 @@ class BookingForm extends React.Component<Props, State> {
             });
             // eslint-disable-next-line no-console
             console.log('will insert/update booking item #', i, bookingItem, bookingId);
-            return upsertBookingItem(this.context, {
+            return setBookingItem(this.context, {
               bookingItem, bookingId,
             });
           }));

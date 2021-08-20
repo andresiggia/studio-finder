@@ -47,7 +47,7 @@ export const getSpaceServices = async (context: AppContextValue, props: {
   return spaceServices;
 };
 
-export const upsertSpaceService = async (context: AppContextValue, {
+export const setSpaceService = async (context: AppContextValue, {
   spaceService, spaceId,
 }: {
   spaceService: SpaceService, spaceId: number,

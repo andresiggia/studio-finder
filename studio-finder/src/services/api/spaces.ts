@@ -141,7 +141,7 @@ export const getSpace = async (context: AppContextValue, spaceId: number) => {
   return space;
 };
 
-export const upsertSpace = async (context: AppContextValue, {
+export const setSpace = async (context: AppContextValue, {
   spaceProfile, studioId,
 }: {
   spaceProfile: SpaceProfile, studioId: number,

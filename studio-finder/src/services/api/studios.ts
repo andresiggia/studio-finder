@@ -146,7 +146,7 @@ export const getStudio = async (context: AppContextValue, studioId: number) => {
   return studio;
 };
 
-export const upsertStudio = async (context: AppContextValue, studioProfile: StudioProfile) => {
+export const setStudio = async (context: AppContextValue, studioProfile: StudioProfile) => {
   const { supabase, state } = context;
   const { roles } = state;
   const defaultStudioRoleName = getDefaultStudioRoleName(context);

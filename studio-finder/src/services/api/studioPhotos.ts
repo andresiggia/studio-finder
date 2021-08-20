@@ -51,7 +51,7 @@ export const getStudioPhotos = async (context: AppContextValue, props: {
   return studioPhotos;
 };
 
-export const upsertStudioPhoto = async (context: AppContextValue, {
+export const setStudioPhoto = async (context: AppContextValue, {
   studioPhoto, studioId, file,
 }: {
   studioPhoto: StudioPhoto, studioId: number, file?: File | null

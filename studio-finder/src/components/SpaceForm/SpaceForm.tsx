@@ -14,15 +14,15 @@ import AppContext from '../../context/AppContext';
 import i18n from '../../services/i18n/i18n';
 import { deepEqual } from '../../services/helpers/misc';
 import {
-  defaultSpaceProfile, getSpace, upsertSpace, SpaceProfile, spaceRequiredFields,
+  defaultSpaceProfile, getSpace, setSpace, SpaceProfile, spaceRequiredFields,
 } from '../../services/api/spaces';
 import { StudioProfile } from '../../services/api/studios';
 import {
-  defaultSpacePhoto, deleteSpacePhoto, getSpacePhotos, SpacePhoto, spacePhotoRequiredFields, upsertSpacePhoto,
+  defaultSpacePhoto, deleteSpacePhoto, getSpacePhotos, SpacePhoto, spacePhotoRequiredFields, setSpacePhoto,
 } from '../../services/api/spacePhotos';
 import { Photo } from '../../services/api/photos';
 import {
-  defaultSpaceService, deleteSpaceService, getSpaceServices, SpaceService, spaceServiceRequiredFields, upsertSpaceService,
+  defaultSpaceService, deleteSpaceService, getSpaceServices, SpaceService, spaceServiceRequiredFields, setSpaceService,
 } from '../../services/api/spaceServices';
 
 // components
@@ -201,7 +201,7 @@ class SpaceForm extends React.Component<Props, State> {
         if (this.hasProfileChanges() || !this.isEditing()) {
         // eslint-disable-next-line no-console
           console.log('will insert/update space', spaceProfile, 'in studio', studioProfile);
-          const data = await upsertSpace(this.context, {
+          const data = await setSpace(this.context, {
             spaceProfile, studioId: studioProfile.id,
           });
           // eslint-disable-next-line no-console
@@ -227,7 +227,7 @@ class SpaceForm extends React.Component<Props, State> {
           await Promise.all(spacePhotos.map((spacePhoto, index) => {
             // eslint-disable-next-line no-console
             console.log('will insert/update space photo', spacePhoto);
-            return upsertSpacePhoto(this.context, {
+            return setSpacePhoto(this.context, {
               spacePhoto, spaceId, file: spacePhotoFiles[index],
             });
           }));
@@ -252,7 +252,7 @@ class SpaceForm extends React.Component<Props, State> {
           await Promise.all(spaceServices.map((spaceService) => {
             // eslint-disable-next-line no-console
             console.log('will insert/update space service', spaceService);
-            return upsertSpaceService(this.context, {
+            return setSpaceService(this.context, {
               spaceService, spaceId,
             });
           }));

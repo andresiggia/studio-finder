@@ -132,7 +132,7 @@ export const getBooking = async (context: AppContextValue, props: {
   return booking;
 };
 
-export const upsertBooking = async (context: AppContextValue, {
+export const setBooking = async (context: AppContextValue, {
   booking, studioId,
 }: {
   booking: Booking, studioId?: number,

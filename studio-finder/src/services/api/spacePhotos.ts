@@ -51,7 +51,7 @@ export const getSpacePhotos = async (context: AppContextValue, props: {
   return spacePhotos;
 };
 
-export const upsertSpacePhoto = async (context: AppContextValue, {
+export const setSpacePhoto = async (context: AppContextValue, {
   spacePhoto, spaceId, file,
 }: {
     spacePhoto: SpacePhoto, spaceId: number, file?: File | null
