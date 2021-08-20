@@ -21,7 +21,7 @@ export const convertObjectKeysToCamelCase = (originalObj: any) => {
   return obj;
 };
 
-export const updateObjectKeysToUnderscoreCase = (originalObj: any) => {
+export const convertObjectKeysToUnderscoreCase = (originalObj: any) => {
   let obj: any = null;
   if (originalObj) {
     obj = {};
@@ -41,6 +41,11 @@ export const convertFromAPI = (original: any, dateFields: string[] = []) => {
       ? new Date(value)
       : null;
   });
+  return converted;
+};
+
+export const convertToAPI = (original: any) => {
+  const converted = convertObjectKeysToUnderscoreCase(original);
   return converted;
 };
 

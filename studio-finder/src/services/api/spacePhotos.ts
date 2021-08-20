@@ -1,6 +1,6 @@
 import { AppContextValue } from '../../context/AppContext';
 
-import { convertFromAPI, updateObjectKeysToUnderscoreCase } from './helpers';
+import { convertFromAPI, convertToAPI } from './helpers';
 import { Photo } from './photos';
 import {
   deleteFile, getFileUrl, StorageBucket, uploadFile,
@@ -88,7 +88,7 @@ export const setSpacePhoto = async (context: AppContextValue, {
     }
     itemObj.photoUrl = photoUrl;
   }
-  const itemData = updateObjectKeysToUnderscoreCase(itemObj);
+  const itemData = convertToAPI(itemObj);
   const { data, error } = await supabase
     .from(TableName.spacePhotos)
     .upsert([itemData]);

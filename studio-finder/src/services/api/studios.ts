@@ -1,6 +1,6 @@
 import { AppContextValue } from '../../context/AppContext';
 
-import { convertFromAPI, updateObjectKeysToUnderscoreCase } from './helpers';
+import { convertFromAPI, convertToAPI } from './helpers';
 import { getDefaultStudioRoleName, Role, RoleType } from './roles';
 import { TableName } from './tables';
 import { ViewName } from './views';
@@ -163,7 +163,7 @@ export const setStudio = async (context: AppContextValue, studioProfile: StudioP
     delete profile.createdAt; // createdAt should be created by back-end
     delete profile.id; // id should be created by back-end
   }
-  const studioProfileData = updateObjectKeysToUnderscoreCase(profile);
+  const studioProfileData = convertToAPI(profile);
   const { data, error } = await supabase
     .from(TableName.studios)
     .upsert([studioProfileData]);
@@ -183,7 +183,7 @@ export const setStudio = async (context: AppContextValue, studioProfile: StudioP
       studioId,
       roleName: defaultStudioRoleName,
     };
-    const studioUserData = updateObjectKeysToUnderscoreCase(studioUser);
+    const studioUserData = convertToAPI(studioUser);
     // eslint-disable-next-line no-console
     console.log('will add new studio user', studioUserData);
     const { data: newJoinRow, error: joinError } = await supabase

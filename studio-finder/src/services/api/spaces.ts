@@ -1,6 +1,6 @@
 import { AppContextValue } from '../../context/AppContext';
 
-import { convertFromAPI, updateObjectKeysToUnderscoreCase } from './helpers';
+import { convertFromAPI, convertToAPI } from './helpers';
 import { getDefaultSpaceRoleName, Role, RoleType } from './roles';
 import { TableName } from './tables';
 import { ViewName } from './views';
@@ -172,7 +172,7 @@ export const setSpace = async (context: AppContextValue, {
     // studioId must match value provided
     throw new Error(SpaceError.editingSpaceOfWrongStudio);
   }
-  const spaceProfileData = updateObjectKeysToUnderscoreCase(profile);
+  const spaceProfileData = convertToAPI(profile);
   const { data, error } = await supabase
     .from(TableName.spaces)
     .upsert([spaceProfileData]);
@@ -192,7 +192,7 @@ export const setSpace = async (context: AppContextValue, {
       spaceId,
       roleName: defaultSpaceRoleName,
     };
-    const spaceUserData = updateObjectKeysToUnderscoreCase(spaceUser);
+    const spaceUserData = convertToAPI(spaceUser);
     // eslint-disable-next-line no-console
     console.log('will add new space user', spaceUserData);
     const { data: newJoinRow, error: joinError } = await supabase

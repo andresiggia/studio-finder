@@ -1,6 +1,6 @@
 import { AppContextValue } from '../../context/AppContext';
 
-import { convertFromAPI, updateObjectKeysToUnderscoreCase } from './helpers';
+import { convertFromAPI, convertToAPI } from './helpers';
 import {
   deleteFile, StorageBucket, uploadFile, getFileUrl,
 } from './storage';
@@ -104,7 +104,7 @@ export const setUserProfile = async (context: AppContextValue, {
     }
     itemObj.photoUrl = photoUrl;
   }
-  const itemData = updateObjectKeysToUnderscoreCase(itemObj);
+  const itemData = convertToAPI(itemObj);
   const { data, error } = await supabase
     .from(TableName.users)
     .upsert(itemData);

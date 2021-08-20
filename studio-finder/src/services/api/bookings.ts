@@ -1,6 +1,6 @@
 import { AppContextValue } from '../../context/AppContext';
 
-import { convertFromAPI, updateObjectKeysToUnderscoreCase } from './helpers';
+import { convertFromAPI, convertToAPI } from './helpers';
 import { TableName } from './tables';
 import { ViewName } from './views';
 
@@ -160,7 +160,7 @@ export const setBooking = async (context: AppContextValue, {
     itemObj.modifiedBy = userId; // injecting user id provided
     itemObj.modifiedAt = new Date(); // modifiedAt to be updated to current date/time
   }
-  const itemData = updateObjectKeysToUnderscoreCase(itemObj);
+  const itemData = convertToAPI(itemObj);
   const { data, error } = await supabase
     .from(TableName.bookings)
     .upsert([itemData]);
