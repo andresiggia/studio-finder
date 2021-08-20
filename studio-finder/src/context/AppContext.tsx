@@ -31,6 +31,8 @@ interface AuthResponse {
 interface State {
   user: supabase.User | null,
   accessToken: string,
+  refreshToken: string,
+  expiresAt: Date | null,
   profile: UserProfile | null,
   roles: Role[] | null,
   settings: Setting[] | null,
@@ -59,6 +61,8 @@ export class AppContextProvider extends React.Component<Props, State> {
     this.state = {
       user: null,
       accessToken: '',
+      refreshToken: '',
+      expiresAt: null,
       profile: null,
       roles: null,
       settings: null,
@@ -166,6 +170,10 @@ export class AppContextProvider extends React.Component<Props, State> {
       this.setMountedState({
         user: session?.user || null,
         accessToken: session?.access_token || '',
+        refreshToken: session?.refresh_token || '',
+        expiresAt: session?.expires_at
+          ? new Date(session?.expires_at * 1000) // convert to miliseconds
+          : null,
       }, async () => {
         if (profile?.id !== session?.user?.id) {
           await this.loadUserProfile();
