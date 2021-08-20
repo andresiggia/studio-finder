@@ -33,8 +33,8 @@ import './BookingForm.css';
 
 interface Props {
   id: number,
-  studioProfile: StudioProfile,
-  spaceProfile: SpaceProfile,
+  studioProfile?: StudioProfile,
+  spaceProfile?: SpaceProfile,
   onCancel?: () => void,
   onSave: () => void,
 }
@@ -101,8 +101,8 @@ class BookingForm extends React.Component<Props, State> {
     const { state } = this.context;
     return {
       ...defaultBookingWithUser,
-      studioId: studioProfile.id,
-      studioTitle: studioProfile.title,
+      studioId: studioProfile?.id || 0,
+      studioTitle: studioProfile?.title || '',
       createdBy: state.user.id,
       createdByName: state.profile.name,
       createdBySurname: state.profile.surname,
@@ -214,7 +214,7 @@ class BookingForm extends React.Component<Props, State> {
           // eslint-disable-next-line no-console
           console.log('will insert/update booking', booking);
           const data = await setBooking(this.context, {
-            booking, studioId: studioProfile.id,
+            booking, studioId: studioProfile?.id || 0,
           });
           // eslint-disable-next-line no-console
           console.log('got new booking data', data);
@@ -300,8 +300,8 @@ class BookingForm extends React.Component<Props, State> {
     const updatedItems = (bookingItems || []).slice();
     updatedItems.push({
       ...defaultBookingItem,
-      studioId: studioProfile.id,
-      studioTitle: studioProfile.title,
+      studioId: studioProfile?.id || 0,
+      studioTitle: studioProfile?.title || '',
       userId: state.user.id,
       userName: state.user.name,
       userSurname: state.user.surname,
@@ -311,10 +311,10 @@ class BookingForm extends React.Component<Props, State> {
       modifiedBy: '',
       modifiedByName: '',
       modifiedBySurname: '',
-      spaceTitle: spaceProfile.title,
+      spaceTitle: spaceProfile?.title || '',
       // booking items
       bookingId: booking?.id || 0,
-      spaceId: spaceProfile.id,
+      spaceId: spaceProfile?.id || 0,
     });
     this.setMountedState({
       bookingItems: updatedItems,
@@ -544,7 +544,7 @@ class BookingForm extends React.Component<Props, State> {
             value: booking.studioId,
             fieldName: 'studio',
             label: i18n.t('Studio'),
-            disabled,
+            disabled: true,
             options: studios.map((item) => ({
               value: item.id,
               label: item.title,
@@ -589,18 +589,20 @@ class BookingForm extends React.Component<Props, State> {
             disabled,
           })}
         </IonItem>
-        <div className="form-list-item-full">
-          <BookingItemList
-            items={bookingItems}
-            disabled={disabled}
-            studioProfile={studioProfile}
-            booking={booking}
-            onAdd={this.onItemAdd}
-            onDelete={this.onItemDelete}
-            onChange={this.onItemChange}
-            isValidEndDate={this.isValidEndDate}
-          />
-        </div>
+        {studioProfile?.id && (
+          <div className="form-list-item-full">
+            <BookingItemList
+              items={bookingItems}
+              disabled={disabled}
+              studioId={studioProfile.id}
+              booking={booking}
+              onAdd={this.onItemAdd}
+              onDelete={this.onItemDelete}
+              onChange={this.onItemChange}
+              isValidEndDate={this.isValidEndDate}
+            />
+          </div>
+        )}
       </IonList>
     );
   }

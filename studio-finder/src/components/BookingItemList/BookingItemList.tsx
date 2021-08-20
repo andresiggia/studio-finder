@@ -7,7 +7,6 @@ import { addOutline } from 'ionicons/icons';
 
 // services
 import i18n from '../../services/i18n/i18n';
-import { StudioProfile } from '../../services/api/studios';
 import { Booking, BookingWithUser } from '../../services/api/bookings';
 import { BookingItemWithBooking } from '../../services/api/bookingItems';
 
@@ -28,7 +27,7 @@ interface Props {
   items: BookingItemWithBooking[],
   disabled: boolean,
   booking: Booking | BookingWithUser,
-  studioProfile: StudioProfile,
+  studioId: number,
   onDelete: (index: number) => void,
   onChange: (item: BookingItemWithBooking, index: number) => void,
   onAdd: () => void,
@@ -51,8 +50,8 @@ class BookingItemList extends React.Component<Props, State> {
   }
 
   componentDidUpdate(prevProps: Props) {
-    const { studioProfile, items } = this.props;
-    if (prevProps.studioProfile.id !== studioProfile.id
+    const { studioId, items } = this.props;
+    if (prevProps.studioId !== studioId
       || prevProps.items.length !== items.length) {
       this.updateState();
     }
@@ -89,14 +88,14 @@ class BookingItemList extends React.Component<Props, State> {
 
   renderSelectedItem = () => {
     const {
-      items, studioProfile, disabled, onDelete, onChange, isValidEndDate,
+      items, studioId, disabled, onDelete, onChange, isValidEndDate,
     } = this.props;
     const { selectedIndex } = this.state;
     return (
       <BookingItemForm
         index={selectedIndex}
         item={items[selectedIndex]}
-        studioId={studioProfile.id}
+        studioId={studioId}
         disabled={disabled}
         onDelete={() => onDelete(selectedIndex)}
         onChange={(item: BookingItemWithBooking) => onChange(item, selectedIndex)}
