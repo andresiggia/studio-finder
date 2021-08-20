@@ -37,6 +37,32 @@ hr {
   height: 1px;
 }
 
+.form-list {
+  padding: 0;
+}
+
+@media only screen and (min-width: 820px) {
+  .form-list {
+    display: flex;
+    flex-wrap: wrap;
+    margin-left: calc(-1 * var(--grid-spacing)) !important;
+    margin-right: calc(-1 * var(--grid-spacing)) !important;
+    width: calc(100% + (var(--grid-spacing) * 2));
+  }
+  .form-list-item,
+  .form-list-item-full{
+    margin-left: var(--grid-spacing);
+    margin-right: var(--grid-spacing);
+    margin-bottom: var(--grid-spacing);
+  }
+  .form-list-item {
+    width: calc(50% - (var(--grid-spacing) * 2));
+  }
+  .form-list-item-full {
+    width: 100%;
+  }
+}
+
 /* ion fixes */
 
 /* prevent blocked button from hiding text */
