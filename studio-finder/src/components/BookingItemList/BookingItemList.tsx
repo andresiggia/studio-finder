@@ -91,17 +91,18 @@ class BookingItemList extends React.Component<Props, State> {
       items, studioId, disabled, onDelete, onChange, isValidEndDate,
     } = this.props;
     const { selectedIndex } = this.state;
-    if (!items[selectedIndex]) {
+    const item = items[selectedIndex];
+    if (!item) {
       return null;
     }
     return (
       <BookingItemForm
         index={selectedIndex}
-        item={items[selectedIndex]}
+        item={item}
         studioId={studioId}
         disabled={disabled}
         onDelete={() => onDelete(selectedIndex)}
-        onChange={(item: BookingItemWithBooking) => onChange(item, selectedIndex)}
+        onChange={(updatedItem: BookingItemWithBooking) => onChange(updatedItem, selectedIndex)}
         isValidEndDate={isValidEndDate}
       />
     );

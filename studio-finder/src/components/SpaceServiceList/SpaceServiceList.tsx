@@ -88,14 +88,18 @@ class SpaceServiceList extends React.Component<Props, State> {
       items, disabled, onDelete, onChange, isUniqueTitle,
     } = this.props;
     const { selectedIndex } = this.state;
+    const item = items[selectedIndex];
+    if (!item) {
+      return null;
+    }
     return (
       <SpaceServiceForm
         index={selectedIndex}
         item={items[selectedIndex]}
         disabled={disabled}
-        onChange={(item: SpaceService) => onChange(item, selectedIndex)}
+        onChange={(updatedItem: SpaceService) => onChange(updatedItem, selectedIndex)}
         onDelete={() => onDelete(selectedIndex)}
-        isUniqueTitle={(item: SpaceService) => isUniqueTitle(item, selectedIndex)}
+        isUniqueTitle={(sItem: SpaceService) => isUniqueTitle(sItem, selectedIndex)}
       />
     );
   }

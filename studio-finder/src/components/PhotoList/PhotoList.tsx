@@ -90,12 +90,16 @@ class PhotoList extends React.Component<Props, State> {
       items, disabled, files, onChange, onFileChange,
     } = this.props;
     const { selectedIndex } = this.state;
+    const item = items[selectedIndex];
+    if (!item) {
+      return null;
+    }
     return (
       <PhotoForm
         item={items[selectedIndex]}
         file={files[selectedIndex]}
         disabled={disabled}
-        onChange={(item: Photo) => onChange(item, selectedIndex)}
+        onChange={(updatedItem: Photo) => onChange(updatedItem, selectedIndex)}
         onFilesChange={(updatedFiles: (File | null)[]) => {
           const file = updatedFiles.length > 0 ? updatedFiles[0] : null;
           // eslint-disable-next-line no-console
