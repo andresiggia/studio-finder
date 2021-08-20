@@ -11,7 +11,7 @@ import {
 // services
 import { SpaceProfile } from '../../services/api/spaces';
 import i18n from '../../services/i18n/i18n';
-import { BookingDate, BookingItemWithBooking, getBookingItems } from '../../services/api/bookingItems';
+import { BookingDate, BookingItemWithBooking, getBookingItemsBySpace } from '../../services/api/bookingItems';
 import { pad } from '../../services/helpers/misc';
 import { StudioProfile } from '../../services/api/studios';
 import { SpaceService } from '../../services/api/spaceServices';
@@ -102,9 +102,12 @@ class BookingCalendar extends React.Component<Props, State> {
         const { spaceProfile, showOnlyActive } = this.props;
         // eslint-disable-next-line no-console
         console.log('will load bookings for space', spaceProfile);
-        const items = await getBookingItems(this.context, {
+        const { weekStartsAt, weekEndsAt } = this.getDateRange();
+        const items = await getBookingItemsBySpace(this.context, {
           spaceId: spaceProfile.id,
           inactive: showOnlyActive ? false : undefined,
+          fromDate: weekStartsAt,
+          toDate: weekEndsAt,
         });
         // eslint-disable-next-line no-console
         console.log('got booking items', items);
@@ -121,6 +124,19 @@ class BookingCalendar extends React.Component<Props, State> {
         });
       }
     });
+  }
+
+  getDateRange = () => {
+    const { weekOffset } = this.state;
+    const currentWeekday = (new Date()).getDay();
+    const weekStartsAt = new Date();
+    weekStartsAt.setDate(weekStartsAt.getDate() - currentWeekday + (weekOffset * 7));
+    weekStartsAt.setHours(0, 0, 0, 0);
+    const weekEndsAt = new Date(weekStartsAt.getTime());
+    weekEndsAt.setDate(weekEndsAt.getDate() + 7);
+    return {
+      weekStartsAt, weekEndsAt,
+    };
   }
 
   allowSelection = () => {
@@ -165,6 +181,12 @@ class BookingCalendar extends React.Component<Props, State> {
       }
     }
     return defaultSpaceService;
+  }
+
+  onWeekChange = (weekOffset = 0) => {
+    this.setMountedState({
+      weekOffset,
+    }, () => this.loadItems());
   }
 
   // render
@@ -282,12 +304,9 @@ class BookingCalendar extends React.Component<Props, State> {
 
   renderCalendar = () => {
     const { maxHeight = 200, showBookingDetails } = this.props;
-    const { items, modalSelectedId, weekOffset } = this.state;
+    const { items, modalSelectedId } = this.state;
     const weekdays = Array.from(Array(7)).map((_item, index) => index);
-    const now = new Date();
-    const currentWeekday = now.getDay();
-    const weekStartsAt = new Date(now.getTime());
-    weekStartsAt.setDate(weekStartsAt.getDate() - currentWeekday + (weekOffset * 7));
+    const { weekStartsAt } = this.getDateRange();
     const halfTimes = Array.from(Array(24 * 2)).map((_item, index) => index / 2);
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -443,7 +462,7 @@ class BookingCalendar extends React.Component<Props, State> {
               color="primary"
               fill="clear"
               disabled={!showPastWeeks && weekOffset === 0}
-              onClick={() => this.setMountedState({ weekOffset: weekOffset - 1 })}
+              onClick={() => this.onWeekChange(weekOffset - 1)}
             >
               <IonIcon icon={chevronBackOutline} ariaLabel={i18n.t('Previous Week')} />
             </IonButton>
@@ -451,14 +470,14 @@ class BookingCalendar extends React.Component<Props, State> {
               color="primary"
               fill="solid"
               disabled={weekOffset === 0}
-              onClick={() => this.setMountedState({ weekOffset: 0 })}
+              onClick={() => this.onWeekChange()}
             >
               {i18n.t('This Week')}
             </IonButton>
             <IonButton
               color="primary"
               fill="clear"
-              onClick={() => this.setMountedState({ weekOffset: weekOffset + 1 })}
+              onClick={() => this.onWeekChange(weekOffset + 1)}
             >
               <IonIcon icon={chevronForwardOutline} ariaLabel={i18n.t('Next Week')} />
             </IonButton>
