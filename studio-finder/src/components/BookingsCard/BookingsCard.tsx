@@ -146,8 +146,10 @@ class BookingsCard extends React.Component<any, State> {
           return (
             <IonItem>
               <p>
-                <IonText color="primary">
-                  {`${serviceLabel} @${bookingItem.studioTitle}/${bookingItem.spaceTitle}`}
+                <IonText color={bookingItem.inactive ? 'medium' : 'primary'}>
+                  {`${serviceLabel} @${bookingItem.studioTitle}/${bookingItem.spaceTitle}${
+                    bookingItem.inactive ? ` (${i18n.t('cancelled')})` : ''
+                  }`}
                 </IonText>
                 <br />
                 {dateLabel
