@@ -97,8 +97,7 @@ class BookingForm extends React.Component<Props, State> {
     }
   }
 
-  getDefaultBookingWithUser = (): BookingWithUser => {
-    const { studioProfile } = this.state;
+  getDefaultBookingWithUser = (studioProfile?: StudioProfile): BookingWithUser => {
     const { state } = this.context;
     return {
       ...defaultBookingWithUser,
@@ -135,7 +134,7 @@ class BookingForm extends React.Component<Props, State> {
           }
         }
         // eslint-disable-next-line no-console
-        const defaultItem = this.getDefaultBookingWithUser();
+        const defaultItem = this.getDefaultBookingWithUser(studioProfile);
         this.setMountedState({
           isLoading: false,
           allowEdit: !isEditing, // if creating new, skip allowEdit
@@ -166,7 +165,10 @@ class BookingForm extends React.Component<Props, State> {
 
   hasChangesToBooking = () => {
     const { booking, bookingOriginal } = this.state;
-    return !deepEqual(booking, bookingOriginal);
+    const hasChangesToBooking = !deepEqual(booking, bookingOriginal);
+    // eslint-disable-next-line no-console
+    if (!hasChangesToBooking) console.log('has no changes to Booking');
+    return hasChangesToBooking;
   }
 
   hasChangesToBookingItem = (item: BookingItemWithBooking, index: number) => {
@@ -174,13 +176,19 @@ class BookingForm extends React.Component<Props, State> {
     const itemOriginal = item.id
       ? bookingItemsOriginal?.find((oItem) => oItem.id === item.id)
       : (bookingItemsOriginal || [])[index];
-    return !deepEqual(item, itemOriginal);
+    const hasChangesToBookingItem = !deepEqual(item, itemOriginal);
+    // eslint-disable-next-line no-console
+    if (!hasChangesToBookingItem) console.log('has no changes to BookingItem', item);
+    return hasChangesToBookingItem;
   }
 
   hasChangesToBookingItems = () => {
     const { bookingItems, bookingItemsOriginal } = this.state;
-    return bookingItems?.length !== bookingItemsOriginal?.length
+    const hasChangesToBookingItems = bookingItems?.length !== bookingItemsOriginal?.length
       || (bookingItems || []).some(this.hasChangesToBookingItem);
+    // eslint-disable-next-line no-console
+    if (!hasChangesToBookingItems) console.log('has no changes to BookingItems');
+    return hasChangesToBookingItems;
   }
 
   hasChanges = () => this.hasChangesToBooking() || this.hasChangesToBookingItems()
@@ -281,21 +289,35 @@ class BookingForm extends React.Component<Props, State> {
     if (!isValidDate(startAt) || !isValidDate(endAt)) {
       return true; // ignore when dates are not set
     }
-    return startAt.getTime() < endAt.getTime();
+    const isValidEndDate = startAt.getTime() < endAt.getTime();
+    // eslint-disable-next-line no-console
+    if (!isValidEndDate) console.log('invalid endDate');
+    return isValidEndDate;
   }
 
-  isValidForm = () => {
-    const { booking, bookingItems } = this.state;
+  isValidBooking = () => {
+    const { booking } = this.state;
     const isValidBooking = !!booking && Object.keys(booking).every((key: string) => (
       !bookingRequiredFields.includes(key as keyof Booking) || !!booking[key as keyof Booking]
     ));
+    // eslint-disable-next-line no-console
+    if (!isValidBooking) console.log('invalid booking', booking);
+    return isValidBooking;
+  }
+
+  isValidBookingItems = () => {
+    const { bookingItems } = this.state;
     // at least one booking item is required
     const isValidBookingItems = !!bookingItems && bookingItems?.length > 0
       && bookingItems.every((bookingItem) => Object.keys(bookingItem).every((key: string) => (
         !bookingItemRequiredFields.includes(key as keyof BookingItem) || !!bookingItem[key as keyof BookingItem]
       )) && this.isValidEndDate(bookingItem));
-    return isValidBooking && isValidBookingItems;
+    // eslint-disable-next-line no-console
+    if (!isValidBookingItems) console.log('invalid booking items');
+    return isValidBookingItems;
   }
+
+  isValidForm = () => this.isValidBooking() && this.isValidBookingItems()
 
   onItemAdd = () => {
     const { spaceProfile } = this.props;
@@ -380,6 +402,29 @@ class BookingForm extends React.Component<Props, State> {
             {`* ${i18n.t('Required')}`}
           </p>
         )}
+        {isLoading && (
+          <div className="booking-form-loading booking-form-spacer">
+            <IonSpinner name="bubbles" />
+          </div>
+        )}
+        {!!error && (
+          <Notification
+            type={NotificationType.danger}
+            className="booking-form-notification booking-form-spacer"
+            header={i18n.t('Error')}
+            message={error?.message || i18n.t('An error occurred, please try again later')}
+            onDismiss={() => this.setMountedState({ error: null })}
+          />
+        )}
+        {!isValidForm && (
+          <Notification
+            type={NotificationType.danger}
+            className="booking-form-notification booking-form-spacer"
+            header={i18n.t('Missing required fields')}
+            message={i18n.t('Some required fields are missing or have invalid data')}
+            preventDismiss
+          />
+        )}
         <IonGrid>
           <IonRow>
             {allowEdit
@@ -452,20 +497,6 @@ class BookingForm extends React.Component<Props, State> {
               )}
           </IonRow>
         </IonGrid>
-        {isLoading && (
-          <div className="booking-form-loading booking-form-spacer">
-            <IonSpinner name="bubbles" />
-          </div>
-        )}
-        {!!error && (
-          <Notification
-            type={NotificationType.danger}
-            className="booking-form-notification booking-form-spacer"
-            header={i18n.t('Error')}
-            message={error?.message || i18n.t('An error occurred, please try again later')}
-            onDismiss={() => this.setMountedState({ error: null })}
-          />
-        )}
       </div>
     );
   }
