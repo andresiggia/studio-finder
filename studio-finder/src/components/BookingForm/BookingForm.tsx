@@ -532,6 +532,17 @@ class BookingForm extends React.Component<Props, State> {
     if (!booking || !bookingItems) {
       return null;
     }
+    if (!this.isEditing() && !studioProfile) {
+      return (
+        <Notification
+          type={NotificationType.danger}
+          className="booking-form-notification booking-form-spacer"
+          header={i18n.t('Invalid studio')}
+          message={i18n.t('Missing studio information')}
+          preventDismiss
+        />
+      );
+    }
     return (
       <IonList className="form-list booking-form-list">
         <IonItem className="form-list-item">
