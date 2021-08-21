@@ -14,6 +14,7 @@ import {
   canDeleteStudio, canUpdateStudio, deleteStudio, getStudiosByUser, StudioWithRole,
 } from '../../services/api/studios';
 import i18n from '../../services/i18n/i18n';
+import { sortByKey } from '../../services/helpers/misc';
 
 // components
 import Notification, { NotificationType } from '../Notification/Notification';
@@ -270,7 +271,7 @@ class StudioCard extends React.Component<any, State> {
                     disabled={isLoading || !!error}
                     onIonChange={(e) => this.setMountedState({ selectedId: e.detail.value })}
                   >
-                    {items.map((item) => (
+                    {sortByKey(items, 'title').map((item) => (
                       <IonSelectOption key={item.id} value={item.id}>
                         {item.title}
                       </IonSelectOption>
