@@ -10,7 +10,9 @@ import {
 } from 'ionicons/icons';
 
 // services
-import { deleteStudio, getStudiosByUser, StudioProfile } from '../../services/api/studios';
+import {
+  canDeleteStudio, deleteStudio, getStudiosByUser, StudioWithRole,
+} from '../../services/api/studios';
 import i18n from '../../services/i18n/i18n';
 
 // components
@@ -27,7 +29,7 @@ import './StudioCard.css';
 interface State {
   isLoading: boolean,
   error: Error | null,
-  items: StudioProfile[] | null,
+  items: StudioWithRole[] | null,
   selectedId: number,
   showModal: boolean,
   modalSelectedId: number,
@@ -275,7 +277,7 @@ class StudioCard extends React.Component<any, State> {
                     ))}
                   </IonSelect>
                   <IonButtons className="studio-card-header-toolbar-buttons">
-                    {!!selectedId && (
+                    {!!studioProfile && (
                       <>
                         <IonButton
                           fill="clear"
@@ -288,6 +290,7 @@ class StudioCard extends React.Component<any, State> {
                         <IonButton
                           fill="clear"
                           color="danger"
+                          disabled={!canDeleteStudio(this.context, studioProfile.roleName)}
                           title={i18n.t('Delete Studio')}
                           onClick={() => this.setMountedState({ showDeleteAlert: true })}
                         >
