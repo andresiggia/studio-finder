@@ -6,13 +6,6 @@ CREATE VIEW permissions_with_role AS (
   ON roles.name = permissions.role_name
 );
 
-DROP VIEW IF EXISTS spaces_with_user_id;
-CREATE VIEW spaces_with_user_id AS (
-  SELECT space_users.user_id, spaces.*
-  FROM space_users, spaces
-  WHERE space_users.space_id = spaces.id
-);
-
 DROP VIEW IF EXISTS studios_by_user;
 CREATE VIEW studios_by_user AS (
   SELECT studio_users.*, studios.*

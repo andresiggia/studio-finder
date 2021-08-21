@@ -99,7 +99,7 @@ export const getSpacesByUser = async (context: AppContextValue, props: {
     throw new Error(SpaceError.notLoggedIn);
   }
   const { data, error } = await supabase
-    .from(ViewName.spacesWithUserId)
+    .from(ViewName.spacesByUser)
     .select()
     .eq('studio_id', studioId)
     .eq('user_id', userId)
