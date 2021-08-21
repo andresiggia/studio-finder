@@ -144,7 +144,7 @@ class SpaceListItem extends React.Component<Props, State> {
               fill="clear"
               color="primary"
               title={i18n.t('Edit Space')}
-              disabled={canUpdateSpace(this.context, spaceProfile.roleName)}
+              disabled={!canUpdateSpace(this.context, spaceProfile.roleName)}
               onClick={() => onModalOpen(spaceProfile.id)}
             >
               <IonIcon slot="start" icon={createOutline} />
