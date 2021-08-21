@@ -24,6 +24,10 @@ export interface SpaceProfile {
   modifiedAt: Date | null,
 }
 
+export interface SpaceWithRole extends SpaceProfile {
+  roleName: string,
+}
+
 const spaceDateFields: (keyof SpaceProfile)[] = ['createdAt', 'modifiedAt'];
 export const spaceRequiredFields: (keyof SpaceProfile)[] = ['title'];
 
@@ -50,6 +54,26 @@ export interface SpaceProfileDisplay extends SpaceProfile {
 export const defaultSpaceProfileDisplay: SpaceProfileDisplay = {
   ...defaultSpaceProfile,
   photoUrl: '',
+};
+
+export const canDeleteSpace = (context: AppContextValue, roleName: string) => {
+  const { state } = context;
+  return (state.roles || []).some((role) => (
+    role.name === roleName
+    && role.permissions.some((permission) => (
+      permission.entity === TableName.spaces && permission.delete
+    ))
+  ));
+};
+
+export const canUpdateSpace = (context: AppContextValue, roleName: string) => {
+  const { state } = context;
+  return (state.roles || []).some((role) => (
+    role.name === roleName
+    && role.permissions.some((permission) => (
+      permission.entity === TableName.spaces && permission.update
+    ))
+  ));
 };
 
 export const getSpaces = async (context: AppContextValue, props: {
