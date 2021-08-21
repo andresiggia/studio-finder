@@ -138,13 +138,7 @@ class SpaceListItem extends React.Component<Props, State> {
     return (
       <>
         <IonToolbar>
-          <p
-            slot="start"
-            className="space-list-item-description"
-            title={spaceProfile.description}
-          >
-            {spaceProfile.description || `(${i18n.t('No description')})`}
-          </p>
+          <SpaceServices spaceId={spaceProfile.id} items={spaceServices} />
           <IonButtons slot="end" className="space-list-item-toolbar">
             <IonButton
               fill="clear"
@@ -158,7 +152,6 @@ class SpaceListItem extends React.Component<Props, State> {
             </IonButton>
           </IonButtons>
         </IonToolbar>
-        <SpaceServices spaceId={spaceProfile.id} items={spaceServices} />
         <BookingCalendar
           spaceProfile={spaceProfile}
           studioProfile={studioProfile}

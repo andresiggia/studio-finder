@@ -13,13 +13,6 @@
   padding: 0 0 0 .5rem;
 }
 
-.space-list-item-description {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 100%;
-}
-
 .space-list-items {
   padding: 0;
 }
