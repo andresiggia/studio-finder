@@ -11,7 +11,7 @@ import {
 
 // services
 import {
-  canDeleteStudio, deleteStudio, getStudiosByUser, StudioWithRole,
+  canDeleteStudio, canUpdateStudio, deleteStudio, getStudiosByUser, StudioWithRole,
 } from '../../services/api/studios';
 import i18n from '../../services/i18n/i18n';
 
@@ -283,6 +283,7 @@ class StudioCard extends React.Component<any, State> {
                           fill="clear"
                           color="primary"
                           title={i18n.t('Edit Studio')}
+                          disabled={!canUpdateStudio(this.context, studioProfile.roleName)}
                           onClick={() => this.onModalOpen(selectedId)}
                         >
                           <IonIcon icon={createOutline} ariaLabel={i18n.t('Edit Studio')} />
@@ -290,8 +291,8 @@ class StudioCard extends React.Component<any, State> {
                         <IonButton
                           fill="clear"
                           color="danger"
-                          disabled={!canDeleteStudio(this.context, studioProfile.roleName)}
                           title={i18n.t('Delete Studio')}
+                          disabled={!canDeleteStudio(this.context, studioProfile.roleName)}
                           onClick={() => this.setMountedState({ showDeleteAlert: true })}
                         >
                           <IonIcon icon={trashOutline} ariaLabel={i18n.t('Delete Studio')} />
