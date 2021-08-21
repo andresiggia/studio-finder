@@ -8,7 +8,7 @@ import {
 } from 'ionicons/icons';
 
 // services
-import { StudioProfile } from '../../services/api/studios';
+import { canInsertSpace, StudioWithRole } from '../../services/api/studios';
 import i18n from '../../services/i18n/i18n';
 import { getSpacesByUser } from '../../services/api/spaces';
 
@@ -34,7 +34,7 @@ interface State {
 }
 
 interface Props {
-  studioProfile: StudioProfile,
+  studioProfile: StudioWithRole,
 }
 
 class SpaceList extends React.Component<Props, State> {
@@ -154,6 +154,7 @@ class SpaceList extends React.Component<Props, State> {
   }
 
   renderSpaces = () => {
+    const { studioProfile } = this.props;
     const { items, selectedId } = this.state;
     const options = [
       ...(items || []),
@@ -162,6 +163,7 @@ class SpaceList extends React.Component<Props, State> {
         title: i18n.t('Space'),
         hoverTitle: i18n.t('Add Space'),
         icon: addOutline,
+        disabled: !canInsertSpace(this.context, studioProfile.roleName),
       },
     ];
     return (
@@ -183,6 +185,7 @@ class SpaceList extends React.Component<Props, State> {
             key={item.id}
             value={String(item.id)}
             title={item.hoverTitle || item.title}
+            disabled={item.disabled}
           >
             {!!item.icon && (
               <IonIcon icon={item.icon} />
@@ -238,6 +241,7 @@ class SpaceList extends React.Component<Props, State> {
   }
 
   renderContent = () => {
+    const { studioProfile } = this.props;
     const {
       isLoading, error, items, selectedId,
     } = this.state;
@@ -270,6 +274,7 @@ class SpaceList extends React.Component<Props, State> {
             fill="solid"
             color="primary"
             title={i18n.t('Add Space')}
+            disabled={!canInsertSpace(this.context, studioProfile.roleName)}
             onClick={() => this.onModalOpen()}
           >
             <IonIcon slot="start" icon={addOutline} />
