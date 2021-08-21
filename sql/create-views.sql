@@ -23,6 +23,7 @@ CREATE VIEW studios_by_user AS (
     SELECT "id"
     FROM permissions_with_role
     WHERE "read" = true
+      AND "entity" = 'studios'
       AND role_name = studio_users.role_name
   )
 );
