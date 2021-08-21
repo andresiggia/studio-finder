@@ -22,6 +22,10 @@ export interface StudioProfile extends Address {
   modifiedAt: Date | null,
 }
 
+export interface StudioWithRole extends StudioProfile {
+  roleName: string,
+}
+
 const studioDateFields: (keyof StudioProfile)[] = ['createdAt', 'modifiedAt'];
 export const studioRequiredFields: (keyof StudioProfile)[] = ['title', 'address'];
 
@@ -49,6 +53,26 @@ export const defaultStudioProfileDisplay: StudioProfileDisplay = {
   ...defaultStudioProfile,
   photoUrl: '',
   distance: 0,
+};
+
+export const canDeleteStudio = (context: AppContextValue, roleName: string) => {
+  const { state } = context;
+  return (state.roles || []).some((role) => (
+    role.name === roleName
+      && role.permissions.some((permission) => (
+        permission.entity === TableName.studios && permission.delete
+      ))
+  ));
+};
+
+export const canUpdateStudio = (context: AppContextValue, roleName: string) => {
+  const { state } = context;
+  return (state.roles || []).some((role) => (
+    role.name === roleName
+    && role.permissions.some((permission) => (
+      permission.entity === TableName.studios && permission.update
+    ))
+  ));
 };
 
 export const getStudios = async (context: AppContextValue, props?: {
@@ -111,7 +135,7 @@ export const getStudiosByUser = async (context: AppContextValue, props?: {
   if (error) {
     throw error;
   }
-  let studios: StudioProfile[] = [];
+  let studios: StudioWithRole[] = [];
   if (data && Array.isArray(data) && data.length > 0) {
     studios = data.map((studioDataWithUserId: any) => {
       // extract userId from studioDataWithUserId before saving
