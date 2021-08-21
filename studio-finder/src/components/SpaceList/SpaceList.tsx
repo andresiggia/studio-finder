@@ -10,7 +10,7 @@ import {
 // services
 import { canInsertSpace, StudioWithRole } from '../../services/api/studios';
 import i18n from '../../services/i18n/i18n';
-import { getSpacesByUser } from '../../services/api/spaces';
+import { getSpacesByUser, SpaceWithRole } from '../../services/api/spaces';
 
 // components
 import Notification, { NotificationType } from '../Notification/Notification';
@@ -27,7 +27,7 @@ import SpaceListItem from './SpaceListItem';
 interface State {
   isLoading: boolean,
   error: Error | null,
-  items: any[] | null,
+  items: SpaceWithRole[] | null,
   selectedId: number,
   showModal: boolean,
   modalSelectedId: number,
@@ -156,12 +156,11 @@ class SpaceList extends React.Component<Props, State> {
   renderSpaces = () => {
     const { studioProfile } = this.props;
     const { items, selectedId } = this.state;
-    const options = [
+    const options: any[] = [
       ...(items || []),
       {
         id: 0,
         title: i18n.t('Space'),
-        hoverTitle: i18n.t('Add Space'),
         icon: addOutline,
         disabled: !canInsertSpace(this.context, studioProfile.roleName),
       },

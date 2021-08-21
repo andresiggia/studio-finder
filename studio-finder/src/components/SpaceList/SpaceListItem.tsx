@@ -10,7 +10,7 @@ import {
 // services
 import i18n from '../../services/i18n/i18n';
 import { getSpaceServices } from '../../services/api/spaceServices';
-import { SpaceProfile } from '../../services/api/spaces';
+import { canUpdateSpace, SpaceWithRole } from '../../services/api/spaces';
 import { StudioProfile } from '../../services/api/studios';
 
 // components
@@ -31,7 +31,7 @@ interface State {
 }
 
 interface Props {
-  spaceProfile: SpaceProfile,
+  spaceProfile: SpaceWithRole,
   studioProfile: StudioProfile,
   onModalOpen: (modalSelectedId?: number) => void,
 }
@@ -150,6 +150,7 @@ class SpaceListItem extends React.Component<Props, State> {
               fill="clear"
               color="primary"
               title={i18n.t('Edit Space')}
+              disabled={canUpdateSpace(this.context, spaceProfile.roleName)}
               onClick={() => onModalOpen(spaceProfile.id)}
             >
               <IonIcon slot="start" icon={createOutline} />
