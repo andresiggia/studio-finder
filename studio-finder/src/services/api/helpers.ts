@@ -57,9 +57,6 @@ export const convertToAPI = (original: any, dateFields: string[] = []) => {
       date.setSeconds(0);
       date.setMilliseconds(0);
       converted[fieldName] = date;
-      console.log('converted date', fieldName, date);
-    } else {
-      console.log('not a valid date', fieldName, date);
     }
   });
   return convertObjectKeysToUnderscoreCase(converted);
