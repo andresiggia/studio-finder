@@ -41,6 +41,7 @@ interface Props {
   studioProfile: StudioProfile,
   spaceServices: SpaceService[],
   showAddButton?: boolean,
+  preventEdition?: boolean,
   showPastWeeks?: boolean,
   showBookingDetails?: boolean,
   showOnlyActive?: boolean,
@@ -192,7 +193,7 @@ class BookingCalendar extends React.Component<Props, State> {
   // render
 
   renderModal = () => {
-    const { spaceProfile, studioProfile } = this.props;
+    const { spaceProfile, studioProfile, preventEdition } = this.props;
     const { showModal, modalSelectedId } = this.state;
     return (
       <IonModal
@@ -222,6 +223,7 @@ class BookingCalendar extends React.Component<Props, State> {
                 id={modalSelectedId}
                 spaceProfile={spaceProfile}
                 studioProfile={studioProfile}
+                readOnly={preventEdition}
                 onCancel={() => this.onModalClose()}
                 onSave={() => {
                   this.onModalClose();

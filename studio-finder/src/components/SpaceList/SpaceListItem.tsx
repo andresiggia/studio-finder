@@ -211,7 +211,8 @@ class SpaceListItem extends React.Component<Props, State> {
           spaceProfile={spaceProfile}
           studioProfile={studioProfile}
           spaceServices={spaceServices}
-          showAddButton
+          showAddButton={canUpdateSpace(this.context, spaceProfile.roleName)}
+          preventEdition={!canUpdateSpace(this.context, spaceProfile.roleName)}
           showPastWeeks
           showBookingDetails
         />

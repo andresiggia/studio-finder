@@ -36,6 +36,7 @@ interface Props {
   id: number,
   studioProfile?: StudioProfile,
   spaceProfile?: SpaceProfile,
+  readOnly?: boolean,
   onCancel?: () => void,
   onSave: () => void,
 }
@@ -390,7 +391,7 @@ class BookingForm extends React.Component<Props, State> {
   )
 
   renderFooter = () => {
-    const { onCancel } = this.props;
+    const { readOnly, onCancel } = this.props;
     const { isLoading, error, allowEdit } = this.state;
     const isValidForm = this.isValidForm();
     const hasChanges = this.hasChanges();
@@ -487,6 +488,7 @@ class BookingForm extends React.Component<Props, State> {
                     <IonButton
                       color="primary"
                       expand="block"
+                      disabled={readOnly}
                       onClick={() => this.setMountedState({ allowEdit: true })}
                     >
                       <IonIcon slot="start" icon={createOutline} />
