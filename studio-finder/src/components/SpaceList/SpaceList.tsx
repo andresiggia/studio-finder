@@ -149,6 +149,7 @@ class SpaceList extends React.Component<Props, State> {
         spaceProfile={spaceProfile}
         studioProfile={studioProfile}
         onModalOpen={this.onModalOpen}
+        reloadItems={this.loadItems}
       />
     );
   }

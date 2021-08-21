@@ -244,3 +244,18 @@ export const setSpace = async (context: AppContextValue, {
   }
   return newRow;
 };
+
+export const deleteSpace = async (context: AppContextValue, id: number) => {
+  const { supabase } = context;
+  const { data, error } = await supabase
+    .from(TableName.spaces)
+    .update({ inactive: true })
+    .match({ id });
+  if (error) {
+    throw error;
+  }
+  if (!data) {
+    throw new Error(SpaceError.invalidResponse);
+  }
+  return data;
+};

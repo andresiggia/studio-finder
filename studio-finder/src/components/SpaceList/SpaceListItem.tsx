@@ -1,16 +1,19 @@
 import React from 'react';
 import {
+  IonAlert,
   IonButton, IonButtons, IonIcon, IonSpinner, IonToolbar,
 } from '@ionic/react';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import {
-  createOutline,
+  createOutline, trashOutline,
 } from 'ionicons/icons';
 
 // services
 import i18n from '../../services/i18n/i18n';
 import { getSpaceServices } from '../../services/api/spaceServices';
-import { canUpdateSpace, SpaceWithRole } from '../../services/api/spaces';
+import {
+  canDeleteSpace, canUpdateSpace, deleteSpace, SpaceWithRole,
+} from '../../services/api/spaces';
 import { StudioProfile } from '../../services/api/studios';
 
 // components
@@ -28,12 +31,14 @@ interface State {
   isLoading: boolean,
   error: Error | null,
   spaceServices: any[] | null,
+  showDeleteAlert: boolean,
 }
 
 interface Props {
   spaceProfile: SpaceWithRole,
   studioProfile: StudioProfile,
   onModalOpen: (modalSelectedId?: number) => void,
+  reloadItems: () => void,
 }
 
 class SpaceListItem extends React.Component<Props, State> {
@@ -45,6 +50,7 @@ class SpaceListItem extends React.Component<Props, State> {
       isLoading: false,
       error: null,
       spaceServices: null,
+      showDeleteAlert: false,
     };
   }
 
@@ -103,11 +109,32 @@ class SpaceListItem extends React.Component<Props, State> {
     });
   }
 
+  onDelete = (selectedId: number) => {
+    this.setMountedState({
+      isLoading: true,
+    }, async () => {
+      try {
+        const { reloadItems } = this.props;
+        await deleteSpace(this.context, selectedId);
+        reloadItems();
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.warn('error - onDelete', error);
+        this.setMountedState({
+          isLoading: false,
+          error,
+        });
+      }
+    });
+  }
+
   // render
 
   render() {
     const { spaceProfile, studioProfile, onModalOpen } = this.props;
-    const { isLoading, error, spaceServices } = this.state;
+    const {
+      isLoading, error, spaceServices, showDeleteAlert,
+    } = this.state;
 
     if (isLoading) {
       return (
@@ -147,9 +174,37 @@ class SpaceListItem extends React.Component<Props, State> {
               disabled={!canUpdateSpace(this.context, spaceProfile.roleName)}
               onClick={() => onModalOpen(spaceProfile.id)}
             >
-              <IonIcon slot="start" icon={createOutline} />
-              {i18n.t('Edit Space')}
+              <IonIcon icon={createOutline} />
             </IonButton>
+            <IonButton
+              fill="clear"
+              color="danger"
+              title={i18n.t('Delete Space')}
+              disabled={!canDeleteSpace(this.context, spaceProfile.roleName)}
+              onClick={() => this.setMountedState({ showDeleteAlert: true })}
+            >
+              <IonIcon icon={trashOutline} />
+            </IonButton>
+            <IonAlert
+              isOpen={showDeleteAlert}
+              onDidDismiss={() => this.setMountedState({ showDeleteAlert: false })}
+              header={i18n.t('Deletion Confirmation')}
+              subHeader={spaceProfile.title || ''}
+              message={i18n.t('Are you sure you want to delete this space?')}
+              buttons={[
+                {
+                  text: 'Cancel',
+                  role: 'cancel',
+                  cssClass: 'secondary',
+                  handler: () => this.setMountedState({ showDeleteAlert: false }),
+                },
+                {
+                  text: 'Okay',
+                  cssClass: 'danger',
+                  handler: () => this.onDelete(spaceProfile.id),
+                },
+              ]}
+            />
           </IonButtons>
         </IonToolbar>
         <BookingCalendar
