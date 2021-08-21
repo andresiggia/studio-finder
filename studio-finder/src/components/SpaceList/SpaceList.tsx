@@ -11,6 +11,7 @@ import {
 import { canInsertSpace, StudioWithRole } from '../../services/api/studios';
 import i18n from '../../services/i18n/i18n';
 import { getSpacesByUser, SpaceWithRole } from '../../services/api/spaces';
+import { sortByKey } from '../../services/helpers/misc';
 
 // components
 import Notification, { NotificationType } from '../Notification/Notification';
@@ -157,8 +158,9 @@ class SpaceList extends React.Component<Props, State> {
   renderSpaces = () => {
     const { studioProfile } = this.props;
     const { items, selectedId } = this.state;
+    const sortedItems = sortByKey(items || [], 'title');
     const options: any[] = [
-      ...(items || []),
+      ...sortedItems,
       {
         id: 0,
         title: i18n.t('Space'),
