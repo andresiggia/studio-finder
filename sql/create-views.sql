@@ -13,11 +13,18 @@ CREATE VIEW spaces_with_user_id AS (
   WHERE space_users.space_id = spaces.id
 );
 
-DROP VIEW IF EXISTS studios_with_user_id;
-CREATE VIEW studios_with_user_id AS (
-  SELECT studio_users.user_id, studios.*
-  FROM studio_users, studios
-  WHERE studio_users.studio_id = studios.id
+DROP VIEW IF EXISTS studios_by_user;
+CREATE VIEW studios_by_user AS (
+  SELECT studio_users.*, studios.*
+  FROM studio_users
+  LEFT JOIN studios
+  ON studio_users.studio_id = studios.id
+  WHERE EXISTS (
+    SELECT "id"
+    FROM permissions_with_role
+    WHERE "read" = true
+      AND role_name = studio_users.role_name
+  )
 );
 
 DROP VIEW IF EXISTS studios_list;

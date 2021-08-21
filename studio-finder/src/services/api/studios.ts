@@ -102,7 +102,7 @@ export const getStudiosByUser = async (context: AppContextValue, props?: {
     throw new Error(StudioError.notLoggedIn);
   }
   const { data, error } = await supabase
-    .from(ViewName.studiosWithUserId)
+    .from(ViewName.studiosByUser)
     .select()
     .eq('user_id', userId)
     .eq('inactive', inactive)
