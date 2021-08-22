@@ -122,7 +122,6 @@ class StudioSearch extends React.Component<Props, State> {
         <div className="studio-search">
           <AddressInput
             value={address}
-            color="primary"
             placeholder={i18n.t('Location or post code')}
             onChange={(response) => this.setMountedState({
               address: response.address,

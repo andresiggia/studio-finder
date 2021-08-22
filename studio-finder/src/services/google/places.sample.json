@@ -1,0 +1,38 @@
+{
+  "html_attributions": [],
+  "results": [
+    {
+      "formatted_address": "9 Morecambe St, London SE17 1DX, UK",
+      "geometry": {
+        "location": {
+          "lat": 51.4900789,
+          "lng": -0.0930995
+        },
+        "viewport": {
+          "northeast": {
+            "lat": 51.49140787989273,
+            "lng": -0.09180997010727779
+          },
+          "southwest": {
+            "lat": 51.48870822010728,
+            "lng": -0.09450962989272223
+          }
+        }
+      },
+      "icon": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/geocode-71.png",
+      "icon_background_color": "#7B9EB0",
+      "icon_mask_base_uri": "https://maps.gstatic.com/mapfiles/place_api/icons/v2/generic_pinlet",
+      "name": "9 Morecambe St",
+      "place_id": "ChIJ5SS1wmEDdkgR9ZAxmVgWQiU",
+      "plus_code": {
+        "compound_code": "FWR4+2Q London",
+        "global_code": "9C3XFWR4+2Q"
+      },
+      "reference": "ChIJ5SS1wmEDdkgR9ZAxmVgWQiU",
+      "types": [
+        "street_address"
+      ]
+    }
+  ],
+  "status": "OK"
+}
