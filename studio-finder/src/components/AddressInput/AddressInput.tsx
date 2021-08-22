@@ -8,7 +8,7 @@ import AutoComplete from 'react-google-autocomplete';
 import i18n from '../../services/i18n/i18n';
 import { convertToAddress } from '../../services/google/places';
 import { Address, defaultAddress } from '../../services/api/address';
-import { key } from '../../services/google/key';
+import { googleAPIKey } from '../../secrets';
 
 // css
 import './AddressInput.css';
@@ -56,7 +56,7 @@ class AddressInput extends React.Component<Props> {
             />
           ) : (
             <AutoComplete
-              apiKey={key}
+              apiKey={googleAPIKey}
               className="native-input sc-ion-input-md"
               options={{
                 types: ['address'],
