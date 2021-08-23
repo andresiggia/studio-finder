@@ -107,3 +107,11 @@ CREATE VIEW space_users_list AS (
   LEFT JOIN auth.users
   ON public.space_users.user_id = auth.users.id::varchar
 );
+
+DROP VIEW IF EXISTS users_list;
+CREATE VIEW users_list AS (
+  SELECT public.users.*, auth.users.email
+  FROM public.users
+  LEFT JOIN auth.users
+  ON public.users.id = auth.users.id::varchar
+);
