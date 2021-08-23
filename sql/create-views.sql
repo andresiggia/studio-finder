@@ -87,3 +87,23 @@ CREATE VIEW booking_items_with_booking AS (
   LEFT JOIN spaces ON booking_items.space_id = spaces.id
   LEFT JOIN bookings_with_user ON bookings_with_user.id = booking_items.booking_id
 );
+
+DROP VIEW IF EXISTS studio_users_list;
+CREATE VIEW studio_users_list AS (
+  SELECT public.studio_users.*, public.users.name, public.users.surname, public.users.photo_url, auth.users.email
+  FROM public.studio_users
+  LEFT JOIN public.users
+  ON public.studio_users.user_id = public.users.id
+  LEFT JOIN auth.users
+  ON public.studio_users.user_id = auth.users.id::varchar
+);
+
+DROP VIEW IF EXISTS space_users_list;
+CREATE VIEW space_users_list AS (
+  SELECT public.space_users.*, public.users.name, public.users.surname, public.users.photo_url, auth.users.email
+  FROM public.space_users
+  LEFT JOIN public.users
+  ON public.space_users.user_id = public.users.id
+  LEFT JOIN auth.users
+  ON public.space_users.user_id = auth.users.id::varchar
+);

@@ -6,4 +6,6 @@ export enum ViewName {
   bookingsWithUser = 'bookings_with_user',
   studiosList = 'studios_list',
   spacesList = 'spaces_list',
+  studioUsersList = 'studio_users_list',
+  spaceUsersList = 'space_users_list',
 }
