@@ -1,7 +1,7 @@
 import React from 'react';
 import {
   IonLabel, IonList, IonItem, IonSelectOption, IonSelect, IonButton, IonButtons, IonIcon, IonToolbar,
-  IonTitle, IonInput, IonSpinner,
+  IonTitle, IonInput,
 } from '@ionic/react';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { trashOutline } from 'ionicons/icons';
@@ -11,11 +11,12 @@ import AppContext from '../../context/AppContext';
 
 // services
 import i18n from '../../services/i18n/i18n';
-import { SpaceUserRoleDisplay, StudioUserRoleDisplay, userRoleDisplayRequiredFields } from '../../services/api/userRoles';
-import { deepEqual } from '../../services/helpers/misc';
+import { UserRoleDisplay, userRoleDisplayRequiredFields } from '../../services/api/userRoles';
 import { Role, RoleType } from '../../services/api/roles';
+import { searchUsersByEmail } from '../../services/api/users';
 
 // components
+import Autocomplete, { Result } from '../Autocomplete/Autocomplete';
 import Notification, { NotificationType } from '../Notification/Notification';
 
 // css
@@ -23,69 +24,15 @@ import './UserRoleForm.css';
 
 interface Props {
   index: number,
-  item: StudioUserRoleDisplay | SpaceUserRoleDisplay,
+  item: UserRoleDisplay,
   roleType: RoleType,
   disabled: boolean,
   onDelete: () => void,
-  onChange: (item: StudioUserRoleDisplay | SpaceUserRoleDisplay) => void,
+  onChange: (item: UserRoleDisplay) => void,
+  isNewUser: (id: string) => boolean,
 }
 
-interface State {
-  email: string,
-  isLoading: boolean,
-  error: Error | null,
-}
-
-class UserRoleForm extends React.Component<Props, State> {
-  mounted = false
-
-  constructor(props: Props) {
-    super(props);
-    this.state = {
-      email: '',
-      isLoading: false,
-      error: null,
-    };
-  }
-
-  componentDidMount() {
-    this.mounted = true;
-    this.updateState();
-  }
-
-  componentDidUpdate(prevProps: Props) {
-    const { index, item } = this.props;
-    if (prevProps.index !== index
-      || !deepEqual(prevProps.item, item)) {
-      this.updateState();
-    }
-  }
-
-  componentWillUnmount() {
-    this.setMountedState({
-      showModal: false,
-    });
-    this.mounted = false;
-  }
-
-  setMountedState = (state: any, callback?: () => any) => {
-    if (this.mounted) {
-      this.setState(state, callback);
-    } else {
-      // eslint-disable-next-line no-console
-      console.log('unmounted request', state);
-      if (typeof callback === 'function') {
-        callback();
-      }
-    }
-  }
-
-  updateState = () => {
-    this.setMountedState({
-      email: '',
-    });
-  }
-
+class UserRoleForm extends React.Component<Props> {
   onChange = (value: any, fieldName: string) => {
     const { item, onChange } = this.props;
     onChange({
@@ -107,15 +54,13 @@ class UserRoleForm extends React.Component<Props, State> {
   renderTextInput = ({
     value, disabled = false, required = false, label, fieldName,
   }: {
-    value: string, disabled?: boolean, required?: boolean, label?: string, fieldName: string,
+    value: string, disabled?: boolean, required?: boolean, label: string, fieldName: string,
   }) => {
     const isRequired = required
-      || userRoleDisplayRequiredFields.includes(fieldName as keyof (StudioUserRoleDisplay | SpaceUserRoleDisplay));
+      || userRoleDisplayRequiredFields.includes(fieldName as keyof UserRoleDisplay);
     return (
       <>
-        {label && (
-          this.renderLabel(label, isRequired)
-        )}
+        {this.renderLabel(label, isRequired)}
         <IonInput
           value={value}
           type="text"
@@ -134,7 +79,7 @@ class UserRoleForm extends React.Component<Props, State> {
     options: { value: any, label: string }[], onChange?: (value: any) => void,
   }) => {
     const isRequired = required
-      || userRoleDisplayRequiredFields.includes(fieldName as keyof (StudioUserRoleDisplay | SpaceUserRoleDisplay));
+      || userRoleDisplayRequiredFields.includes(fieldName as keyof (UserRoleDisplay));
     return (
       <>
         {this.renderLabel(label, isRequired)}
@@ -156,47 +101,95 @@ class UserRoleForm extends React.Component<Props, State> {
     );
   }
 
+  renderAutocomplete = ({
+    value, disabled = false, required = false, label, fieldName, onSearch, onSelect,
+  }: {
+    value: string, disabled?: boolean, required?: boolean, label: string, fieldName: string,
+    onSearch: (query: string) => Promise<Result[]>, onSelect: (result?: Result) => void,
+  }) => {
+    const isRequired = required
+      || userRoleDisplayRequiredFields.includes(fieldName as keyof (UserRoleDisplay));
+    return (
+      <>
+        {this.renderLabel(label, isRequired)}
+        <Autocomplete
+          value={value}
+          required={isRequired}
+          disabled={disabled}
+          onSearch={onSearch}
+          onSelect={onSelect}
+        />
+      </>
+    );
+  }
+
   renderFields = (disabled: boolean) => {
-    const { item, roleType } = this.props;
     const {
-      email, isLoading, error,
-    } = this.state;
+      item, roleType, isNewUser, onChange,
+    } = this.props;
     const { state } = this.context;
     const selectedRole: Role = state.roles?.find((role: Role) => item.roleName === role.name);
     return (
       <IonList className="form-list">
         <IonItem className="form-list-item-full">
-          {item.email
-            ? (
-              this.renderTextInput({
-                value: `${`${item.name} ${item.surname}`.trim()} (${item.email})`.trim(),
-                fieldName: 'email',
-                label: i18n.t('User'),
-                disabled: true,
+          {this.renderAutocomplete({
+            value: item.userId
+              ? `${`${item.name} ${item.surname}`.trim()} (${item.email})`.trim()
+              : '',
+            fieldName: 'userId',
+            label: i18n.t('Email'),
+            disabled,
+            onSelect: (result) => {
+              // eslint-disable-next-line no-console
+              console.log('user selected', result);
+              const {
+                email = '', id: userId = '', name = '', surname = '',
+              } = result?.value || {};
+              onChange({
+                ...item,
+                email,
+                userId,
+                name,
+                surname,
+              });
+            },
+            onSearch: (query: string) => (
+              // eslint-disable-next-line no-async-promise-executor
+              new Promise(async (resolve, reject) => {
+                try {
+                  // eslint-disable-next-line no-console
+                  console.log('searching for', query);
+                  const users = await searchUsersByEmail(this.context, {
+                    query,
+                  });
+                  // eslint-disable-next-line no-console
+                  console.log('got users', users);
+                  resolve(users.map((user) => ({
+                    label: `${`${user.name} ${user.surname}`.trim()} (${user.email})`.trim(),
+                    value: user,
+                    disabled: !isNewUser(user.id)
+                      || state.user.id === user.id, // prevent user from editing their own access
+                  })));
+                } catch (error) {
+                  // eslint-disable-next-line no-console
+                  console.warn('error - onSearch', error);
+                  reject(error);
+                }
               })
-            ) : (
-              this.renderTextInput({
-                value: email,
-                fieldName: 'email',
-                label: i18n.t('Email'),
-                disabled,
-              })
-            )}
-          {isLoading && (
-            <div className="user-role-form-loading user-role-form-spacer">
-              <IonSpinner name="bubbles" />
-            </div>
-          )}
-          {!!error && (
-            <Notification
-              type={NotificationType.danger}
-              className="user-role-form-notification user-role-form-spacer"
-              header={i18n.t('Error')}
-              message={error?.message || i18n.t('An error occurred, please try again later')}
-              onDismiss={() => this.setMountedState({ error: null })}
-            />
-          )}
+            ),
+          })}
         </IonItem>
+        {!item.userId && (
+          <IonItem className="form-list-item-full">
+            <Notification
+              type={NotificationType.warning}
+              className="user-role-form-spacer"
+              header={i18n.t('Users must register beforehand')}
+              message={i18n.t('To find your users here, they must register with StudioFinder first')}
+              preventDismiss
+            />
+          </IonItem>
+        )}
         <IonItem className="form-list-item-full">
           {this.renderSelectInput({
             value: item.roleName,
@@ -245,7 +238,10 @@ class UserRoleForm extends React.Component<Props, State> {
   }
 
   render() {
-    const { disabled, index, onDelete } = this.props;
+    const { state } = this.context;
+    const {
+      disabled, index, item, onDelete,
+    } = this.props;
     return (
       <fieldset className="user-role-form-fieldset" disabled={disabled}>
         <IonToolbar className="user-role-form-toolbar">
@@ -267,6 +263,18 @@ class UserRoleForm extends React.Component<Props, State> {
           </IonButtons>
         </IonToolbar>
         {this.renderFields(disabled)}
+        {state.user.id === item.userId && (
+          <Notification
+            type={NotificationType.danger}
+            className="user-role-form-spacer"
+            header={i18n.t('Editing is disabled')}
+            message={i18n.t('You cannot change your own permission')}
+            preventDismiss
+          />
+        )}
+        <p className="user-role-form-note-required">
+          {`* ${i18n.t('Required')}`}
+        </p>
       </fieldset>
     );
   }

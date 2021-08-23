@@ -1,6 +1,7 @@
 .user-role-form-fieldset {
   padding: .5rem;
   border: 1px solid var(--ion-color-light-shade);
+  overflow-x: hidden;
 }
 
 .user-role-form-toolbar {
@@ -44,4 +45,9 @@
 .user-role-form-radio-item-label {
   margin-left: .5rem;
   font-size: .875rem !important;
+}
+
+.user-role-form-note-required {
+  font-size: .75rem;
+  font-style: oblique;
 }

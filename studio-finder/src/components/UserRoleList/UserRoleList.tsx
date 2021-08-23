@@ -1,28 +1,33 @@
 import React from 'react';
 import {
-  IonButton, IonCol, IonIcon, IonItem, IonLabel, IonReorder, IonRow, IonList, IonGrid,
+  IonButton, IonCol, IonIcon, IonItem, IonLabel, IonReorder, IonRow, IonList, IonGrid, IonSpinner,
 } from '@ionic/react';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { addOutline, trashOutline } from 'ionicons/icons';
+import {
+  addOutline, refreshOutline, saveOutline, trashOutline,
+} from 'ionicons/icons';
 
 // services
 import i18n from '../../services/i18n/i18n';
 import { RoleType } from '../../services/api/roles';
 import {
-  defaultSpaceRoleDisplay, defaultStudioRoleDisplay, getUserRoles, SpaceUserRoleDisplay, StudioUserRoleDisplay, UserRoleDisplay,
+  defaultUserRole, defaultUserRoleDisplay, getUserRoles, setUserRole, UserRoleDisplay, userRoleDisplayRequiredFields,
 } from '../../services/api/userRoles';
+import { deepEqual } from '../../services/helpers/misc';
 
 // context
 import AppContext from '../../context/AppContext';
 
 // components
 import UserRoleForm from '../UserRoleForm/UserRoleForm';
+import Notification, { NotificationType } from '../Notification/Notification';
 
 // css
 import './UserRoleList.css';
 
 interface State {
-  items: (StudioUserRoleDisplay | SpaceUserRoleDisplay)[] | null,
+  items: UserRoleDisplay[] | null,
+  itemsOriginal: UserRoleDisplay[] | null,
   selectedIndex: number,
   isLoading: boolean,
   error: Error | null,
@@ -40,6 +45,7 @@ class UserRoleList extends React.Component<Props, State> {
     super(props);
     this.state = {
       items: null,
+      itemsOriginal: null,
       selectedIndex: -1,
       isLoading: false,
       error: null,
@@ -99,6 +105,7 @@ class UserRoleList extends React.Component<Props, State> {
         this.setMountedState({
           isLoading: false,
           items,
+          itemsOriginal: items,
           selectedIndex,
         });
       } catch (error) {
@@ -112,22 +119,20 @@ class UserRoleList extends React.Component<Props, State> {
     });
   }
 
+  onReset = () => {
+    const { itemsOriginal } = this.state;
+    this.setMountedState({
+      items: itemsOriginal,
+    });
+  }
+
   onAdd = () => {
-    const { roleType, typeId } = this.props;
     const { items } = this.state;
     const updatedItems = (items || []).slice();
-    const defaultUserRole = roleType === RoleType.studio
-      ? defaultStudioRoleDisplay
-      : defaultSpaceRoleDisplay;
-    const typeIdName = roleType === RoleType.studio
-      ? 'spaceId'
-      : 'studioId';
-    updatedItems.push({
-      ...defaultUserRole,
-      [typeIdName]: typeId,
-    });
+    updatedItems.push(defaultUserRoleDisplay);
     this.setMountedState({
       items: updatedItems,
+      selectedIndex: updatedItems.length - 1,
     });
   }
 
@@ -153,9 +158,72 @@ class UserRoleList extends React.Component<Props, State> {
     });
   }
 
+  isValidForm = () => {
+    const { items } = this.state;
+    return !!items && items.every((item) => (
+      // check all required fields
+      !!item && Object.keys(item).every((key: string) => (
+        !userRoleDisplayRequiredFields.includes(key as keyof UserRoleDisplay) || !!item[key as keyof UserRoleDisplay]
+      ))
+    ));
+  }
+
+  hasChanges = () => {
+    const { items, itemsOriginal } = this.state;
+    return !!items && !!itemsOriginal
+      && (items.length !== itemsOriginal.length
+        || (items || []).some((item, index) => !deepEqual(item, itemsOriginal[index])));
+  }
+
+  onSubmit = (e: any) => {
+    // prevent form from submitting
+    e.preventDefault();
+    if (!this.isValidForm()) {
+      // eslint-disable-next-line no-console
+      console.warn('Invalid form');
+      return;
+    }
+    if (!this.hasChanges()) {
+      // eslint-disable-next-line no-console
+      console.warn('Form has no changes');
+      return;
+    }
+    this.setMountedState({
+      isLoading: true,
+    }, async () => {
+      try {
+        const { typeId, roleType } = this.props;
+        const { items } = this.state;
+        if (items && this.hasChanges()) {
+          await Promise.all(items?.map((userRoleDisplay) => {
+            // remove extra fields to convert UserRoleDisplay to UserRole
+            const userRole: any = {};
+            Object.keys(defaultUserRole).forEach((key: string) => {
+              userRole[key] = userRoleDisplay[key as keyof UserRoleDisplay];
+            });
+            return setUserRole(this.context, {
+              userRole, typeId, roleType,
+            });
+          }));
+        }
+        this.setMountedState({
+          isLoading: false,
+        }, () => this.loadData());
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.warn('error - onSubmit', error);
+        this.setMountedState({
+          isLoading: false,
+          error,
+        });
+      }
+    });
+  }
+
   // render
 
   renderSelectedItem = () => {
+    const { state } = this.context;
     const { roleType } = this.props;
     const {
       items, selectedIndex, isLoading, error,
@@ -164,15 +232,17 @@ class UserRoleList extends React.Component<Props, State> {
       return null;
     }
     const item = items[selectedIndex];
-    const disabled = isLoading || !!error;
+    const disabled = isLoading || !!error
+      || state.user.id === item.userId; // prevent user from editing their own access
     return (
       <UserRoleForm
         index={selectedIndex}
         item={item}
         disabled={disabled}
         roleType={roleType}
-        onChange={(updatedItem: StudioUserRoleDisplay | SpaceUserRoleDisplay) => this.onChange(updatedItem, selectedIndex)}
+        onChange={(updatedItem: UserRoleDisplay) => this.onChange(updatedItem, selectedIndex)}
         onDelete={() => this.onDelete(selectedIndex)}
+        isNewUser={(id: string) => items.every((bItem) => bItem.userId !== id)}
       />
     );
   }
@@ -238,6 +308,58 @@ class UserRoleList extends React.Component<Props, State> {
     );
   }
 
+  renderFooter = () => {
+    const { isLoading, error } = this.state;
+    const isValidForm = this.isValidForm();
+    const hasChanges = this.hasChanges();
+    return (
+      <div className="user-role-form-footer">
+        {isLoading && (
+          <div className="user-role-form-loading user-role-form-spacer">
+            <IonSpinner name="bubbles" />
+          </div>
+        )}
+        {!!error && (
+          <Notification
+            type={NotificationType.danger}
+            className="user-role-form-spacer"
+            header={i18n.t('Error')}
+            message={error?.message || i18n.t('An error occurred, please try again later')}
+            onDismiss={() => this.setMountedState({ error: null })}
+          />
+        )}
+        <IonGrid>
+          <IonRow>
+            <IonCol size="12" size-md="6">
+              <IonButton
+                fill="outline"
+                type="button"
+                expand="block"
+                disabled={isLoading || !!error || !hasChanges}
+                onClick={() => this.onReset()}
+              >
+                <IonIcon slot="start" icon={refreshOutline} />
+                {i18n.t('Reset')}
+              </IonButton>
+            </IonCol>
+            <IonCol size="12" size-md="6">
+              <IonButton
+                fill="solid"
+                color="primary"
+                type="submit"
+                expand="block"
+                disabled={isLoading || !!error || !isValidForm || !hasChanges}
+              >
+                <IonIcon slot="start" icon={saveOutline} />
+                {i18n.t('Save')}
+              </IonButton>
+            </IonCol>
+          </IonRow>
+        </IonGrid>
+      </div>
+    );
+  }
+
   render() {
     const { items, selectedIndex } = this.state;
 
@@ -263,18 +385,21 @@ class UserRoleList extends React.Component<Props, State> {
     }
 
     return (
-      <IonGrid>
-        <IonRow style={{ width: '100%' }}>
-          <IonCol size="6" size-lg="4">
-            {this.renderItems()}
-          </IonCol>
-          <IonCol size="6" size-lg="8">
-            {selectedIndex > -1 && (
-              this.renderSelectedItem()
-            )}
-          </IonCol>
-        </IonRow>
-      </IonGrid>
+      <form className="user-role-list-form" onSubmit={this.onSubmit}>
+        <IonGrid>
+          <IonRow style={{ width: '100%' }}>
+            <IonCol size="6" size-lg="4">
+              {this.renderItems()}
+            </IonCol>
+            <IonCol size="6" size-lg="8">
+              {selectedIndex > -1 && (
+                this.renderSelectedItem()
+              )}
+            </IonCol>
+          </IonRow>
+          {this.renderFooter()}
+        </IonGrid>
+      </form>
     );
   }
 }
