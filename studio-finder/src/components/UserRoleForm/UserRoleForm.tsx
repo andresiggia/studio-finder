@@ -107,13 +107,15 @@ class UserRoleForm extends React.Component<Props, State> {
   renderTextInput = ({
     value, disabled = false, required = false, label, fieldName,
   }: {
-    value: string, disabled?: boolean, required?: boolean, label: string, fieldName: string,
+    value: string, disabled?: boolean, required?: boolean, label?: string, fieldName: string,
   }) => {
     const isRequired = required
       || userRoleDisplayRequiredFields.includes(fieldName as keyof (StudioUserRoleDisplay | SpaceUserRoleDisplay));
     return (
       <>
-        {this.renderLabel(label, isRequired)}
+        {label && (
+          this.renderLabel(label, isRequired)
+        )}
         <IonInput
           value={value}
           type="text"
@@ -160,6 +162,7 @@ class UserRoleForm extends React.Component<Props, State> {
       email, isLoading, error,
     } = this.state;
     const { state } = this.context;
+    const selectedRole: Role = state.roles?.find((role: Role) => item.roleName === role.name);
     return (
       <IonList className="form-list">
         <IonItem className="form-list-item-full">
@@ -194,7 +197,7 @@ class UserRoleForm extends React.Component<Props, State> {
             />
           )}
         </IonItem>
-        <IonItem className="form-list-item">
+        <IonItem className="form-list-item-full">
           {this.renderSelectInput({
             value: item.roleName,
             fieldName: 'roleName',
@@ -208,6 +211,35 @@ class UserRoleForm extends React.Component<Props, State> {
               })),
           })}
         </IonItem>
+        {!!selectedRole && (
+          <IonItem className="form-list-item-full">
+            {selectedRole.permissions.map((permission) => {
+              const pArr = [];
+              if (permission.read) {
+                pArr.push(i18n.t('View'));
+              }
+              if (permission.insert) {
+                pArr.push(i18n.t('Create'));
+              }
+              if (permission.update) {
+                pArr.push(i18n.t('Edit'));
+              }
+              if (permission.delete) {
+                pArr.push(i18n.t('Delete'));
+              }
+              return (
+                <React.Fragment key={permission.id}>
+                  {this.renderTextInput({
+                    value: pArr.join(', '),
+                    fieldName: `role-${selectedRole.name}`,
+                    label: `${i18n.t('Permissions')} - ${permission.entity?.toUpperCase()}`,
+                    disabled: true,
+                  })}
+                </React.Fragment>
+              );
+            })}
+          </IonItem>
+        )}
       </IonList>
     );
   }
