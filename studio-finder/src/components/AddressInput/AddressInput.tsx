@@ -50,7 +50,7 @@ const AddressInput: React.FC<Props> = ({
           if (!value) { // input was updated
             if (newValue.length >= minChars) {
               getPlacePredictions({
-                input: queryString,
+                input: newValue,
                 componentRestrictions: { country: 'GB' },
                 sessionToken: autocompleteSessionToken,
               });
