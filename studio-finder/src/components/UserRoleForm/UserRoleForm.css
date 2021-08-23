@@ -1,0 +1,47 @@
+.user-role-form-fieldset {
+  padding: .5rem;
+  border: 1px solid var(--ion-color-light-shade);
+}
+
+.user-role-form-toolbar {
+  --min-height: 25px;
+}
+
+.user-role-form-title {
+  padding: 0 0 0 .5rem;
+  margin-bottom: 0;
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+.user-role-form-loading {
+  text-align: center;
+}
+
+.user-role-form-notification {
+  margin-left: 1rem;
+  margin-right: 1rem;
+}
+
+.user-role-form-spacer {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+.user-role-form-radio-group-container {
+  display: block;
+}
+
+.user-role-form-radio-group-wrapper {
+  margin-top: .5rem;
+}
+
+.user-role-form-radio-item {
+  display: flex;
+  align-items: center;
+}
+
+.user-role-form-radio-item-label {
+  margin-left: .5rem;
+  font-size: .875rem !important;
+}

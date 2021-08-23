@@ -6,7 +6,7 @@ import {
 } from '@ionic/react';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import {
-  addOutline, closeOutline, createOutline, trashOutline,
+  addOutline, closeOutline, createOutline, trashOutline, people,
 } from 'ionicons/icons';
 
 // services
@@ -15,11 +15,13 @@ import {
 } from '../../services/api/studios';
 import i18n from '../../services/i18n/i18n';
 import { sortByKey } from '../../services/helpers/misc';
+import { RoleType } from '../../services/api/roles';
 
 // components
 import Notification, { NotificationType } from '../Notification/Notification';
 import StudioForm from '../StudioForm/StudioForm';
 import SpaceList from '../SpaceList/SpaceList';
+import UserRoleList from '../UserRoleList/UserRoleList';
 
 // context
 import AppContext from '../../context/AppContext';
@@ -32,9 +34,10 @@ interface State {
   error: Error | null,
   items: StudioWithRole[] | null,
   selectedId: number,
-  showModal: boolean,
+  showStudioModal: boolean,
   modalSelectedId: number,
   showDeleteAlert: boolean,
+  showUserModal: boolean,
 }
 
 class StudioCard extends React.Component<any, State> {
@@ -47,9 +50,10 @@ class StudioCard extends React.Component<any, State> {
       error: null,
       items: null,
       selectedId: 0,
-      showModal: false,
+      showStudioModal: false,
       modalSelectedId: 0,
       showDeleteAlert: false,
+      showUserModal: false,
     };
   }
 
@@ -60,7 +64,7 @@ class StudioCard extends React.Component<any, State> {
 
   componentWillUnmount() {
     this.setMountedState({
-      showModal: false,
+      showStudioModal: false,
     });
     this.mounted = false;
   }
@@ -106,16 +110,28 @@ class StudioCard extends React.Component<any, State> {
     });
   }
 
-  onModalOpen = (modalSelectedId = 0) => {
+  onUserModalOpen = () => {
     this.setMountedState({
-      showModal: true,
+      showUserModal: true,
+    });
+  }
+
+  onUserModalClose = () => {
+    this.setMountedState({
+      showUserModal: false,
+    });
+  }
+
+  onStudioModalOpen = (modalSelectedId = 0) => {
+    this.setMountedState({
+      showStudioModal: true,
       modalSelectedId,
     });
   }
 
-  onModalClose = () => {
+  onStudioModalClose = () => {
     this.setMountedState({
-      showModal: false,
+      showStudioModal: false,
     });
   }
 
@@ -189,7 +205,7 @@ class StudioCard extends React.Component<any, State> {
                 color="primary"
                 fill="solid"
                 title={i18n.t('Add Studio')}
-                onClick={() => this.onModalOpen()}
+                onClick={() => this.onStudioModalOpen()}
               >
                 <IonIcon slot="start" icon={addOutline} />
                 {i18n.t('Studio')}
@@ -203,12 +219,12 @@ class StudioCard extends React.Component<any, State> {
   }
 
   renderModalStudio = () => {
-    const { showModal, modalSelectedId } = this.state;
+    const { showStudioModal, modalSelectedId } = this.state;
     return (
       <IonModal
         cssClass="studio-card-modal"
-        isOpen={showModal}
-        onWillDismiss={() => this.onModalClose()}
+        isOpen={showStudioModal}
+        onWillDismiss={() => this.onStudioModalClose()}
       >
         <IonToolbar>
           <IonTitle>
@@ -219,21 +235,57 @@ class StudioCard extends React.Component<any, State> {
           <IonButtons slot="end">
             <IonButton
               color="primary"
-              onClick={() => this.onModalClose()}
+              onClick={() => this.onStudioModalClose()}
             >
               <IonIcon icon={closeOutline} ariaLabel={i18n.t('Close')} />
             </IonButton>
           </IonButtons>
         </IonToolbar>
         <IonContent>
-          {showModal && (
+          {showStudioModal && (
             <StudioForm
               id={modalSelectedId}
-              onCancel={() => this.onModalClose()}
+              onCancel={() => this.onStudioModalClose()}
               onSave={() => {
-                this.onModalClose();
+                this.onStudioModalClose();
                 this.loadItems();
               }}
+            />
+          )}
+        </IonContent>
+      </IonModal>
+    );
+  }
+
+  renderModalUser = () => {
+    const { showUserModal, selectedId } = this.state;
+    if (!selectedId) {
+      return null;
+    }
+    return (
+      <IonModal
+        cssClass="studio-card-modal"
+        isOpen={showUserModal}
+        onWillDismiss={() => this.onUserModalClose()}
+      >
+        <IonToolbar>
+          <IonTitle>
+            {i18n.t('Manage Studio Users')}
+          </IonTitle>
+          <IonButtons slot="end">
+            <IonButton
+              color="primary"
+              onClick={() => this.onUserModalClose()}
+            >
+              <IonIcon icon={closeOutline} ariaLabel={i18n.t('Close')} />
+            </IonButton>
+          </IonButtons>
+        </IonToolbar>
+        <IonContent>
+          {showUserModal && (
+            <UserRoleList
+              typeId={selectedId}
+              roleType={RoleType.studio}
             />
           )}
         </IonContent>
@@ -283,9 +335,18 @@ class StudioCard extends React.Component<any, State> {
                         <IonButton
                           fill="clear"
                           color="primary"
+                          title={i18n.t('Manage Studio Users')}
+                          disabled={!canUpdateStudio(this.context, studioProfile.roleName)}
+                          onClick={() => this.onUserModalOpen()}
+                        >
+                          <IonIcon icon={people} ariaLabel={i18n.t('Manage Studio Users')} />
+                        </IonButton>
+                        <IonButton
+                          fill="clear"
+                          color="primary"
                           title={i18n.t('Edit Studio')}
                           disabled={!canUpdateStudio(this.context, studioProfile.roleName)}
-                          onClick={() => this.onModalOpen(selectedId)}
+                          onClick={() => this.onStudioModalOpen(selectedId)}
                         >
                           <IonIcon icon={createOutline} ariaLabel={i18n.t('Edit Studio')} />
                         </IonButton>
@@ -325,7 +386,7 @@ class StudioCard extends React.Component<any, State> {
                       color="primary"
                       fill="clear"
                       title={i18n.t('Add Studio')}
-                      onClick={() => this.onModalOpen()}
+                      onClick={() => this.onStudioModalOpen()}
                     >
                       <IonIcon icon={addOutline} ariaLabel={i18n.t('Add Studio')} />
                     </IonButton>
@@ -341,6 +402,7 @@ class StudioCard extends React.Component<any, State> {
           </IonCardContent>
         </IonCard>
         {this.renderModalStudio()}
+        {this.renderModalUser()}
       </>
     );
   }
