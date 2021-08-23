@@ -33,3 +33,10 @@
     --min-width: 800px;
   }
 }
+
+.bookings-card-pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: .5rem;
+}

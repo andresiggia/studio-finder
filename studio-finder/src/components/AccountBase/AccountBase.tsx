@@ -27,8 +27,8 @@ class AccountBase extends React.Component<UserValidationProps> {
     <StudioCard />
   )
 
-  renderBookingsCard = () => (
-    <BookingsCard />
+  renderBookingsCard = (limit?: number) => (
+    <BookingsCard limit={limit} />
   )
 
   render() {
@@ -47,7 +47,7 @@ class AccountBase extends React.Component<UserValidationProps> {
           >
             {this.renderProfileCard(hasProfile)}
             {isStudio && (
-              this.renderBookingsCard()
+              this.renderBookingsCard(3)
             )}
           </IonCol>
           {hasProfile && (
@@ -56,7 +56,7 @@ class AccountBase extends React.Component<UserValidationProps> {
                 ? (
                   this.renderStudioCard()
                 ) : (
-                  this.renderBookingsCard()
+                  this.renderBookingsCard(5)
                 )}
             </IonCol>
           )}

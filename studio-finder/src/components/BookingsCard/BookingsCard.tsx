@@ -1,10 +1,12 @@
 import React from 'react';
 import {
   IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonContent,
-  IonGrid, IonIcon, IonItem, IonList, IonModal, IonSpinner, IonText, IonTitle, IonToolbar,
+  IonGrid, IonIcon, IonItem, IonLabel, IonList, IonModal, IonSpinner, IonText, IonTitle, IonToolbar,
 } from '@ionic/react';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import {
+  chevronBack,
+  chevronForward,
   closeOutline, createOutline, timerOutline,
 } from 'ionicons/icons';
 
@@ -22,24 +24,37 @@ import AppContext from '../../context/AppContext';
 // css
 import './BookingsCard.css';
 
+interface Props {
+  limit: number,
+}
+
 interface State {
   isLoading: boolean,
   error: Error | null,
   items: BookingItemWithBooking[] | null,
+  count: number,
+  start: number,
   showModal: boolean,
   modalSelectedId: number,
   showPastItems: boolean,
 }
 
-class BookingsCard extends React.Component<any, State> {
+class BookingsCard extends React.Component<Props, State> {
+  // eslint-disable-next-line react/static-property-placement
+  static defaultProps = {
+    limit: 3,
+  }
+
   mounted = false
 
-  constructor(props: any) {
+  constructor(props: Props) {
     super(props);
     this.state = {
       isLoading: false,
       error: null,
       items: null,
+      count: 0,
+      start: 0,
       showModal: false,
       modalSelectedId: 0,
       showPastItems: false,
@@ -75,16 +90,17 @@ class BookingsCard extends React.Component<any, State> {
       isLoading: true,
     }, async () => {
       try {
-        const { showPastItems } = this.state;
-        const items = await getBookingItemsByUser(this.context, {
-          showPastItems,
+        const { limit } = this.props;
+        const { showPastItems, start } = this.state;
+        const { items, count } = await getBookingItemsByUser(this.context, {
+          showPastItems, start, limit,
         });
         // eslint-disable-next-line no-console
         console.log('got user bookings', items);
         this.setMountedState({
           isLoading: false,
           items,
-          // selectedId,
+          count,
         });
       } catch (error) {
         // eslint-disable-next-line no-console
@@ -110,7 +126,53 @@ class BookingsCard extends React.Component<any, State> {
     });
   }
 
+  onPaginationChange = (start: number) => {
+    this.setMountedState({
+      start,
+    }, () => this.loadItems());
+  }
+
   // render
+
+  renderPagination = () => {
+    const { limit } = this.props;
+    const {
+      count, start, isLoading, error, items,
+    } = this.state;
+    if (!items) {
+      return null;
+    }
+    const disabled = isLoading || !!error || count <= limit;
+    return (
+      <div className="bookings-card-pagination">
+        <IonButton
+          size="small"
+          fill="outline"
+          disabled={disabled || (start - limit) < 0}
+          title={i18n.t('Back')}
+          onClick={() => this.onPaginationChange(start - limit)}
+        >
+          <IonIcon icon={chevronBack} />
+        </IonButton>
+        <IonLabel>
+          {i18n.t('Showing item {{current}} - {{count}} out of {{total}}', {
+            count: start + items.length,
+            current: String(start + 1),
+            total: String(count),
+          })}
+        </IonLabel>
+        <IonButton
+          size="small"
+          fill="outline"
+          disabled={disabled || (start + limit) >= count}
+          title={i18n.t('Forward')}
+          onClick={() => this.onPaginationChange(start + limit)}
+        >
+          <IonIcon icon={chevronForward} />
+        </IonButton>
+      </div>
+    );
+  }
 
   renderItems = (items: BookingItemWithBooking[]) => {
     if (items.length === 0) {
@@ -180,6 +242,7 @@ class BookingsCard extends React.Component<any, State> {
             </IonItem>
           );
         })}
+        {this.renderPagination()}
       </IonList>
     );
   }
@@ -263,6 +326,7 @@ class BookingsCard extends React.Component<any, State> {
                 title={i18n.t('Show Past Bookings')}
                 onClick={() => this.setMountedState({
                   showPastItems: !showPastItems,
+                  start: 0, // reset pagination
                 }, () => this.loadItems())}
               >
                 <IonIcon slot="start" icon={timerOutline} ariaLabel={i18n.t('Show Past Bookings')} />

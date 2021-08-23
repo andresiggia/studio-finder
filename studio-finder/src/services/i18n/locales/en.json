@@ -1,4 +1,6 @@
 {
   "{{count}} hour": "{{count}} hour",
-  "{{count}} hour_plural": "{{count}} hours"
+  "{{count}} hour_plural": "{{count}} hours",
+  "Showing item {{current}} - {{count}} out of {{total}}": "Showing item {{current}} - {{count}} out of {{total}}",
+  "Showing item {{current}} - {{count}} out of {{total}}_plural": "Showing items {{current}} - {{count}} out of {{total}}"
 }

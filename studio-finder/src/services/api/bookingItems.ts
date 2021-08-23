@@ -80,12 +80,13 @@ export const getBookingItemsByUser = async (context: AppContextValue, props?: {
     throw new Error(BookingItemError.notLoggedIn);
   }
   let data: any[] | null = null;
+  let count = 0;
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   if (showPastItems) {
-    const { data: dataPast, error } = await supabase
+    const { data: dataPast, error, count: countPast } = await supabase
       .from(ViewName.bookingItemsWithBooking)
-      .select()
+      .select('*', { count: 'exact' })
       .gte('start_at', convertDateForComparison(today))
       .order('start_at', { ascending: true })
       .range(start, start + limit - 1);
@@ -93,10 +94,11 @@ export const getBookingItemsByUser = async (context: AppContextValue, props?: {
       throw error;
     }
     data = dataPast;
+    count = countPast || 0;
   } else {
-    const { data: dataFuture, error } = await supabase
+    const { data: dataFuture, error, count: countFuture } = await supabase
       .from(ViewName.bookingItemsWithBooking)
-      .select()
+      .select('*', { count: 'exact' })
       .lt('start_at', convertDateForComparison(today))
       .order('start_at', { ascending: true })
       .range(start, start + limit - 1);
@@ -104,12 +106,16 @@ export const getBookingItemsByUser = async (context: AppContextValue, props?: {
       throw error;
     }
     data = dataFuture;
+    count = countFuture || 0;
   }
-  let bookingItems: BookingItemWithBooking[] = [];
+  let items: BookingItemWithBooking[] = [];
   if (data && Array.isArray(data) && data.length > 0) {
-    bookingItems = data.map((item: any) => convertFromAPI(item, bookingItemDateFields));
+    items = data.map((item: any) => convertFromAPI(item, bookingItemDateFields));
   }
-  return bookingItems;
+  return {
+    items,
+    count,
+  };
 };
 
 export const getBookingItemsByBooking = async (context: AppContextValue, props: {
