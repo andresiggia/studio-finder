@@ -18,6 +18,7 @@ import AppContext from '../../context/AppContext';
 import Header from '../../components/Header/Header';
 import Notification, { NotificationType } from '../../components/Notification/Notification';
 import ImageSlider from '../../components/ImageSlider/ImageSlider';
+import Map from '../../components/Map/Map';
 
 // services
 import i18n from '../../services/i18n/i18n';
@@ -181,8 +182,23 @@ class Studio extends React.Component<RouteComponentProps, State> {
         <IonLabel className="studio-page-label">
           {i18n.t('About')}
         </IonLabel>
-        {studioProfile?.description && (
-          <p className="studio-page-description">{studioProfile.description}</p>
+        {!!studioProfile?.description && (
+          <p className="studio-page-text">{studioProfile.description}</p>
+        )}
+        {!!studioProfile?.address && (
+          <>
+            <p className="studio-page-text">
+              <strong>{`${i18n.t('Address')}: `}</strong>
+              {studioProfile.address}
+            </p>
+            {(!!studioProfile?.latitude && !!studioProfile?.longitude) && (
+              <Map
+                label={studioProfile.title}
+                latitude={studioProfile.latitude}
+                longitude={studioProfile.longitude}
+              />
+            )}
+          </>
         )}
       </>
     );
