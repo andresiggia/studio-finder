@@ -17,32 +17,42 @@ interface Props {
 }
 
 class Map extends React.Component<Props> {
-  render() {
+  renderMap = () => {
     const {
       latitude, longitude, label,
     } = this.props;
     return (
       <div className="map-container map-container-16by9">
-        <LoadScript googleMapsApiKey={googleAPIKey} language={i18n.language}>
-          <GoogleMap
-            mapContainerClassName="map-item"
-            center={{
+        <GoogleMap
+          mapContainerClassName="map-item"
+          center={{
+            lat: latitude,
+            lng: longitude,
+          }}
+          zoom={16}
+        >
+          { /* Child components, such as markers, info windows, etc. */}
+          <Marker
+            label={label}
+            position={{
               lat: latitude,
               lng: longitude,
             }}
-            zoom={16}
-          >
-            { /* Child components, such as markers, info windows, etc. */}
-            <Marker
-              label={label}
-              position={{
-                lat: latitude,
-                lng: longitude,
-              }}
-            />
-          </GoogleMap>
-        </LoadScript>
+          />
+        </GoogleMap>
       </div>
+    );
+  }
+
+  render() {
+    const { google } = window as any;
+    if (google) {
+      return this.renderMap();
+    }
+    return (
+      <LoadScript googleMapsApiKey={googleAPIKey} language={i18n.language}>
+        {this.renderMap()}
+      </LoadScript>
     );
   }
 }
