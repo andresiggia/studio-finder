@@ -27,6 +27,7 @@ import { getStudioPhotos, StudioPhoto } from '../../services/api/studioPhotos';
 import { getSpaces, SpaceProfileDisplay } from '../../services/api/spaces';
 import { BookingDate, BookingItem, setBookingItem } from '../../services/api/bookingItems';
 import { defaultBooking, setBooking } from '../../services/api/bookings';
+import { sortByKey } from '../../services/helpers/misc';
 
 import Space from './Space';
 import BookingBar from './BookingBar';
@@ -261,12 +262,13 @@ class Studio extends React.Component<RouteComponentProps, State> {
 
   renderSpaces = () => {
     const { spaces, selectedSpaceId } = this.state;
+    const sortedItems = sortByKey(spaces, 'title');
     return (
       <>
         <IonText className="page-subtitle">
           {i18n.t('Spaces')}
         </IonText>
-        {spaces.length === 0
+        {sortedItems.length === 0
           ? (
             <p>{i18n.t('No spaces available')}</p>
           ) : (
@@ -276,7 +278,7 @@ class Studio extends React.Component<RouteComponentProps, State> {
                   {i18n.t('Select a space')}
                 </IonLabel>
                 <div className="studio-page-spaces-list">
-                  {spaces.map((item) => (
+                  {sortedItems.map((item) => (
                     <IonCard
                       key={item.id}
                       className={`studio-page-space ${
