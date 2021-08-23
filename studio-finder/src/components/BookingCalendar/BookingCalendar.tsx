@@ -45,7 +45,7 @@ interface Props {
   showPastWeeks?: boolean,
   showBookingDetails?: boolean,
   showOnlyActive?: boolean,
-  maxHeight?: number,
+  height?: number,
   bookingDates?: BookingDate[],
   onSelectionChange?: (index: number, item?: BookingDate) => void,
 }
@@ -305,7 +305,7 @@ class BookingCalendar extends React.Component<Props, State> {
   }
 
   renderCalendar = () => {
-    const { maxHeight = 200, showBookingDetails } = this.props;
+    const { height = 200, showBookingDetails } = this.props;
     const { items, modalSelectedId } = this.state;
     const weekdays = Array.from(Array(7)).map((_item, index) => index);
     const { weekStartsAt } = this.getDateRange();
@@ -355,7 +355,7 @@ class BookingCalendar extends React.Component<Props, State> {
               })}
             </tr>
           </thead>
-          <tbody style={{ maxHeight: `${maxHeight}px` }}>
+          <tbody style={{ height: `${height}px` }}>
             {halfTimes.map((time, index) => {
               const startTimeArr = String(time).split('.');
               const startHours = Number(startTimeArr[0]);

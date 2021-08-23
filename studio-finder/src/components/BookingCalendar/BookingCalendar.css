@@ -80,6 +80,7 @@
   display: block;
   width: 100%;
   overflow: auto;
+  max-height: 80vh;
 }
 
 /* table body cells */

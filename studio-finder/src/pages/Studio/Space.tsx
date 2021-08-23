@@ -181,7 +181,7 @@ class Space extends React.Component<Props, State> {
           spaceProfile={spaceProfile}
           studioProfile={studioProfile}
           spaceServices={spaceServices}
-          maxHeight={300}
+          height={300}
           bookingDates={bookingDates}
           showOnlyActive={false}
           onSelectionChange={onSelectionChange}

@@ -208,7 +208,7 @@ class SpaceListItem extends React.Component<Props, State> {
           </IonButtons>
         </IonToolbar>
         <BookingCalendar
-          maxHeight={400}
+          height={400}
           spaceProfile={spaceProfile}
           studioProfile={studioProfile}
           spaceServices={spaceServices}
