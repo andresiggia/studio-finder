@@ -5,6 +5,7 @@ import {
   deleteFile, StorageBucket, uploadFile, getFileUrl,
 } from './storage';
 import { TableName } from './tables';
+import { ViewName } from './views';
 
 export enum UserError {
   notLoggedIn = 'notLoggedIn',
@@ -44,6 +45,10 @@ export const defaultUserProfile: UserProfile = {
   createdAt: null,
   modifiedAt: null,
 };
+
+export interface UserDisplay extends UserProfile {
+  email: string,
+}
 
 export const getUserProfile = async (context: AppContextValue) => {
   const { supabase, state } = context;
@@ -140,4 +145,26 @@ export const updateUserType = async (context: AppContextValue, userType: string)
     throw error;
   }
   return user;
+};
+
+export const searchUsersByEmail = async (context: AppContextValue, props: {
+  query: string, start?: number, limit?: number,
+}) => {
+  const {
+    query, start = 0, limit = 1000,
+  } = props;
+  const { supabase } = context;
+  const { data, error } = await supabase
+    .from(ViewName.usersList)
+    .select()
+    .like('email', `${query}%`)
+    .range(start, start + limit - 1);
+  if (error) {
+    throw error;
+  }
+  let items: UserDisplay[] = [];
+  if (data && Array.isArray(data) && data.length > 0) {
+    items = data.map((item: any) => convertFromAPI(item));
+  }
+  return items;
 };
