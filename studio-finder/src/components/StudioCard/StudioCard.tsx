@@ -59,7 +59,7 @@ class StudioCard extends React.Component<any, State> {
 
   componentDidMount() {
     this.mounted = true;
-    this.loadItems();
+    this.loadData();
   }
 
   componentWillUnmount() {
@@ -81,7 +81,7 @@ class StudioCard extends React.Component<any, State> {
     }
   }
 
-  loadItems = () => {
+  loadData = () => {
     this.setMountedState({
       isLoading: true,
     }, async () => {
@@ -101,7 +101,7 @@ class StudioCard extends React.Component<any, State> {
         });
       } catch (error) {
         // eslint-disable-next-line no-console
-        console.warn('error - loadItems', error);
+        console.warn('error - loadData', error);
         this.setMountedState({
           isLoading: false,
           error,
@@ -141,7 +141,7 @@ class StudioCard extends React.Component<any, State> {
     }, async () => {
       try {
         await deleteStudio(this.context, selectedId);
-        this.loadItems();
+        this.loadData();
       } catch (error) {
         // eslint-disable-next-line no-console
         console.warn('error - onDelete', error);
@@ -248,7 +248,7 @@ class StudioCard extends React.Component<any, State> {
               onCancel={() => this.onStudioModalClose()}
               onSave={() => {
                 this.onStudioModalClose();
-                this.loadItems();
+                this.loadData();
               }}
             />
           )}
