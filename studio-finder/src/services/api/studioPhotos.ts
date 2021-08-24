@@ -11,7 +11,6 @@ export enum StudioPhotoError {
   notLoggedIn = 'notLoggedIn',
   missingStudioId = 'missingStudioId',
   invalidResponse = 'invalidResponse',
-  editingPhotoOfWrongStudio = 'editingPhotoOfWrongStudio',
 }
 
 export interface StudioPhoto extends Photo {
@@ -56,17 +55,17 @@ export const setStudioPhoto = async (context: AppContextValue, {
 }: {
   studioPhoto: StudioPhoto, studioId: number, file?: File | null
 }) => {
+  if (!studioId) {
+    throw new Error(StudioPhotoError.missingStudioId);
+  }
   const { supabase } = context;
   const isEditing = !!studioPhoto.id;
-  const itemObj: any = { ...studioPhoto };
+  const itemObj: any = {
+    ...studioPhoto,
+    studioId, // injecting studio id provided
+  };
   if (!isEditing) { // inserting new row
-    if (!studioId) {
-      throw new Error(StudioPhotoError.missingStudioId);
-    }
-    itemObj.studioId = studioId; // injecting studio id provided
     delete itemObj.id; // id should be created by back-end
-  } else if (itemObj.studioId !== studioId) {
-    throw new Error(StudioPhotoError.editingPhotoOfWrongStudio);
   }
   const filePath = `${itemObj.studioId}/${file?.name || ''}`;
   if (file) {
