@@ -36,6 +36,8 @@ interface State {
 interface Props {
   roleType: RoleType,
   typeId: number,
+  onSave: () => void,
+  onCancel: () => void,
 }
 
 class UserRoleList extends React.Component<Props, State> {
@@ -193,7 +195,7 @@ class UserRoleList extends React.Component<Props, State> {
       isLoading: true,
     }, async () => {
       try {
-        const { typeId, roleType } = this.props;
+        const { typeId, roleType, onSave } = this.props;
         const { items } = this.state;
         if (items && this.hasChanges()) {
           await Promise.all(items?.map((userRoleDisplay) => {
@@ -209,7 +211,10 @@ class UserRoleList extends React.Component<Props, State> {
         }
         this.setMountedState({
           isLoading: false,
-        }, () => this.loadData());
+        }, () => {
+          this.loadData();
+          onSave();
+        });
       } catch (error) {
         // eslint-disable-next-line no-console
         console.warn('error - onSubmit', error);
@@ -327,6 +332,7 @@ class UserRoleList extends React.Component<Props, State> {
   }
 
   renderFooter = () => {
+    const { onCancel } = this.props;
     const { isLoading, error } = this.state;
     const isValidForm = this.isValidForm();
     const hasChanges = this.hasChanges();
@@ -349,16 +355,29 @@ class UserRoleList extends React.Component<Props, State> {
         <IonGrid>
           <IonRow>
             <IonCol size="12" size-md="6">
-              <IonButton
-                fill="outline"
-                type="button"
-                expand="block"
-                disabled={isLoading || !!error || !hasChanges}
-                onClick={() => this.onReset()}
-              >
-                <IonIcon slot="start" icon={refreshOutline} />
-                {i18n.t('Reset')}
-              </IonButton>
+              {(!hasChanges && typeof onCancel === 'function')
+                ? (
+                  <IonButton
+                    fill="outline"
+                    type="button"
+                    expand="block"
+                    disabled={isLoading || !!error}
+                    onClick={() => onCancel()}
+                  >
+                    {i18n.t('Cancel')}
+                  </IonButton>
+                ) : (
+                  <IonButton
+                    fill="outline"
+                    type="button"
+                    expand="block"
+                    disabled={isLoading || !!error || !hasChanges}
+                    onClick={() => this.onReset()}
+                  >
+                    <IonIcon slot="start" icon={refreshOutline} />
+                    {i18n.t('Reset')}
+                  </IonButton>
+                )}
             </IonCol>
             <IonCol size="12" size-md="6">
               <IonButton

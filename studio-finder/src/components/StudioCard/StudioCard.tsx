@@ -286,6 +286,8 @@ class StudioCard extends React.Component<any, State> {
             <UserRoleList
               typeId={selectedId}
               roleType={RoleType.studio}
+              onSave={() => this.loadData()}
+              onCancel={() => this.onUserModalClose()}
             />
           )}
         </IonContent>
