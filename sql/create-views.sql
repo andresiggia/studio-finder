@@ -41,6 +41,21 @@ CREATE VIEW studios_list AS (
   ON studios.id = first_studio_photo.studio_id
 );
 
+DROP VIEW IF EXISTS spaces_by_user;
+CREATE VIEW spaces_by_user AS (
+  SELECT space_users.*, spaces.*
+  FROM space_users
+  LEFT JOIN spaces
+  ON space_users.space_id = spaces.id
+  WHERE EXISTS (
+    SELECT "id"
+    FROM permissions_with_role
+    WHERE "read" = true
+      AND "entity" = 'spaces'
+      AND role_name = space_users.role_name
+  )
+);
+
 DROP VIEW IF EXISTS spaces_list;
 CREATE VIEW spaces_list AS (
   SELECT spaces.*, first_space_photo.first_photo_url as photo_url
