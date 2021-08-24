@@ -11,7 +11,7 @@ import {
 import i18n from '../../services/i18n/i18n';
 import { RoleType } from '../../services/api/roles';
 import {
-  defaultUserRole, defaultUserRoleDisplay, getUserRoles, setUserRole, UserRoleDisplay, userRoleDisplayRequiredFields,
+  defaultUserRole, defaultUserRoleDisplay, deleteUserRole, getUserRoles, setUserRole, UserRoleDisplay, userRoleDisplayRequiredFields,
 } from '../../services/api/userRoles';
 import { deepEqual } from '../../services/helpers/misc';
 
@@ -196,9 +196,27 @@ class UserRoleList extends React.Component<Props, State> {
     }, async () => {
       try {
         const { typeId, roleType, onSave } = this.props;
-        const { items } = this.state;
+        const { items, itemsOriginal } = this.state;
         if (items && this.hasChanges()) {
-          await Promise.all(items?.map((userRoleDisplay) => {
+          // handle removed items
+          const deleted = await Promise.all((itemsOriginal || []).map((userRoleDisplay) => {
+            const existingItem = items?.find((item) => item.userId === userRoleDisplay.userId);
+            if (existingItem) { // still there
+              return Promise.resolve(null);
+            }
+            // remove extra fields to convert UserRoleDisplay to UserRole
+            const userRole: any = {};
+            Object.keys(defaultUserRole).forEach((key: string) => {
+              userRole[key] = userRoleDisplay[key as keyof UserRoleDisplay];
+            });
+            // deleted
+            return deleteUserRole(this.context, {
+              userRole, typeId, roleType,
+            });
+          }));
+          // eslint-disable-next-line no-console
+          console.log('deleted items', deleted);
+          await Promise.all(items.map((userRoleDisplay) => {
             // remove extra fields to convert UserRoleDisplay to UserRole
             const userRole: any = {};
             Object.keys(defaultUserRole).forEach((key: string) => {

@@ -129,7 +129,7 @@ export const deleteUserRole = async (context: AppContextValue, {
       [roleType === RoleType.studio
         ? 'studio_id'
         : 'space_id']: typeId,
-      userId: userRole.userId,
+      user_id: userRole.userId,
     });
   if (error) {
     throw error;
