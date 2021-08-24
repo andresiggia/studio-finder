@@ -441,7 +441,7 @@ class UserRoleList extends React.Component<Props, State> {
 
     if (items.length === 0) {
       return (
-        <>
+        <IonGrid>
           <p>{i18n.t('No users found.')}</p>
           <IonButton
             fill="solid"
@@ -453,7 +453,7 @@ class UserRoleList extends React.Component<Props, State> {
             <IonIcon slot="start" icon={addOutline} />
             {i18n.t('User')}
           </IonButton>
-        </>
+        </IonGrid>
       );
     }
 
