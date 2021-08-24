@@ -173,9 +173,7 @@ class StudioCard extends React.Component<any, State> {
       );
     }
     return (
-      <div className="studio-card-spacer">
-        <SpaceList studioProfile={studioProfile} />
-      </div>
+      <SpaceList studioProfile={studioProfile} />
     );
   }
 

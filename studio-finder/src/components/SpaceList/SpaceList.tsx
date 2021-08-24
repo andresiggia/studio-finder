@@ -156,33 +156,30 @@ class SpaceList extends React.Component<Props, State> {
   }
 
   renderSpaces = () => {
-    const { studioProfile } = this.props;
     const { items, selectedId } = this.state;
     const sortedItems = sortByKey(items || [], 'title');
-    const options: any[] = [
-      ...sortedItems,
-      {
-        id: 0,
-        title: i18n.t('Space'),
-        icon: addOutline,
-        disabled: !canInsertSpace(this.context, studioProfile.roleName),
-      },
-    ];
+    if (sortedItems.length === 1) {
+      return sortedItems.map((item) => (
+        <IonLabel
+          key={item.id}
+          className="space-list-item-title"
+        >
+          {item.title}
+        </IonLabel>
+      ));
+    }
     return (
       <IonSegment
         value={String(selectedId)}
         scrollable
         onIonChange={(e) => {
           const newValue = Number(e.detail.value);
-          if (!newValue) {
-            this.onModalOpen();
-          }
           this.setMountedState({
             selectedId: newValue || selectedId,
           });
         }}
       >
-        {options.map((item) => (
+        {sortedItems.map((item) => (
           <IonSegmentButton
             key={item.id}
             value={String(item.id)}
@@ -270,7 +267,7 @@ class SpaceList extends React.Component<Props, State> {
 
     if (!items || items.length === 0) {
       return (
-        <>
+        <IonGrid>
           <p>{i18n.t('No spaces found.')}</p>
           <IonButton
             fill="solid"
@@ -282,7 +279,7 @@ class SpaceList extends React.Component<Props, State> {
             <IonIcon slot="start" icon={addOutline} />
             {i18n.t('Space')}
           </IonButton>
-        </>
+        </IonGrid>
       );
     }
 

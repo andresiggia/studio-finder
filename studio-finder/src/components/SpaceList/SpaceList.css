@@ -13,6 +13,17 @@
   padding: 0 0 0 .5rem;
 }
 
+.space-list-item-title {
+  font-weight: 500;
+  color: var(--ion-color-primary);
+  text-transform: uppercase;
+  padding: 1rem .5rem;
+  display: block;
+  border-bottom: 2px solid var(--ion-color-primary);
+  text-align: center;
+  letter-spacing: .1rem;
+}
+
 .space-list-items {
   padding: 0;
 }

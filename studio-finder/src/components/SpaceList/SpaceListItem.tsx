@@ -5,6 +5,7 @@ import {
 } from '@ionic/react';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import {
+  addOutline,
   closeOutline,
   createOutline, people, trashOutline,
 } from 'ionicons/icons';
@@ -13,9 +14,9 @@ import {
 import i18n from '../../services/i18n/i18n';
 import { getSpaceServices } from '../../services/api/spaceServices';
 import {
-  canDeleteSpace, canUpdateSpace, deleteSpace, SpaceWithRole,
+  canDeleteSpace, canInsertSpace, canUpdateSpace, deleteSpace, SpaceWithRole,
 } from '../../services/api/spaces';
-import { StudioProfile } from '../../services/api/studios';
+import { StudioWithRole } from '../../services/api/studios';
 
 // components
 import Notification, { NotificationType } from '../Notification/Notification';
@@ -43,7 +44,7 @@ interface State {
 
 interface Props {
   spaceProfile: SpaceWithRole,
-  studioProfile: StudioProfile,
+  studioProfile: StudioWithRole,
   onModalOpen: (modalSelectedId?: number) => void,
   reloadItems: () => void,
 }
@@ -252,6 +253,15 @@ class SpaceListItem extends React.Component<Props, State> {
               onClick={() => this.setMountedState({ showDeleteAlert: true })}
             >
               <IonIcon icon={trashOutline} />
+            </IonButton>
+            <IonButton
+              fill="clear"
+              color="primary"
+              title={i18n.t('Add Space')}
+              disabled={!canInsertSpace(this.context, studioProfile.roleName)}
+              onClick={() => onModalOpen()}
+            >
+              <IonIcon icon={addOutline} />
             </IonButton>
             <IonAlert
               isOpen={showDeleteAlert}
