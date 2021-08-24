@@ -157,7 +157,7 @@ export const searchUsersByEmail = async (context: AppContextValue, props: {
   const { data, error } = await supabase
     .from(ViewName.usersList)
     .select()
-    .like('email', `${query}%`)
+    .like('email', `${query.toLowerCase().trim()}%`)
     .range(start, start + limit - 1);
   if (error) {
     throw error;

@@ -155,7 +155,7 @@ class LoginForm extends React.Component<Props, State> {
           const isSignUp = screen === LoginRouteName.signUp;
           if (isSignUp) {
             const { error: signUpError } = await supabase.auth.signUp({
-              email,
+              email: email.toLowerCase().trim(),
               password,
             }, { redirectTo: this.getRedirectUrl() });
             if (signUpError) {
@@ -180,7 +180,7 @@ class LoginForm extends React.Component<Props, State> {
             } as NotificationProps;
           } else { // log in
             const { error: signInError } = await supabase.auth.signIn({
-              email,
+              email: email.toLowerCase().trim(),
               password,
             });
             if (signInError) {
