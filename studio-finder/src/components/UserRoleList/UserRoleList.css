@@ -1,3 +1,20 @@
 .user-role-list-items {
   padding: 0;
 }
+
+.user-role-list-avatar {
+  overflow: hidden;
+  border: 2px solid var(--ion-color-light);
+  width: 30px;
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: .5rem;
+}
+
+.user-role-list-avatar-icon {
+  width: 80%;
+  height: 80%;
+  color: var(--ion-color-light);
+}

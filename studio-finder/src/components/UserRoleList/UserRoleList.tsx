@@ -1,10 +1,10 @@
 import React from 'react';
 import {
-  IonButton, IonCol, IonIcon, IonItem, IonLabel, IonReorder, IonRow, IonList, IonGrid, IonSpinner,
+  IonButton, IonCol, IonIcon, IonItem, IonLabel, IonReorder, IonRow, IonList, IonGrid, IonSpinner, IonAvatar,
 } from '@ionic/react';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import {
-  addOutline, refreshOutline, saveOutline, trashOutline,
+  addOutline, person, refreshOutline, saveOutline, trashOutline,
 } from 'ionicons/icons';
 
 // services
@@ -247,7 +247,19 @@ class UserRoleList extends React.Component<Props, State> {
     );
   }
 
+  renderAvatar = (photoUrl: string, className = '') => (
+    <IonAvatar className={`user-role-list-avatar ${className}`}>
+      {photoUrl
+        ? (
+          <img src={photoUrl} alt={i18n.t('Profile image')} />
+        ) : (
+          <IonIcon className="user-role-list-avatar-icon" icon={person} />
+        )}
+    </IonAvatar>
+  )
+
   renderItems = () => {
+    const { state } = this.context;
     const { items, selectedIndex } = this.state;
     if (!items) {
       return null;
@@ -256,7 +268,9 @@ class UserRoleList extends React.Component<Props, State> {
       <IonList className="user-role-list-items">
         {items.map((item, index) => {
           const fullName = `${item.name} ${item.surname}`.trim();
-          const label = `${index + 1}. ${fullName || `(${i18n.t('No user')})`}`;
+          const label = `${fullName || `(${i18n.t('No user')})`}${
+            state.user.id === item.userId ? ` (${i18n.t('You')})` : ''
+          }`;
           return (
             <IonItem
               // eslint-disable-next-line react/no-array-index-key
@@ -270,6 +284,7 @@ class UserRoleList extends React.Component<Props, State> {
               title={label}
             >
               <IonReorder slot="start" />
+              {this.renderAvatar(item.photoUrl)}
               <IonLabel>{label}</IonLabel>
               <IonButton
                 slot="end"
