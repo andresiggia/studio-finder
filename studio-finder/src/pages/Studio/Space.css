@@ -1,3 +1,10 @@
 .studio-page-space-description {
   font-size: .875rem;
 }
+
+.studio-page-space-section-label {
+  font-size: .875rem;
+  font-weight: 500;
+  display: block;
+  margin-bottom: .5rem;
+}

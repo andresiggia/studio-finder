@@ -123,6 +123,9 @@ class Space extends React.Component<Props, State> {
         {spaceProfile.description && (
           <p className="studio-page-space-description">{spaceProfile.description}</p>
         )}
+        <IonLabel className="studio-page-space-section-label">
+          {`${i18n.t('Services')}`}
+        </IonLabel>
         <SpaceServices spaceId={spaceProfile.id} items={spaceServices} />
       </>
     );
@@ -167,13 +170,16 @@ class Space extends React.Component<Props, State> {
     return (
       <>
         <IonLabel className="studio-page-label">
-          {spaceProfile.title}
+          {`${i18n.t('Selected')}: ${spaceProfile.title}`}
         </IonLabel>
         <IonRow>
           <IonCol size="12" size-sm="6">
             {this.renderAbout()}
           </IonCol>
           <IonCol size="12" size-sm="6">
+            <IonLabel className="studio-page-space-section-label">
+              {`${i18n.t('Photos')}`}
+            </IonLabel>
             {this.renderPhotos()}
           </IonCol>
         </IonRow>
