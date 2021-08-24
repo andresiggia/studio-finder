@@ -17,7 +17,6 @@ import AppContext from '../../context/AppContext';
 import i18n from '../../services/i18n/i18n';
 import { getStudios, StudioProfileDisplay } from '../../services/api/studios';
 import { getRoutesByName, RouteName } from '../../services/routes/routes';
-import { overflowText } from '../../services/helpers/misc';
 
 // components
 import Notification, { NotificationType } from '../Notification/Notification';
@@ -113,6 +112,8 @@ class StudioList extends React.Component<Props, State> {
       <IonCard
         button
         href={`#${path}`}
+        title={item.title}
+        className="studio-list-item"
         onClick={(e: any) => {
           e.preventDefault();
           history.push(path);
@@ -128,12 +129,17 @@ class StudioList extends React.Component<Props, State> {
           )}
         </div>
         <IonCardHeader>
-          <IonCardTitle>
+          <IonCardTitle className="studio-list-item-title">
             {item.title}
           </IonCardTitle>
         </IonCardHeader>
-        <IonCardContent>
-          {overflowText(item.description, 100)}
+        <IonCardContent className="studio-list-item-content">
+          {!!item.address && (
+            <p><strong>{item.address}</strong></p>
+          )}
+          {!!item.description && (
+            <p>{item.description}</p>
+          )}
         </IonCardContent>
       </IonCard>
     );
