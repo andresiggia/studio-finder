@@ -8,9 +8,9 @@ import {
 } from 'ionicons/icons';
 
 // services
-import { canInsertSpace, StudioWithRole } from '../../services/api/studios';
+import { StudioWithRole } from '../../services/api/studios';
 import i18n from '../../services/i18n/i18n';
-import { getSpacesByUser, SpaceWithRole } from '../../services/api/spaces';
+import { canInsertSpace, getSpacesByUser, SpaceWithRole } from '../../services/api/spaces';
 import { sortByKey } from '../../services/helpers/misc';
 
 // components

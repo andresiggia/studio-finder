@@ -75,16 +75,6 @@ export const canUpdateStudio = (context: AppContextValue, roleName: string) => {
   ));
 };
 
-export const canInsertSpace = (context: AppContextValue, roleName: string) => {
-  const { state } = context;
-  return (state.roles || []).some((role) => (
-    role.name === roleName
-    && role.permissions.some((permission) => (
-      permission.entity === TableName.studios && permission.insert
-    ))
-  ));
-};
-
 export const getStudios = async (context: AppContextValue, props?: {
   start?: number, limit?: number, lat?: number, lon?: number,
 }) => {

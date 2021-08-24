@@ -56,6 +56,16 @@ export const defaultSpaceProfileDisplay: SpaceProfileDisplay = {
   photoUrl: '',
 };
 
+export const canInsertSpace = (context: AppContextValue, roleName: string) => {
+  const { state } = context;
+  return (state.roles || []).some((role) => (
+    role.name === roleName
+    && role.permissions.some((permission) => (
+      permission.entity === TableName.spaces && permission.insert
+    ))
+  ));
+};
+
 export const canDeleteSpace = (context: AppContextValue, roleName: string) => {
   const { state } = context;
   return (state.roles || []).some((role) => (
