@@ -246,23 +246,19 @@ class UserRoleList extends React.Component<Props, State> {
 
   // render
 
-  renderSelectedItem = () => {
+  renderSelectedItem = (disabled: boolean) => {
     const { state } = this.context;
     const { roleType } = this.props;
-    const {
-      items, selectedIndex, isLoading, error,
-    } = this.state;
+    const { items, selectedIndex } = this.state;
     if (!items || !items[selectedIndex]) {
       return null;
     }
     const item = items[selectedIndex];
-    const disabled = isLoading || !!error
-      || state.user.id === item.userId; // prevent user from editing their own access
     return (
       <UserRoleForm
         index={selectedIndex}
         item={item}
-        disabled={disabled}
+        disabled={disabled || state.user.id === item.userId} // prevent user from editing their own access
         roleType={roleType}
         onChange={(updatedItem: UserRoleDisplay) => this.onChange(updatedItem, selectedIndex)}
         onDelete={() => this.onDelete(selectedIndex)}
@@ -282,7 +278,7 @@ class UserRoleList extends React.Component<Props, State> {
     </IonAvatar>
   )
 
-  renderItems = () => {
+  renderItems = (disabled: boolean) => {
     const { state } = this.context;
     const { items, selectedIndex } = this.state;
     if (!items) {
@@ -319,6 +315,7 @@ class UserRoleList extends React.Component<Props, State> {
                     : 'danger'}
                   fill="clear"
                   title={i18n.t('Delete User')}
+                  disabled={disabled}
                   onClick={(e) => {
                     e.stopPropagation();
                     const newIndex = index >= selectedIndex
@@ -337,6 +334,7 @@ class UserRoleList extends React.Component<Props, State> {
         })}
         <IonItem
           button
+          disabled={disabled}
           onClick={() => this.onAdd()}
           title={i18n.t('Add User')}
         >
@@ -349,7 +347,7 @@ class UserRoleList extends React.Component<Props, State> {
     );
   }
 
-  renderFooter = () => {
+  renderFooter = (disabled: boolean) => {
     const { onCancel } = this.props;
     const { isLoading, error } = this.state;
     const isValidForm = this.isValidForm();
@@ -379,7 +377,7 @@ class UserRoleList extends React.Component<Props, State> {
                     fill="outline"
                     type="button"
                     expand="block"
-                    disabled={isLoading || !!error}
+                    disabled={disabled}
                     onClick={() => onCancel()}
                   >
                     {i18n.t('Cancel')}
@@ -389,7 +387,7 @@ class UserRoleList extends React.Component<Props, State> {
                     fill="outline"
                     type="button"
                     expand="block"
-                    disabled={isLoading || !!error || !hasChanges}
+                    disabled={disabled || !hasChanges}
                     onClick={() => this.onReset()}
                   >
                     <IonIcon slot="start" icon={refreshOutline} />
@@ -403,7 +401,7 @@ class UserRoleList extends React.Component<Props, State> {
                 color="primary"
                 type="submit"
                 expand="block"
-                disabled={isLoading || !!error || !isValidForm || !hasChanges}
+                disabled={disabled || !isValidForm || !hasChanges}
               >
                 <IonIcon slot="start" icon={saveOutline} />
                 {i18n.t('Save')}
@@ -416,7 +414,10 @@ class UserRoleList extends React.Component<Props, State> {
   }
 
   render() {
-    const { items, selectedIndex } = this.state;
+    const {
+      items, selectedIndex, isLoading, error,
+    } = this.state;
+    const disabled = isLoading || !!error;
 
     if (!items) {
       return null;
@@ -430,6 +431,7 @@ class UserRoleList extends React.Component<Props, State> {
             fill="solid"
             color="primary"
             title={i18n.t('Add User')}
+            disabled={disabled}
             onClick={() => this.onAdd()}
           >
             <IonIcon slot="start" icon={addOutline} />
@@ -444,15 +446,15 @@ class UserRoleList extends React.Component<Props, State> {
         <IonGrid>
           <IonRow style={{ width: '100%' }}>
             <IonCol size="6" size-lg="4">
-              {this.renderItems()}
+              {this.renderItems(disabled)}
             </IonCol>
             <IonCol size="6" size-lg="8">
               {selectedIndex > -1 && (
-                this.renderSelectedItem()
+                this.renderSelectedItem(disabled)
               )}
             </IonCol>
           </IonRow>
-          {this.renderFooter()}
+          {this.renderFooter(disabled)}
         </IonGrid>
       </form>
     );
