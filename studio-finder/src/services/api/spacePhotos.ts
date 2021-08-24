@@ -65,7 +65,7 @@ export const setSpacePhoto = async (context: AppContextValue, {
     }
     itemObj.spaceId = spaceId; // injecting space id provided
     delete itemObj.id; // id should be created by back-end
-  } else if (itemObj.spaceId === spaceId) {
+  } else if (itemObj.spaceId !== spaceId) {
     throw new Error(SpacePhotoError.editingPhotoOfWrongSpace);
   }
   const filePath = `${itemObj.spaceId}/${file?.name || ''}`;

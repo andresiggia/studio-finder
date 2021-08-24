@@ -65,7 +65,7 @@ export const setStudioPhoto = async (context: AppContextValue, {
     }
     itemObj.studioId = studioId; // injecting studio id provided
     delete itemObj.id; // id should be created by back-end
-  } else if (itemObj.studioId === studioId) {
+  } else if (itemObj.studioId !== studioId) {
     throw new Error(StudioPhotoError.editingPhotoOfWrongStudio);
   }
   const filePath = `${itemObj.studioId}/${file?.name || ''}`;
