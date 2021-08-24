@@ -137,7 +137,7 @@ class UserRoleForm extends React.Component<Props> {
               ? `${`${item.name} ${item.surname}`.trim()} (${item.email})`.trim()
               : '',
             fieldName: 'userId',
-            label: i18n.t('Email'),
+            label: item.userId ? i18n.t('User') : i18n.t('Email Search'),
             disabled,
             onSelect: (result) => {
               // eslint-disable-next-line no-console
