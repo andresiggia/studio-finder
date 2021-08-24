@@ -142,6 +142,7 @@ class UserRoleList extends React.Component<Props, State> {
     updatedItems.splice(index, 1);
     this.setMountedState({
       items: updatedItems,
+      selectedIndex: Math.max(0, index - 1),
     });
   }
 
