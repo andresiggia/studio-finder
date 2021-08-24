@@ -286,26 +286,28 @@ class UserRoleList extends React.Component<Props, State> {
               <IonReorder slot="start" />
               {this.renderAvatar(item.photoUrl)}
               <IonLabel>{label}</IonLabel>
-              <IonButton
-                slot="end"
-                size="small"
-                color={index === selectedIndex
-                  ? 'light'
-                  : 'danger'}
-                fill="clear"
-                title={i18n.t('Delete User')}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  const newIndex = index >= selectedIndex
-                    ? selectedIndex - 1
-                    : selectedIndex;
-                  this.setMountedState({
-                    selectedIndex: newIndex,
-                  }, () => this.onDelete(index));
-                }}
-              >
-                <IonIcon icon={trashOutline} />
-              </IonButton>
+              {state.user.id !== item.userId && (
+                <IonButton
+                  slot="end"
+                  size="small"
+                  color={index === selectedIndex
+                    ? 'light'
+                    : 'danger'}
+                  fill="clear"
+                  title={i18n.t('Delete User')}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    const newIndex = index >= selectedIndex
+                      ? selectedIndex - 1
+                      : selectedIndex;
+                    this.setMountedState({
+                      selectedIndex: newIndex,
+                    }, () => this.onDelete(index));
+                  }}
+                >
+                  <IonIcon icon={trashOutline} />
+                </IonButton>
+              )}
             </IonItem>
           );
         })}
