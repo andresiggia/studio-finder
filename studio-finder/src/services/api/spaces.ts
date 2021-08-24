@@ -133,7 +133,7 @@ export const getSpacesByUser = async (context: AppContextValue, props: {
   if (error) {
     throw error;
   }
-  let spaces: SpaceProfile[] = [];
+  let spaces: SpaceWithRole[] = [];
   if (data && Array.isArray(data) && data.length > 0) {
     spaces = data.map((spaceDataWithUserId: any) => {
       // extract userId from spaceDataWithUserId before saving
