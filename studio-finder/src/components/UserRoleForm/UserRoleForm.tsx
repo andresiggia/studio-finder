@@ -27,6 +27,7 @@ interface Props {
   item: UserRoleDisplay,
   roleType: RoleType,
   disabled: boolean,
+  canDelete: boolean,
   onDelete: () => void,
   onChange: (item: UserRoleDisplay) => void,
   isNewUser: (id: string) => boolean,
@@ -240,7 +241,7 @@ class UserRoleForm extends React.Component<Props> {
   render() {
     const { state } = this.context;
     const {
-      disabled, index, item, onDelete,
+      disabled, index, item, canDelete, onDelete,
     } = this.props;
     return (
       <fieldset className="user-role-form-fieldset" disabled={disabled}>
@@ -254,6 +255,7 @@ class UserRoleForm extends React.Component<Props> {
                 size="small"
                 color="danger"
                 fill="clear"
+                disabled={disabled || !canDelete}
                 title={i18n.t('Delete Item')}
                 onClick={() => onDelete()}
               >

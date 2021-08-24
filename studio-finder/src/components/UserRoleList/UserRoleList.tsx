@@ -36,6 +36,9 @@ interface State {
 interface Props {
   roleType: RoleType,
   typeId: number,
+  canInsert: boolean,
+  canUpdate: boolean,
+  canDelete: boolean,
   onSave: () => void,
   onCancel: () => void,
 }
@@ -119,6 +122,11 @@ class UserRoleList extends React.Component<Props, State> {
         });
       }
     });
+  }
+
+  isEditing = (item: UserRoleDisplay) => {
+    const { itemsOriginal } = this.state;
+    return !!item.userId && itemsOriginal?.some((oItem) => oItem.userId === item.userId);
   }
 
   onReset = () => {
@@ -248,17 +256,23 @@ class UserRoleList extends React.Component<Props, State> {
 
   renderSelectedItem = (disabled: boolean) => {
     const { state } = this.context;
-    const { roleType } = this.props;
+    const {
+      roleType, canUpdate, canInsert, canDelete,
+    } = this.props;
     const { items, selectedIndex } = this.state;
     if (!items || !items[selectedIndex]) {
       return null;
     }
     const item = items[selectedIndex];
+    const hasPermission = this.isEditing(item)
+      ? canUpdate
+      : canInsert;
     return (
       <UserRoleForm
         index={selectedIndex}
         item={item}
-        disabled={disabled || state.user.id === item.userId} // prevent user from editing their own access
+        disabled={disabled || !hasPermission || state.user.id === item.userId} // prevent user from editing their own access
+        canDelete={canDelete}
         roleType={roleType}
         onChange={(updatedItem: UserRoleDisplay) => this.onChange(updatedItem, selectedIndex)}
         onDelete={() => this.onDelete(selectedIndex)}
@@ -280,6 +294,7 @@ class UserRoleList extends React.Component<Props, State> {
 
   renderItems = (disabled: boolean) => {
     const { state } = this.context;
+    const { canInsert, canDelete } = this.props;
     const { items, selectedIndex } = this.state;
     if (!items) {
       return null;
@@ -315,7 +330,7 @@ class UserRoleList extends React.Component<Props, State> {
                     : 'danger'}
                   fill="clear"
                   title={i18n.t('Delete User')}
-                  disabled={disabled}
+                  disabled={disabled || !canDelete}
                   onClick={(e) => {
                     e.stopPropagation();
                     const newIndex = index >= selectedIndex
@@ -334,7 +349,7 @@ class UserRoleList extends React.Component<Props, State> {
         })}
         <IonItem
           button
-          disabled={disabled}
+          disabled={disabled || !canInsert}
           onClick={() => this.onAdd()}
           title={i18n.t('Add User')}
         >
@@ -414,6 +429,7 @@ class UserRoleList extends React.Component<Props, State> {
   }
 
   render() {
+    const { canInsert } = this.props;
     const {
       items, selectedIndex, isLoading, error,
     } = this.state;
@@ -431,7 +447,7 @@ class UserRoleList extends React.Component<Props, State> {
             fill="solid"
             color="primary"
             title={i18n.t('Add User')}
-            disabled={disabled}
+            disabled={disabled || !canInsert}
             onClick={() => this.onAdd()}
           >
             <IonIcon slot="start" icon={addOutline} />

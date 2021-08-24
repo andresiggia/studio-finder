@@ -41,6 +41,52 @@ export const userRoleRequiredFields: (keyof UserRole)[] = ['userId', 'roleName']
 
 export const userRoleDisplayRequiredFields: (keyof UserRoleDisplay)[] = ['userId', 'roleName', 'email'];
 
+const getTableNameByRoleType = (roleType: RoleType) => (
+  roleType === RoleType.studio
+    ? TableName.studioUsers
+    : TableName.spaceUsers
+);
+
+export const canReadUsers = (context: AppContextValue, roleType: RoleType, roleName: string) => {
+  const { state } = context;
+  return (state.roles || []).some((role) => (
+    role.name === roleName
+    && role.permissions.some((permission) => (
+      permission.entity === getTableNameByRoleType(roleType) && permission.read
+    ))
+  ));
+};
+
+export const canUpdateUsers = (context: AppContextValue, roleType: RoleType, roleName: string) => {
+  const { state } = context;
+  return (state.roles || []).some((role) => (
+    role.name === roleName
+    && role.permissions.some((permission) => (
+      permission.entity === getTableNameByRoleType(roleType) && permission.update
+    ))
+  ));
+};
+
+export const canInsertUsers = (context: AppContextValue, roleType: RoleType, roleName: string) => {
+  const { state } = context;
+  return (state.roles || []).some((role) => (
+    role.name === roleName
+    && role.permissions.some((permission) => (
+      permission.entity === getTableNameByRoleType(roleType) && permission.insert
+    ))
+  ));
+};
+
+export const canDeleteUsers = (context: AppContextValue, roleType: RoleType, roleName: string) => {
+  const { state } = context;
+  return (state.roles || []).some((role) => (
+    role.name === roleName
+    && role.permissions.some((permission) => (
+      permission.entity === getTableNameByRoleType(roleType) && permission.delete
+    ))
+  ));
+};
+
 export const getUserRoles = async (context: AppContextValue, props: {
   typeId: number, roleType: RoleType, start?: number, limit?: number,
 }) => {
@@ -121,9 +167,7 @@ export const deleteUserRole = async (context: AppContextValue, {
 }) => {
   const { supabase } = context;
   const { data, error } = await supabase
-    .from(roleType === RoleType.studio
-      ? TableName.studioUsers
-      : TableName.spaceUsers)
+    .from(getTableNameByRoleType(roleType))
     .delete()
     .match({
       [roleType === RoleType.studio

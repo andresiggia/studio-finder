@@ -16,6 +16,9 @@ import {
 import i18n from '../../services/i18n/i18n';
 import { sortByKey } from '../../services/helpers/misc';
 import { RoleType } from '../../services/api/roles';
+import {
+  canDeleteUsers, canInsertUsers, canReadUsers, canUpdateUsers,
+} from '../../services/api/userRoles';
 
 // components
 import Notification, { NotificationType } from '../Notification/Notification';
@@ -257,11 +260,8 @@ class StudioCard extends React.Component<any, State> {
     );
   }
 
-  renderModalUser = () => {
-    const { showUserModal, selectedId } = this.state;
-    if (!selectedId) {
-      return null;
-    }
+  renderModalUser = (studioProfile: StudioWithRole) => {
+    const { showUserModal } = this.state;
     return (
       <IonModal
         cssClass="studio-card-modal"
@@ -284,8 +284,11 @@ class StudioCard extends React.Component<any, State> {
         <IonContent>
           {showUserModal && (
             <UserRoleList
-              typeId={selectedId}
+              typeId={studioProfile.id}
               roleType={RoleType.studio}
+              canInsert={canInsertUsers(this.context, RoleType.studio, studioProfile.roleName)}
+              canUpdate={canUpdateUsers(this.context, RoleType.studio, studioProfile.roleName)}
+              canDelete={canDeleteUsers(this.context, RoleType.studio, studioProfile.roleName)}
               onSave={() => this.loadData()}
               onCancel={() => this.onUserModalClose()}
             />
@@ -338,7 +341,7 @@ class StudioCard extends React.Component<any, State> {
                           fill="clear"
                           color="primary"
                           title={i18n.t('Manage Studio Users')}
-                          disabled={!canUpdateStudio(this.context, studioProfile.roleName)}
+                          disabled={!canReadUsers(this.context, RoleType.studio, studioProfile.roleName)}
                           onClick={() => this.onUserModalOpen()}
                         >
                           <IonIcon icon={people} ariaLabel={i18n.t('Manage Studio Users')} />
@@ -404,7 +407,9 @@ class StudioCard extends React.Component<any, State> {
           </IonCardContent>
         </IonCard>
         {this.renderModalStudio()}
-        {this.renderModalUser()}
+        {!!studioProfile && (
+          this.renderModalUser(studioProfile)
+        )}
       </>
     );
   }
