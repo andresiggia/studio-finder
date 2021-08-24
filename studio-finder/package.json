@@ -1,7 +1,7 @@
 {
   "name": "studio-finder",
   "description": "StudioFinder",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "private": true,
   "homepage": "https://titan.dcs.bbk.ac.uk/~asiggi01/studio-finder/",
   "dependencies": {
