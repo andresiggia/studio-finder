@@ -288,7 +288,7 @@ class StudioCard extends React.Component<any, State> {
               canUpdate={canUpdateUsers(this.context, RoleType.studio, studioProfile.roleName)}
               canDelete={canDeleteUsers(this.context, RoleType.studio, studioProfile.roleName)}
               onSave={() => this.loadData()}
-              onCancel={() => this.onUserModalClose()}
+              onClose={() => this.onUserModalClose()}
             />
           )}
         </IonContent>

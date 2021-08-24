@@ -40,7 +40,7 @@ interface Props {
   canUpdate: boolean,
   canDelete: boolean,
   onSave: () => void,
-  onCancel: () => void,
+  onClose: () => void,
 }
 
 class UserRoleList extends React.Component<Props, State> {
@@ -363,7 +363,7 @@ class UserRoleList extends React.Component<Props, State> {
   }
 
   renderFooter = (disabled: boolean) => {
-    const { onCancel } = this.props;
+    const { onClose } = this.props;
     const { isLoading, error } = this.state;
     const isValidForm = this.isValidForm();
     const hasChanges = this.hasChanges();
@@ -386,16 +386,16 @@ class UserRoleList extends React.Component<Props, State> {
         <IonGrid>
           <IonRow>
             <IonCol size="12" size-md="6">
-              {(!hasChanges && typeof onCancel === 'function')
+              {(!hasChanges && typeof onClose === 'function')
                 ? (
                   <IonButton
                     fill="outline"
                     type="button"
                     expand="block"
                     disabled={disabled}
-                    onClick={() => onCancel()}
+                    onClick={() => onClose()}
                   >
-                    {i18n.t('Cancel')}
+                    {i18n.t('Close')}
                   </IonButton>
                 ) : (
                   <IonButton

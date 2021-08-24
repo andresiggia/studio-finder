@@ -182,7 +182,7 @@ class SpaceListItem extends React.Component<Props, State> {
               canUpdate={canUpdateUsers(this.context, RoleType.space, spaceProfile.roleName)}
               canDelete={canDeleteUsers(this.context, RoleType.space, spaceProfile.roleName)}
               onSave={() => reloadItems()}
-              onCancel={() => this.onUserModalClose()}
+              onClose={() => this.onUserModalClose()}
             />
           )}
         </IonContent>
