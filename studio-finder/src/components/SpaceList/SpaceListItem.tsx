@@ -1,11 +1,12 @@
 import React from 'react';
 import {
   IonAlert,
-  IonButton, IonButtons, IonIcon, IonSpinner, IonToolbar,
+  IonButton, IonButtons, IonContent, IonIcon, IonModal, IonSpinner, IonTitle, IonToolbar,
 } from '@ionic/react';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import {
-  createOutline, trashOutline,
+  closeOutline,
+  createOutline, people, trashOutline,
 } from 'ionicons/icons';
 
 // services
@@ -23,6 +24,11 @@ import SpaceServices from '../SpaceServices/SpaceServices';
 
 // context
 import AppContext from '../../context/AppContext';
+import {
+  canDeleteUsers, canInsertUsers, canReadUsers, canUpdateUsers,
+} from '../../services/api/userRoles';
+import { RoleType } from '../../services/api/roles';
+import UserRoleList from '../UserRoleList/UserRoleList';
 
 // css
 // import './SpaceListItem.css';
@@ -32,6 +38,7 @@ interface State {
   error: Error | null,
   spaceServices: any[] | null,
   showDeleteAlert: boolean,
+  showUserModal: boolean,
 }
 
 interface Props {
@@ -51,6 +58,7 @@ class SpaceListItem extends React.Component<Props, State> {
       error: null,
       spaceServices: null,
       showDeleteAlert: false,
+      showUserModal: false,
     };
   }
 
@@ -128,7 +136,58 @@ class SpaceListItem extends React.Component<Props, State> {
     });
   }
 
+  onUserModalOpen = () => {
+    this.setMountedState({
+      showUserModal: true,
+    });
+  }
+
+  onUserModalClose = () => {
+    this.setMountedState({
+      showUserModal: false,
+    });
+  }
+
   // render
+
+  renderModalUser = () => {
+    const { spaceProfile, reloadItems } = this.props;
+    const { showUserModal } = this.state;
+    return (
+      <IonModal
+        cssClass="studio-card-modal"
+        isOpen={showUserModal}
+        onWillDismiss={() => this.onUserModalClose()}
+      >
+        <IonToolbar>
+          <IonTitle>
+            {i18n.t('Manage Space Users')}
+          </IonTitle>
+          <IonButtons slot="end">
+            <IonButton
+              color="primary"
+              onClick={() => this.onUserModalClose()}
+            >
+              <IonIcon icon={closeOutline} ariaLabel={i18n.t('Close')} />
+            </IonButton>
+          </IonButtons>
+        </IonToolbar>
+        <IonContent>
+          {showUserModal && (
+            <UserRoleList
+              typeId={spaceProfile.id}
+              roleType={RoleType.space}
+              canInsert={canInsertUsers(this.context, RoleType.space, spaceProfile.roleName)}
+              canUpdate={canUpdateUsers(this.context, RoleType.space, spaceProfile.roleName)}
+              canDelete={canDeleteUsers(this.context, RoleType.space, spaceProfile.roleName)}
+              onSave={() => reloadItems()}
+              onCancel={() => this.onUserModalClose()}
+            />
+          )}
+        </IonContent>
+      </IonModal>
+    );
+  }
 
   render() {
     const { spaceProfile, studioProfile, onModalOpen } = this.props;
@@ -167,6 +226,15 @@ class SpaceListItem extends React.Component<Props, State> {
         <IonToolbar>
           <SpaceServices spaceId={spaceProfile.id} items={spaceServices} />
           <IonButtons slot="end" className="space-list-item-toolbar">
+            <IonButton
+              fill="clear"
+              color="primary"
+              title={i18n.t('Manage Space Users')}
+              disabled={!canReadUsers(this.context, RoleType.space, spaceProfile.roleName)}
+              onClick={() => this.onUserModalOpen()}
+            >
+              <IonIcon icon={people} ariaLabel={i18n.t('Manage Studio Users')} />
+            </IonButton>
             <IonButton
               fill="clear"
               color="primary"
@@ -217,6 +285,7 @@ class SpaceListItem extends React.Component<Props, State> {
           showPastWeeks
           showBookingDetails
         />
+        {this.renderModalUser()}
       </>
     );
   }
