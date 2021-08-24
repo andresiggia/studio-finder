@@ -159,9 +159,10 @@ class SpaceList extends React.Component<Props, State> {
     const { items, selectedId } = this.state;
     const sortedItems = sortByKey(items || [], 'title');
     if (sortedItems.length === 1) {
-      return sortedItems.map((item) => (
+      return sortedItems.map((item, index) => (
         <IonLabel
-          key={item.id}
+          // eslint-disable-next-line react/no-array-index-key
+          key={index}
           className="space-list-item-title"
         >
           {item.title}
