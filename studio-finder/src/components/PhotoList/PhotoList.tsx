@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  IonButton, IonCol, IonIcon, IonItem, IonLabel, IonReorder, IonReorderGroup, IonRow, IonList, IonGrid,
+  IonButton, IonCol, IonIcon, IonItem, IonLabel, IonReorder, IonReorderGroup, IonRow, IonList, IonGrid, IonSpinner,
 } from '@ionic/react';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { addOutline, trashOutline } from 'ionicons/icons';
@@ -21,6 +21,7 @@ import './PhotoList.css';
 
 interface State {
   selectedIndex: number,
+  isReordering: boolean,
 }
 
 interface Props {
@@ -41,6 +42,7 @@ class PhotoList extends React.Component<Props, State> {
     super(props);
     this.state = {
       selectedIndex: -1,
+      isReordering: false,
     };
   }
 
@@ -78,8 +80,16 @@ class PhotoList extends React.Component<Props, State> {
 
   updateState = () => {
     const { items } = this.props;
+    let { selectedIndex } = this.state;
+    // prevent invalid selection
+    if (selectedIndex === -1 && items.length > 0) {
+      selectedIndex = 0;
+    } else if (selectedIndex >= items.length) {
+      selectedIndex = items.length - 1;
+    }
     this.setMountedState({
-      selectedIndex: items.length - 1, // pre-select last item
+      selectedIndex,
+      isReordering: false,
     });
   }
 
@@ -123,12 +133,15 @@ class PhotoList extends React.Component<Props, State> {
             const { from, to } = e.detail;
             if (from !== to) {
               // eslint-disable-next-line no-console
-              console.log('will reorder items', { from, to });
+              console.log('will reorder items', { from, to }, items);
               const updatedItems = items.slice();
               const [movedItem] = updatedItems.splice(from, 1);
               updatedItems.splice(to, 0, movedItem);
+              // eslint-disable-next-line no-console
+              console.log('reordered items', updatedItems);
               this.setMountedState({
                 selectedIndex: to,
+                isReordering: true,
               }, () => onOrderChange(updatedItems));
             }
             e.detail.complete();
@@ -158,29 +171,26 @@ class PhotoList extends React.Component<Props, State> {
               >
                 <IonReorder slot="start" />
                 <IonLabel>{label}</IonLabel>
-                {
-                // index === selectedIndex && (
-                  <IonButton
-                    slot="end"
-                    size="small"
-                    color={index === selectedIndex
-                      ? 'light'
-                      : 'danger'}
-                    fill="clear"
-                    title={i18n.t('Delete Item')}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      const newIndex = index >= selectedIndex
-                        ? selectedIndex - 1
-                        : selectedIndex;
-                      this.setMountedState({
-                        selectedIndex: newIndex,
-                      }, () => onDelete(index));
-                    }}
-                  >
-                    <IonIcon icon={trashOutline} />
-                  </IonButton>
-                }
+                <IonButton
+                  slot="end"
+                  size="small"
+                  color={index === selectedIndex
+                    ? 'light'
+                    : 'danger'}
+                  fill="clear"
+                  title={i18n.t('Delete Item')}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    const newIndex = index >= selectedIndex
+                      ? selectedIndex - 1
+                      : selectedIndex;
+                    this.setMountedState({
+                      selectedIndex: newIndex,
+                    }, () => onDelete(index));
+                  }}
+                >
+                  <IonIcon icon={trashOutline} />
+                </IonButton>
               </IonItem>
             );
           })}
@@ -203,7 +213,15 @@ class PhotoList extends React.Component<Props, State> {
 
   render() {
     const { items, onAdd } = this.props;
-    const { selectedIndex } = this.state;
+    const { selectedIndex, isReordering } = this.state;
+    if (isReordering) {
+      return (
+        <div className="photo-list-loading photo-list-spacer">
+          <IonSpinner name="bubbles" />
+        </div>
+      );
+    }
+
     if (items.length === 0) {
       return (
         <>
