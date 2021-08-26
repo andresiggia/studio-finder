@@ -23,16 +23,20 @@ import Notification, { NotificationType } from '../Notification/Notification';
 
 // css
 import './StudioList.css';
+import Pagination from '../Pagination/Pagination';
 
 interface Props extends RouteComponentProps {
   latitude?: number,
   longitude?: number,
+  limit?: number,
 }
 
 interface State {
   isLoading: boolean,
   error: Error | null,
   items: StudioProfileDisplay[] | null,
+  count: number,
+  start: number,
 }
 
 class StudioList extends React.Component<Props, State> {
@@ -44,6 +48,8 @@ class StudioList extends React.Component<Props, State> {
       isLoading: false,
       error: null,
       items: null,
+      count: 0,
+      start: 0,
     };
   }
 
@@ -82,12 +88,13 @@ class StudioList extends React.Component<Props, State> {
     }, async () => {
       try {
         const { latitude, longitude } = this.props;
-        const items = await getStudios(this.context, {
+        const { items, count } = await getStudios(this.context, {
           lat: latitude, lon: longitude,
         });
         this.setMountedState({
           isLoading: false,
           items,
+          count,
         });
       } catch (error) {
         // eslint-disable-next-line no-console
@@ -100,7 +107,35 @@ class StudioList extends React.Component<Props, State> {
     });
   }
 
+  onPaginationChange = (start: number) => {
+    this.setMountedState({
+      start,
+    }, () => this.loadData());
+  }
+
   // render
+
+  renderPagination = () => {
+    const { limit = 12 } = this.props;
+    const {
+      count, start, isLoading, error, items,
+    } = this.state;
+    if (!items) {
+      return null;
+    }
+    const disabled = isLoading || !!error || count <= limit;
+    return (
+      <Pagination
+        className="studio-list-pagination"
+        disabled={disabled}
+        start={start}
+        limit={limit}
+        count={count}
+        itemsLength={items.length}
+        onChange={this.onPaginationChange}
+      />
+    );
+  }
 
   renderStudio = (item: StudioProfileDisplay) => {
     const { history } = this.props;
@@ -179,6 +214,7 @@ class StudioList extends React.Component<Props, State> {
             </IonCol>
           ))}
         </IonRow>
+        {this.renderPagination()}
       </IonGrid>
     );
   }

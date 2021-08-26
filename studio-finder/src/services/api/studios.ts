@@ -83,9 +83,10 @@ export const getStudios = async (context: AppContextValue, props?: {
   } = props || {};
   const { supabase } = context;
   let data;
+  let count = 0;
   if (lat && lon) {
     // order by distance to provided latitude/longitude
-    const { data: dataDistance, error } = await supabase
+    const { data: dataDistance, error, count: countDistance } = await supabase
       .rpc(DBFunction.getStudiosWithDistance, {
         lat, lon,
       })
@@ -96,11 +97,12 @@ export const getStudios = async (context: AppContextValue, props?: {
       throw error;
     }
     data = dataDistance;
+    count = countDistance || 0;
   } else {
     // order by latest additions
-    const { data: dataList, error } = await supabase
+    const { data: dataList, error, count: countList } = await supabase
       .from(ViewName.studiosList)
-      .select()
+      .select('*', { count: 'exact' })
       .eq('inactive', false)
       .order('created_at', { ascending: false })
       .range(start, start + limit - 1);
@@ -108,12 +110,16 @@ export const getStudios = async (context: AppContextValue, props?: {
       throw error;
     }
     data = dataList;
+    count = countList || 0;
   }
-  let studios: StudioProfileDisplay[] = [];
+  let items: StudioProfileDisplay[] = [];
   if (data && Array.isArray(data) && data.length > 0) {
-    studios = data.map((studioData: any) => convertFromAPI(studioData, studioDateFields));
+    items = data.map((itemData: any) => convertFromAPI(itemData, studioDateFields));
   }
-  return studios;
+  return {
+    items,
+    count,
+  };
 };
 
 export const getStudiosByUser = async (context: AppContextValue, props?: {
