@@ -27,7 +27,7 @@ class Home extends React.Component {
           <IonText className="page-subtitle">
             {i18n.t('Latest additions')}
           </IonText>
-          <StudioList />
+          <StudioList limit={6} />
         </IonContent>
       </IonPage>
     );
