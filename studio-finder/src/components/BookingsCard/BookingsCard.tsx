@@ -1,12 +1,10 @@
 import React from 'react';
 import {
   IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonContent,
-  IonGrid, IonIcon, IonItem, IonLabel, IonList, IonModal, IonSpinner, IonText, IonTitle, IonToolbar,
+  IonGrid, IonIcon, IonItem, IonList, IonModal, IonSpinner, IonText, IonTitle, IonToolbar,
 } from '@ionic/react';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import {
-  chevronBack,
-  chevronForward,
   closeOutline, createOutline, timerOutline,
 } from 'ionicons/icons';
 
@@ -17,6 +15,7 @@ import { BookingItemWithBooking, getBookingItemsByUser } from '../../services/ap
 // components
 import Notification, { NotificationType } from '../Notification/Notification';
 import BookingForm from '../BookingForm/BookingForm';
+import Pagination from '../Pagination/Pagination';
 
 // context
 import AppContext from '../../context/AppContext';
@@ -144,33 +143,15 @@ class BookingsCard extends React.Component<Props, State> {
     }
     const disabled = isLoading || !!error || count <= limit;
     return (
-      <div className="bookings-card-pagination">
-        <IonButton
-          size="small"
-          fill="outline"
-          disabled={disabled || (start - limit) < 0}
-          title={i18n.t('Back')}
-          onClick={() => this.onPaginationChange(start - limit)}
-        >
-          <IonIcon icon={chevronBack} />
-        </IonButton>
-        <IonLabel>
-          {i18n.t('Showing item {{current}} - {{count}} out of {{total}}', {
-            count: start + items.length,
-            current: String(start + 1),
-            total: String(count),
-          })}
-        </IonLabel>
-        <IonButton
-          size="small"
-          fill="outline"
-          disabled={disabled || (start + limit) >= count}
-          title={i18n.t('Forward')}
-          onClick={() => this.onPaginationChange(start + limit)}
-        >
-          <IonIcon icon={chevronForward} />
-        </IonButton>
-      </div>
+      <Pagination
+        className="bookings-card-pagination"
+        disabled={disabled}
+        start={start}
+        limit={limit}
+        count={count}
+        itemsLength={items.length}
+        onChange={this.onPaginationChange}
+      />
     );
   }
 
