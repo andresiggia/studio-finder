@@ -16,5 +16,5 @@ export const getServices = async (context: AppContextValue) => {
   if (error) {
     throw error;
   }
-  return data || [];
+  return (data || []) as Service[];
 };
