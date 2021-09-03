@@ -395,7 +395,9 @@ class BookingCalendar extends React.Component<Props, State> {
                                 <IonChip color="danger">{i18n.t('Overbooking')}</IonChip>
                               )}
                               {relevantItems.map((item) => {
-                                let label = item.inactive ? i18n.t('cancelled') : item.serviceTitle;
+                                let label = item.inactive
+                                  ? i18n.t('cancelled')
+                                  : (item.serviceTitle || `(${i18n.t('Blocked time')})`);
                                 if (item.userId) {
                                   const userNameSurname = `${item.userName} ${item.userSurname}`.trim();
                                   label = `${userNameSurname} (${label})`;

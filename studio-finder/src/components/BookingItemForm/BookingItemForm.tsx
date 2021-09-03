@@ -246,10 +246,13 @@ class BookingItemForm extends React.Component<Props, State> {
                   fieldName: 'serviceTitle',
                   label: i18n.t('Service'),
                   disabled,
-                  options: spaceServices.map((spaceService) => ({
+                  options: [{
+                    value: '',
+                    label: `(${i18n.t('Blocked time')})`,
+                  }].concat(spaceServices.map((spaceService) => ({
                     value: spaceService.title, // title is unique per spaceId
                     label: spaceService.title,
-                  })),
+                  }))),
                   onChange: (title) => {
                     const spaceService = spaceServices.find((sItem: any) => sItem.title === title);
                     if (spaceService) {

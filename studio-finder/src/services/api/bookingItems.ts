@@ -45,7 +45,7 @@ export const defaultBookingItem: BookingItem = {
   endAt: null,
 };
 const bookingItemDateFields: (keyof BookingItem)[] = ['startAt', 'endAt'];
-export const bookingItemRequiredFields: (keyof BookingItem)[] = ['spaceId', 'serviceType', 'endAt', 'startAt'];
+export const bookingItemRequiredFields: (keyof BookingItem)[] = ['spaceId', 'endAt', 'startAt'];
 
 export interface BookingItemWithBooking extends BookingItem {
   studioId: number,
