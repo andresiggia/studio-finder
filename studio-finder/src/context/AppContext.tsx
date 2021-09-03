@@ -42,6 +42,7 @@ interface State {
 export interface AppContextValue {
   state: State,
   supabase: supabase.SupabaseClient,
+  loadDefinitions: () => Promise<void>,
   updateProfile: any,
   getLoginPath: any,
   getDefaultLoggedInRouteName: any,
@@ -100,7 +101,7 @@ export class AppContextProvider extends React.Component<Props, State> {
     }
   }
 
-  loadDefinitions = async () => {
+  loadDefinitions = async (): Promise<void> => {
     try {
       const [settings, roles, services] = await Promise.all([
         getSettings(this.getContext()),
@@ -114,7 +115,7 @@ export class AppContextProvider extends React.Component<Props, State> {
       return new Promise((resolve) => {
         this.setMountedState({
           settings, roles, services,
-        }, () => resolve(true));
+        }, () => resolve());
       });
     } catch (error) {
       // eslint-disable-next-line no-console
@@ -214,7 +215,7 @@ export class AppContextProvider extends React.Component<Props, State> {
     return route?.path || '';
   }
 
-  getContext = () => ({
+  getContext = (): AppContextValue => ({
     state: this.state,
     supabase: this.supabase,
     loadDefinitions: this.loadDefinitions,
