@@ -80,12 +80,8 @@ class UserRoleList extends React.Component<Props, State> {
   setMountedState = (state: any, callback?: () => any) => {
     if (this.mounted) {
       this.setState(state, callback);
-    } else {
-      // eslint-disable-next-line no-console
-      console.log('unmounted request', state);
-      if (typeof callback === 'function') {
-        callback();
-      }
+    } else if (typeof callback === 'function') {
+      callback();
     }
   }
 
