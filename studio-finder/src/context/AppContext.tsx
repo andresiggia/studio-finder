@@ -92,16 +92,13 @@ export class AppContextProvider extends React.Component<Props, State> {
   setMountedState = (state: any, callback?: () => any) => {
     if (this.mounted) {
       this.setState(state, callback);
-    } else {
-      // eslint-disable-next-line no-console
-      console.log('unmounted request', state);
-      if (typeof callback === 'function') {
-        callback();
-      }
+    } else if (typeof callback === 'function') {
+      callback();
     }
   }
 
-  loadDefinitions = async (): Promise<void> => {
+  // eslint-disable-next-line no-async-promise-executor
+  loadDefinitions = (): Promise<void> => new Promise(async (resolve, reject) => {
     try {
       const [settings, roles, services] = await Promise.all([
         getSettings(this.getContext()),
@@ -112,17 +109,15 @@ export class AppContextProvider extends React.Component<Props, State> {
       console.log('got definitions', {
         settings, roles, services,
       });
-      return new Promise((resolve) => {
-        this.setMountedState({
-          settings, roles, services,
-        }, () => resolve());
-      });
+      this.setMountedState({
+        settings, roles, services,
+      }, () => resolve());
     } catch (error) {
       // eslint-disable-next-line no-console
       console.warn('error - loadDefinitions', error);
-      return Promise.reject(error);
+      reject(error);
     }
-  }
+  })
 
   loadUserProfile = async () => {
     try {
