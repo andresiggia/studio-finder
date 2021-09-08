@@ -16,6 +16,11 @@ import { SpaceProfile } from '../../services/api/spaces';
 import { StudioProfile } from '../../services/api/studios';
 import { BookingDate, BookingItem, defaultBookingItem } from '../../services/api/bookingItems';
 import { sortByKey } from '../../services/helpers/misc';
+import { RouteName } from '../../services/routes/routes';
+import { UserType } from '../../services/api/users';
+
+// components
+import LoginForm from '../../components/LoginForm/LoginForm';
 
 import BookingBarItem from './BookingBarItem';
 
@@ -156,7 +161,41 @@ class BookingBar extends React.Component<Props, State> {
     </>
   )
 
-  renderModal = (bookingItems: BookingItem[], totalPrice: number) => {
+  renderLoginModal = () => {
+    const { showModal } = this.state;
+    return (
+      <IonModal
+        cssClass="booking-bar-modal-login"
+        isOpen={showModal}
+        onWillDismiss={() => this.onModalClose()}
+      >
+        <IonToolbar>
+          <IonTitle>
+            {i18n.t('Log In / Sign Up')}
+          </IonTitle>
+          <IonButtons slot="end">
+            <IonButton
+              color="primary"
+              onClick={() => this.onModalClose()}
+            >
+              <IonIcon icon={closeOutline} ariaLabel={i18n.t('Close')} />
+            </IonButton>
+          </IonButtons>
+        </IonToolbar>
+        <IonContent>
+          {showModal && (
+            <LoginForm
+              routeName={RouteName.login}
+              userType={UserType.musician}
+              onCancel={() => this.onModalClose()}
+            />
+          )}
+        </IonContent>
+      </IonModal>
+    );
+  }
+
+  renderConfirmationModal = (bookingItems: BookingItem[], totalPrice: number) => {
     const { onConfirmBooking } = this.props;
     const { showModal, showPaymentAlert, notes } = this.state;
     // eslint-disable-next-line max-len
@@ -283,6 +322,7 @@ class BookingBar extends React.Component<Props, State> {
   }
 
   render() {
+    const { state } = this.context;
     const { onClear } = this.props;
     const bookingItems = this.getBookingItems();
     const totalPrice = bookingItems.map((bookingItem) => bookingItem.quantity * bookingItem.servicePrice)
@@ -331,7 +371,9 @@ class BookingBar extends React.Component<Props, State> {
             </IonCol>
           </IonRow>
         </IonGrid>
-        {this.renderModal(bookingItems, totalPrice)}
+        {state.user
+          ? this.renderConfirmationModal(bookingItems, totalPrice)
+          : this.renderLoginModal()}
       </div>
     );
   }
