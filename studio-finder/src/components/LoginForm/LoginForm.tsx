@@ -20,7 +20,7 @@ import PasswordFields from '../PasswordFields/PasswordFields';
 // services
 import i18n from '../../services/i18n/i18n';
 import {
-  defaultRoute, getRoutesByName, LoginRouteName, RouteName,
+  getRoutesByName, LoginRouteName, RouteName,
 } from '../../services/routes/routes';
 
 // css
@@ -38,9 +38,12 @@ interface State {
 
 interface Props extends RouteComponentProps {
   routeName: string,
-  title: string,
   userType: string,
-  defaultScreen?: string,
+  title: string,
+  screen: string,
+  onLogin: () => void,
+  onScreenChange: (screen: string) => void,
+  onCancel: () => void,
 }
 
 class LoginForm extends React.Component<Props, State> {
@@ -72,11 +75,6 @@ class LoginForm extends React.Component<Props, State> {
     this.mounted = false;
   }
 
-  static getSearchParam(location: { search: string }, fieldName: string) {
-    const query = new URLSearchParams(location.search);
-    return query.get(fieldName);
-  }
-
   setMountedState = (state: any, callback?: () => any) => {
     if (this.mounted) {
       this.setState(state, callback);
@@ -86,36 +84,18 @@ class LoginForm extends React.Component<Props, State> {
   }
 
   checkLogin = () => {
-    const { state, getDefaultLoggedInRoutePath } = this.context;
-    const { location, history, userType } = this.props;
+    const { state } = this.context;
+    const { onLogin } = this.props;
     if (state.user) {
-      const redirectTo = LoginForm.getSearchParam(location, 'redirectTo');
-      const routePath = getDefaultLoggedInRoutePath(userType);
-      history.push(redirectTo || routePath || '/');
+      onLogin();
     }
   }
 
-  getScreen = () => {
-    const { location, defaultScreen = LoginRouteName.login } = this.props;
-    return LoginForm.getSearchParam(location, 'screen') || defaultScreen;
-  }
-
-  onCancel = () => {
-    const { location, history } = this.props;
-    const backUrl = LoginForm.getSearchParam(location, 'backUrl') || defaultRoute?.path || '/';
-    history.push(backUrl);
-  }
-
-  changeScreen = (value: string) => {
-    const { location, history } = this.props;
-    const query = new URLSearchParams(location.search);
-    query.set('screen', value || '');
-    history.push(`${location.pathname}?${query.toString()}`);
-  }
-
-  onScreenChange = (e: any) => {
-    const { value } = e.detail;
-    this.changeScreen(value);
+  getForgotPasswordUrl = () => {
+    const { match } = this.props;
+    const [host] = window.location.href.split(match.url);
+    const [route] = getRoutesByName([RouteName.forgotPassword]);
+    return `${host}${route.path}`;
   }
 
   getRedirectUrl = () => {
@@ -128,13 +108,6 @@ class LoginForm extends React.Component<Props, State> {
     return `${host}${redirectPath}`;
   }
 
-  getForgotPasswordUrl = () => {
-    const { match } = this.props;
-    const [host] = window.location.href.split(match.url);
-    const [route] = getRoutesByName([RouteName.forgotPassword]);
-    return `${host}${route.path}`;
-  }
-
   onSubmit = (e: any) => {
     // prevent form from submitting
     e.preventDefault();
@@ -143,7 +116,7 @@ class LoginForm extends React.Component<Props, State> {
       this.setMountedState({
         isLoading: true,
       }, async () => {
-        const screen = this.getScreen();
+        const { screen, onScreenChange } = this.props;
         try {
           const { email, password, forgotPassword } = this.state;
           const { supabase } = this.context;
@@ -196,7 +169,7 @@ class LoginForm extends React.Component<Props, State> {
           }, () => {
             if (isSignUp) {
               // redirect to login screen after successful sign up
-              this.changeScreen(LoginRouteName.login);
+              onScreenChange(LoginRouteName.login);
             }
           });
         } catch (error) {
@@ -212,10 +185,10 @@ class LoginForm extends React.Component<Props, State> {
   }
 
   isValidForm = () => {
+    const { screen } = this.props;
     const {
       email, password, passwordRepeat, forgotPassword,
     } = this.state;
-    const screen = this.getScreen();
     const isEmailValid = !!email;
     const isPasswordValid = !!password && password.length >= MIN_PASSWORD_CHARS;
     const isPasswordRepeatValid = !!passwordRepeat && password === passwordRepeat;
@@ -228,10 +201,10 @@ class LoginForm extends React.Component<Props, State> {
   // render
 
   renderForm = () => {
+    const { screen, onCancel } = this.props;
     const {
       email, password, passwordRepeat, isLoading, error, notification, forgotPassword,
     } = this.state;
-    const screen = this.getScreen();
     const isValidForm = this.isValidForm();
     const disabled = isLoading || !!error;
     const isSignUp = screen === LoginRouteName.signUp;
@@ -308,7 +281,7 @@ class LoginForm extends React.Component<Props, State> {
               type="button"
               expand="block"
               disabled={disabled}
-              onClick={this.onCancel}
+              onClick={onCancel}
             >
               {i18n.t('Cancel')}
             </IonButton>
@@ -343,8 +316,9 @@ class LoginForm extends React.Component<Props, State> {
   }
 
   render() {
-    const { routeName, title } = this.props;
-    const screen = this.getScreen();
+    const {
+      routeName, title, screen, onScreenChange,
+    } = this.props;
     const [route] = getRoutesByName([routeName]);
     if (!route) {
       // eslint-disable-next-line no-console
@@ -364,7 +338,7 @@ class LoginForm extends React.Component<Props, State> {
               <IonCardContent>
                 <IonSegment
                   value={screen}
-                  onIonChange={this.onScreenChange}
+                  onIonChange={(e: any) => onScreenChange(e.detail.value)}
                 >
                   {!!route.routes && (
                     route.routes.map((subRoute) => (
