@@ -1,5 +1,7 @@
 import React from 'react';
-import { IonContent, IonPage } from '@ionic/react';
+import {
+  IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonCol, IonContent, IonGrid, IonPage, IonRow,
+} from '@ionic/react';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 
 // components
@@ -11,8 +13,6 @@ import AppContext from '../../context/AppContext';
 
 // services
 import { LoginRouteName, defaultRoute } from '../../services/routes/routes';
-
-// constants
 import { UserType } from '../../services/api/users';
 
 interface Props extends RouteComponentProps {
@@ -60,15 +60,29 @@ class LoginBase extends React.Component<Props, any> {
       <IonPage>
         <IonContent fullscreen>
           <Header />
-          <LoginForm
-            title={title}
-            routeName={routeName}
-            userType={userType}
-            screen={this.getScreen()}
-            onLogin={this.onLogin}
-            onScreenChange={this.onScreenChange}
-            onCancel={this.onCancel}
-          />
+          <IonGrid>
+            <IonRow>
+              <IonCol size="12" size-lg="4" offset-lg="4" size-md="6" offset-md="3">
+                <IonCard>
+                  <IonCardHeader>
+                    <IonCardTitle>
+                      {title}
+                    </IonCardTitle>
+                  </IonCardHeader>
+                  <IonCardContent>
+                    <LoginForm
+                      routeName={routeName}
+                      userType={userType}
+                      screen={this.getScreen()}
+                      onLogin={this.onLogin}
+                      onScreenChange={this.onScreenChange}
+                      onCancel={this.onCancel}
+                    />
+                  </IonCardContent>
+                </IonCard>
+              </IonCol>
+            </IonRow>
+          </IonGrid>
         </IonContent>
       </IonPage>
     );

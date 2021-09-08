@@ -1,8 +1,7 @@
 import React from 'react';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import {
-  IonButton, IonSegment, IonSegmentButton, IonLabel, IonList, IonGrid, IonRow, IonCol,
-  IonItem, IonInput, IonSpinner, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonIcon,
+  IonButton, IonSegment, IonSegmentButton, IonLabel, IonList, IonItem, IonInput, IonSpinner, IonIcon,
 } from '@ionic/react';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { chevronBackOutline } from 'ionicons/icons';
@@ -27,6 +26,7 @@ import {
 import './LoginForm.css';
 
 interface State {
+  screen: string,
   email: string;
   password: string;
   passwordRepeat: string;
@@ -39,11 +39,11 @@ interface State {
 interface Props extends RouteComponentProps {
   routeName: string,
   userType: string,
-  title: string,
-  screen: string,
-  onLogin: () => void,
-  onScreenChange: (screen: string) => void,
+  screen?: string,
+  defaultScreen?: string,
+  onScreenChange?: (screen: string) => void,
   onCancel: () => void,
+  onLogin?: () => void,
 }
 
 class LoginForm extends React.Component<Props, State> {
@@ -52,6 +52,7 @@ class LoginForm extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
+      screen: '',
       email: '',
       password: '',
       passwordRepeat: '',
@@ -86,7 +87,7 @@ class LoginForm extends React.Component<Props, State> {
   checkLogin = () => {
     const { state } = this.context;
     const { onLogin } = this.props;
-    if (state.user) {
+    if (state.user && typeof onLogin === 'function') {
       onLogin();
     }
   }
@@ -108,6 +109,24 @@ class LoginForm extends React.Component<Props, State> {
     return `${host}${redirectPath}`;
   }
 
+  getScreen = () => {
+    const { screen: screenProp, onScreenChange, defaultScreen = LoginRouteName.login } = this.props;
+    const { screen: screenState } = this.state;
+    if (typeof onScreenChange === 'function') {
+      return screenProp || defaultScreen;
+    }
+    return screenState || defaultScreen;
+  }
+
+  onScreenChange = (screen: string) => {
+    const { onScreenChange } = this.props;
+    if (typeof onScreenChange === 'function') {
+      onScreenChange(screen);
+    } else {
+      this.setMountedState({ screen });
+    }
+  }
+
   onSubmit = (e: any) => {
     // prevent form from submitting
     e.preventDefault();
@@ -116,7 +135,7 @@ class LoginForm extends React.Component<Props, State> {
       this.setMountedState({
         isLoading: true,
       }, async () => {
-        const { screen, onScreenChange } = this.props;
+        const screen = this.getScreen();
         try {
           const { email, password, forgotPassword } = this.state;
           const { supabase } = this.context;
@@ -169,7 +188,7 @@ class LoginForm extends React.Component<Props, State> {
           }, () => {
             if (isSignUp) {
               // redirect to login screen after successful sign up
-              onScreenChange(LoginRouteName.login);
+              this.onScreenChange(LoginRouteName.login);
             }
           });
         } catch (error) {
@@ -185,10 +204,10 @@ class LoginForm extends React.Component<Props, State> {
   }
 
   isValidForm = () => {
-    const { screen } = this.props;
     const {
       email, password, passwordRepeat, forgotPassword,
     } = this.state;
+    const screen = this.getScreen();
     const isEmailValid = !!email;
     const isPasswordValid = !!password && password.length >= MIN_PASSWORD_CHARS;
     const isPasswordRepeatValid = !!passwordRepeat && password === passwordRepeat;
@@ -201,10 +220,11 @@ class LoginForm extends React.Component<Props, State> {
   // render
 
   renderForm = () => {
-    const { screen, onCancel } = this.props;
+    const { onCancel } = this.props;
     const {
       email, password, passwordRepeat, isLoading, error, notification, forgotPassword,
     } = this.state;
+    const screen = this.getScreen();
     const isValidForm = this.isValidForm();
     const disabled = isLoading || !!error;
     const isSignUp = screen === LoginRouteName.signUp;
@@ -316,9 +336,8 @@ class LoginForm extends React.Component<Props, State> {
   }
 
   render() {
-    const {
-      routeName, title, screen, onScreenChange,
-    } = this.props;
+    const { routeName } = this.props;
+    const screen = this.getScreen();
     const [route] = getRoutesByName([routeName]);
     if (!route) {
       // eslint-disable-next-line no-console
@@ -326,36 +345,23 @@ class LoginForm extends React.Component<Props, State> {
       return null;
     }
     return (
-      <IonGrid>
-        <IonRow>
-          <IonCol size="12" size-lg="4" offset-lg="4" size-md="6" offset-md="3">
-            <IonCard>
-              <IonCardHeader>
-                <IonCardTitle>
-                  {title}
-                </IonCardTitle>
-              </IonCardHeader>
-              <IonCardContent>
-                <IonSegment
-                  value={screen}
-                  onIonChange={(e: any) => onScreenChange(e.detail.value)}
-                >
-                  {!!route.routes && (
-                    route.routes.map((subRoute) => (
-                      <IonSegmentButton key={subRoute.name} value={subRoute.name}>
-                        <IonLabel>
-                          {subRoute.getLabel ? subRoute.getLabel() : ''}
-                        </IonLabel>
-                      </IonSegmentButton>
-                    ))
-                  )}
-                </IonSegment>
-                {this.renderForm()}
-              </IonCardContent>
-            </IonCard>
-          </IonCol>
-        </IonRow>
-      </IonGrid>
+      <>
+        <IonSegment
+          value={screen}
+          onIonChange={(e: any) => this.onScreenChange(e.detail.value)}
+        >
+          {!!route.routes && (
+            route.routes.map((subRoute) => (
+              <IonSegmentButton key={subRoute.name} value={subRoute.name}>
+                <IonLabel>
+                  {subRoute.getLabel ? subRoute.getLabel() : ''}
+                </IonLabel>
+              </IonSegmentButton>
+            ))
+          )}
+        </IonSegment>
+        {this.renderForm()}
+      </>
     );
   }
 }
