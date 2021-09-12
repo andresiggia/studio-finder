@@ -18,8 +18,6 @@ CREATE TABLE "studios" (
   "title" varchar,
   "description" varchar,
   "address" varchar,
-  "city" varchar,
-  "country" varchar,
   "latitude" float8,
   "longitude" float8,
   "inactive" boolean,
