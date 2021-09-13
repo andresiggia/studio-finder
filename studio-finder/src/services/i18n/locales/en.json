@@ -1,4 +1,6 @@
 {
+  "Passwords must have at least {{count}} character": "Passwords must have at least {{count}} character",
+  "Passwords must have at least {{count}} character_plural": "Passwords must have at least {{count}} characters",
   "{{count}} hour": "{{count}} hour",
   "{{count}} hour_plural": "{{count}} hours",
   "Showing item {{current}} - {{count}} out of {{total}}": "Showing item {{current}} - {{count}} out of {{total}}",
