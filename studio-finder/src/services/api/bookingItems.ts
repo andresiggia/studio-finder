@@ -87,6 +87,7 @@ export const getBookingItemsByUser = async (context: AppContextValue, props?: {
     const { data: dataPast, error, count: countPast } = await supabase
       .from(ViewName.bookingItemsWithBooking)
       .select('*', { count: 'exact' })
+      .eq('user_id', userId)
       .gte('start_at', convertDateForComparison(today))
       .order('start_at', { ascending: true })
       .range(start, start + limit - 1);
@@ -99,6 +100,7 @@ export const getBookingItemsByUser = async (context: AppContextValue, props?: {
     const { data: dataFuture, error, count: countFuture } = await supabase
       .from(ViewName.bookingItemsWithBooking)
       .select('*', { count: 'exact' })
+      .eq('user_id', userId)
       .lt('start_at', convertDateForComparison(today))
       .order('start_at', { ascending: true })
       .range(start, start + limit - 1);
