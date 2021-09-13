@@ -9,7 +9,7 @@
     "@ionic/react": "^5.5.0",
     "@ionic/react-router": "^5.5.0",
     "@react-google-maps/api": "^2.2.0",
-    "@supabase/supabase-js": "1.20",
+    "@supabase/supabase-js": "^1.22.6",
     "@testing-library/jest-dom": "^5.11.9",
     "@testing-library/react": "^11.2.5",
     "@testing-library/user-event": "^12.6.3",
