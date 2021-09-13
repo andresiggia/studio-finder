@@ -127,8 +127,6 @@ export class AppContextProvider extends React.Component<Props, State> {
         console.warn('user not available, cannot load profile', user);
         return false;
       }
-      // eslint-disable-next-line no-console
-      console.log('loading user profile...');
       const profile = await getUserProfile(this.getContext());
       // eslint-disable-next-line no-console
       console.log('got user profile', profile);

@@ -48,17 +48,21 @@ export const getUserProfile = async (context: AppContextValue) => {
   if (!id) {
     throw new Error(UserError.notLoggedIn);
   }
+  // eslint-disable-next-line no-console
+  console.log('loading user profile for id', id);
   const { data, error } = await supabase
     .from(TableName.users)
     .select()
-    .eq('id', id)
-    .single();
+    .eq('id', id);
   if (error) {
     throw error;
   }
   let profile: any = null;
-  if (data && data.id === id) {
-    profile = convertFromAPI(data, userDateFields);
+  if (data) {
+    const row = data.find((dataRow) => dataRow.id === id);
+    if (row && row.id === id) {
+      profile = convertFromAPI(data, userDateFields);
+    }
   }
   return profile;
 };
