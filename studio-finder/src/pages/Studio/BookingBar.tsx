@@ -171,7 +171,7 @@ class BookingBar extends React.Component<Props, State> {
       >
         <IonToolbar>
           <IonTitle>
-            {i18n.t('Log In / Sign Up')}
+            {i18n.t('Log in or sign up to continue')}
           </IonTitle>
           <IonButtons slot="end">
             <IonButton
