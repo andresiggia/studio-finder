@@ -354,7 +354,7 @@ class BookingBar extends React.Component<Props, State> {
                     expand="block"
                     onClick={() => onClear()}
                   >
-                    {i18n.t('Reset')}
+                    {i18n.t('Cancel')}
                   </IonButton>
                 </IonCol>
                 <IonCol size="12" size-md="6">
