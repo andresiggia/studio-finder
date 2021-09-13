@@ -337,6 +337,7 @@ class LoginForm extends React.Component<Props, State> {
 
   render() {
     const { routeName } = this.props;
+    const { forgotPassword } = this.state;
     const screen = this.getScreen();
     const [route] = getRoutesByName([routeName]);
     if (!route) {
@@ -351,13 +352,19 @@ class LoginForm extends React.Component<Props, State> {
           onIonChange={(e: any) => this.onScreenChange(e.detail.value)}
         >
           {!!route.routes && (
-            route.routes.map((subRoute) => (
-              <IonSegmentButton key={subRoute.name} value={subRoute.name}>
-                <IonLabel>
-                  {subRoute.getLabel ? subRoute.getLabel() : ''}
-                </IonLabel>
-              </IonSegmentButton>
-            ))
+            route.routes.map((subRoute) => {
+              // prevent showing sign up option if forgotPassword is selected
+              if (subRoute.name === LoginRouteName.signUp && forgotPassword) {
+                return null;
+              }
+              return (
+                <IonSegmentButton key={subRoute.name} value={subRoute.name}>
+                  <IonLabel>
+                    {subRoute.getLabel ? subRoute.getLabel() : ''}
+                  </IonLabel>
+                </IonSegmentButton>
+              );
+            })
           )}
         </IonSegment>
         {this.renderForm()}
