@@ -77,6 +77,7 @@ http://ionicframework.com/docs/theming/ */
 
   /* custom variables */
   --grid-spacing: 10px;
+  --booking-bar-height: 185px;
 }
 
 @media (prefers-color-scheme: dark) {
