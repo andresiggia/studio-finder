@@ -89,7 +89,7 @@ export const getStudios = async (context: AppContextValue, props?: {
     const { data: dataDistance, error, count: countDistance } = await supabase
       .rpc(DBFunction.getStudiosWithDistance, {
         lat, lon,
-      })
+      }, { count: 'exact' })
       .eq('inactive', false)
       .order('distance', { ascending: true, nullsFirst: false })
       .range(start, start + limit - 1);
