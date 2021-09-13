@@ -93,10 +93,10 @@ class SpaceServiceForm extends React.Component<Props> {
   }
 
   renderSelectInput = ({
-    value, disabled = false, required = false, label, fieldName, options, onChange,
+    value, disabled = false, required = false, label, fieldName, options, headerLabel, onChange,
   }: {
     value: any, disabled?: boolean, required?: boolean, label: string, fieldName: string,
-    options: { value: any, label: string }[], onChange?: (value: any) => void,
+    options: { value: any, label: string }[], headerLabel?: string, onChange?: (value: any) => void,
   }) => {
     const isRequired = required || spaceServiceRequiredFields.includes(fieldName as keyof SpaceService);
     return (
@@ -106,6 +106,9 @@ class SpaceServiceForm extends React.Component<Props> {
           value={value}
           // required={isRequired}
           disabled={disabled}
+          interfaceOptions={{
+            header: headerLabel || label,
+          }}
           onIonChange={(e: any) => (typeof onChange === 'function'
             ? onChange(e.detail.value)
             : this.onChange(e.detail.value, fieldName))}
@@ -134,6 +137,7 @@ class SpaceServiceForm extends React.Component<Props> {
             value: item.serviceType,
             fieldName: 'serviceType',
             label: i18n.t('Service Type'),
+            headerLabel: i18n.t('Select Service Type'),
             disabled,
             options: serviceTypeOptions,
             onChange: (value) => {

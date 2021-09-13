@@ -253,6 +253,9 @@ class BookingCalendar extends React.Component<Props, State> {
           <IonSelect
             color="primary"
             value={bookingDate.serviceTitle}
+            interfaceOptions={{
+              header: i18n.t('Select Service'),
+            }}
             onIonChange={(e: any) => {
               const spaceService = spaceServices.find((sItem) => sItem.title === e.detail.value);
               if (spaceService) {

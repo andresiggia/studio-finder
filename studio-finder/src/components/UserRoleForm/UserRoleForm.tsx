@@ -74,10 +74,10 @@ class UserRoleForm extends React.Component<Props> {
   }
 
   renderSelectInput = ({
-    value, disabled = false, required = false, label, fieldName, options, onChange,
+    value, disabled = false, required = false, label, fieldName, options, headerLabel, onChange,
   }: {
     value: any, disabled?: boolean, required?: boolean, label: string, fieldName: string,
-    options: { value: any, label: string }[], onChange?: (value: any) => void,
+    options: { value: any, label: string }[], headerLabel?: string, onChange?: (value: any) => void,
   }) => {
     const isRequired = required
       || userRoleDisplayRequiredFields.includes(fieldName as keyof (UserRoleDisplay));
@@ -88,6 +88,9 @@ class UserRoleForm extends React.Component<Props> {
           value={value}
           // required={isRequired}
           disabled={disabled}
+          interfaceOptions={{
+            header: headerLabel || label,
+          }}
           onIonChange={(e: any) => (typeof onChange === 'function'
             ? onChange(e.detail.value)
             : this.onChange(e.detail.value, fieldName))}
@@ -196,6 +199,7 @@ class UserRoleForm extends React.Component<Props> {
             value: item.roleName,
             fieldName: 'roleName',
             label: i18n.t('Role'),
+            headerLabel: i18n.t('Select Role'),
             disabled,
             options: state.roles
               .filter((role: Role) => role.type === roleType)

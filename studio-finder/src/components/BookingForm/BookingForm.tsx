@@ -538,32 +538,6 @@ class BookingForm extends React.Component<Props, State> {
     );
   }
 
-  renderSelectInput = ({
-    value, disabled = false, required = false, label, fieldName, options,
-  }: {
-    value: any, disabled?: boolean, required?: boolean, label: string, fieldName: string,
-    options: { value: any, label: string }[],
-  }) => {
-    const isRequired = required || bookingRequiredFields.includes(fieldName as keyof Booking);
-    return (
-      <>
-        {this.renderLabel(label, isRequired)}
-        <IonSelect
-          value={value}
-          // required={isRequired}
-          disabled={disabled}
-          onIonChange={(e: any) => this.onChange(e.detail.value || '', fieldName)}
-        >
-          {options.map((item) => (
-            <IonSelectOption key={item.value} value={item.value}>
-              {item.label}
-            </IonSelectOption>
-          ))}
-        </IonSelect>
-      </>
-    );
-  }
-
   renderFields = (disabled: boolean) => {
     const { studioProfile, booking, bookingItems } = this.state;
     if (!booking || !bookingItems) {
