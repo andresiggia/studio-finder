@@ -5,7 +5,7 @@ import {
 } from '@ionic/react';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import {
-  closeOutline, createOutline, timerOutline,
+  closeOutline, eyeOutline, timerOutline,
 } from 'ionicons/icons';
 
 // services
@@ -211,10 +211,10 @@ class BookingsCard extends React.Component<Props, State> {
                 slot="end"
                 fill="clear"
                 type="button"
-                title={i18n.t('View/Modify Booking')}
+                title={i18n.t('View Booking')}
                 onClick={() => this.onModalOpen(bookingItem.bookingId)}
               >
-                <IonIcon icon={createOutline} />
+                <IonIcon icon={eyeOutline} />
               </IonButton>
             </IonItem>
           );
@@ -259,7 +259,7 @@ class BookingsCard extends React.Component<Props, State> {
       >
         <IonToolbar>
           <IonTitle>
-            {i18n.t('View/Modify Booking')}
+            {i18n.t('View Booking')}
           </IonTitle>
           <IonButtons slot="end">
             <IonButton
@@ -272,14 +272,23 @@ class BookingsCard extends React.Component<Props, State> {
         </IonToolbar>
         <IonContent>
           {showModal && (
-            <BookingForm
-              id={modalSelectedId}
-              onCancel={() => this.onModalClose()}
-              onSave={() => {
-                this.onModalClose();
-                this.loadItems();
-              }}
-            />
+            <>
+              <Notification
+                type={NotificationType.warning}
+                className="bookings-card-spacer"
+                header={i18n.t('Read-only')}
+                message={i18n.t('To make updates to this booking, please get in touch with the studio directly.')}
+              />
+              <BookingForm
+                id={modalSelectedId}
+                onCancel={() => this.onModalClose()}
+                onSave={() => {
+                  this.onModalClose();
+                  this.loadItems();
+                }}
+                readOnly
+              />
+            </>
           )}
         </IonContent>
       </IonModal>
