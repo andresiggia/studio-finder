@@ -13,7 +13,7 @@ import AppContext from '../../context/AppContext';
 import i18n from '../../services/i18n/i18n';
 import { UserRoleDisplay, userRoleDisplayRequiredFields } from '../../services/api/userRoles';
 import { Role, RoleType } from '../../services/api/roles';
-import { searchUsersByEmail } from '../../services/api/users';
+import { searchUsersByEmail, UserType } from '../../services/api/users';
 
 // components
 import Autocomplete, { Result } from '../Autocomplete/Autocomplete';
@@ -165,6 +165,7 @@ class UserRoleForm extends React.Component<Props> {
                   console.log('searching for', query);
                   const users = await searchUsersByEmail(this.context, {
                     query,
+                    type: UserType.studio,
                   });
                   // eslint-disable-next-line no-console
                   console.log('got users', users);

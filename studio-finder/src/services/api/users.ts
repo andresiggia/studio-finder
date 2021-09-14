@@ -141,23 +141,26 @@ export const updateUserType = async (context: AppContextValue, userType: string)
 };
 
 export const searchUsersByEmail = async (context: AppContextValue, props: {
-  query: string, start?: number, limit?: number,
+  query: string, type: UserType, start?: number, limit?: number,
 }) => {
   const {
-    query, start = 0, limit = 1000,
+    query, type, start = 0, limit = 1000,
   } = props;
   const { supabase } = context;
   const { data, error } = await supabase
     .from(ViewName.usersList)
     .select()
-    .like('email', `${query.toLowerCase().trim()}%`)
+    .like('email', `%${query.toLowerCase().trim().split(' ').join('%')}%`)
+    // .eq('type', type)
     .range(start, start + limit - 1);
+  console.log('data', data);
   if (error) {
     throw error;
   }
   let items: UserDisplay[] = [];
   if (data && Array.isArray(data) && data.length > 0) {
-    items = data.map((item: any) => convertFromAPI(item));
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    items = data.map(({ type: unusedType, ...item }: any) => convertFromAPI(item));
   }
   return items;
 };
