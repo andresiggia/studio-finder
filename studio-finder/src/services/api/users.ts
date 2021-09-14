@@ -57,12 +57,9 @@ export const getUserProfile = async (context: AppContextValue) => {
   if (error) {
     throw error;
   }
-  let profile: any = null;
-  if (data) {
-    const row = data.find((dataRow) => dataRow.id === id);
-    if (row && row.id === id) {
-      profile = convertFromAPI(data, userDateFields);
-    }
+  let profile: UserProfile[] = [];
+  if (data && Array.isArray(data) && data.length > 0) {
+    [profile] = data.map((item: any) => convertFromAPI(item, userDateFields));
   }
   return profile;
 };
