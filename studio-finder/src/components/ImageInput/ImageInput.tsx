@@ -48,7 +48,7 @@ class ImageInput extends React.Component<Props> {
     const {
       multiple, files, imageUrls, disabled, onFilesChange,
     } = this.props;
-    const validImages = imageUrls.filter((imageUrl) => imageUrl.length > 0);
+    const validImages = imageUrls.filter((imageUrl) => !!imageUrl);
     const validFiles = files.filter((file) => !!file) as File[];
 
     return (
