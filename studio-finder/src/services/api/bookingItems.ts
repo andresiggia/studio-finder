@@ -88,8 +88,8 @@ export const getBookingItemsByUser = async (context: AppContextValue, props?: {
       .from(ViewName.bookingItemsWithBooking)
       .select('*', { count: 'exact' })
       .eq('user_id', userId)
-      .gte('start_at', convertDateForComparison(today))
-      .order('start_at', { ascending: true })
+      .lt('start_at', convertDateForComparison(today))
+      .order('start_at', { ascending: false })
       .range(start, start + limit - 1);
     if (error) {
       throw error;
@@ -101,7 +101,7 @@ export const getBookingItemsByUser = async (context: AppContextValue, props?: {
       .from(ViewName.bookingItemsWithBooking)
       .select('*', { count: 'exact' })
       .eq('user_id', userId)
-      .lt('start_at', convertDateForComparison(today))
+      .gte('start_at', convertDateForComparison(today))
       .order('start_at', { ascending: true })
       .range(start, start + limit - 1);
     if (error) {
