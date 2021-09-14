@@ -148,7 +148,7 @@ class SpaceListItem extends React.Component<Props, State> {
   // render
 
   renderModalUser = () => {
-    const { spaceProfile, reloadItems } = this.props;
+    const { spaceProfile, studioProfile, reloadItems } = this.props;
     const { showUserModal } = this.state;
     return (
       <IonModal
@@ -158,7 +158,7 @@ class SpaceListItem extends React.Component<Props, State> {
       >
         <IonToolbar>
           <IonTitle>
-            {i18n.t('Manage Space Users')}
+            {`${i18n.t('Manage Space Users')} - ${spaceProfile.title} (${studioProfile.title})`}
           </IonTitle>
           <IonButtons slot="end">
             <IonButton

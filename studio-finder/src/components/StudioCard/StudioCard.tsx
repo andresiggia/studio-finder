@@ -264,7 +264,7 @@ class StudioCard extends React.Component<any, State> {
       >
         <IonToolbar>
           <IonTitle>
-            {i18n.t('Manage Studio Users')}
+            {`${i18n.t('Manage Studio Users')} - ${studioProfile.title}`}
           </IonTitle>
           <IonButtons slot="end">
             <IonButton
