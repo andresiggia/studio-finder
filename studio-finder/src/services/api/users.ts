@@ -141,16 +141,17 @@ export const updateUserType = async (context: AppContextValue, userType: string)
 };
 
 export const searchUsersByEmail = async (context: AppContextValue, props: {
-  query: string, start?: number, limit?: number,
+  query: string, type: UserType, start?: number, limit?: number,
 }) => {
   const {
-    query, start = 0, limit = 1000,
+    query, type, start = 0, limit = 1000,
   } = props;
   const { supabase } = context;
   const { data, error } = await supabase
     .from(ViewName.usersList)
     .select()
     .like('email', `%${query.toLowerCase().trim().split(' ').join('%')}%`)
+    .eq('type', type)
     .range(start, start + limit - 1);
   // eslint-disable-next-line no-console
   console.log('data', data);
